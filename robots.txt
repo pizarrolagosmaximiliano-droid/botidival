@@ -1,0 +1,34 @@
+# Configuración de robots.txt para Boti Dival
+# Indica cómo deben indexar los motores de búsqueda tu página
+
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /styles.css
+Allow: /script.js
+Allow: /manifest.json
+
+# Disallow (no indexar archivos que no existan)
+Disallow: /admin/
+Disallow: /private/
+
+# URLs específicas para el sitemap
+Sitemap: https://tudominio.com/sitemap.xml
+
+# Velocidad de rastreo
+Crawl-delay: 1
+
+# Google Search Console
+User-agent: Googlebot
+Allow: /
+Priority: 1.0
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Priority: 0.9
+
+# Información de contacto
+User-agent: *
+Disallow: /wp-admin/
+Disallow: /wp-includes/

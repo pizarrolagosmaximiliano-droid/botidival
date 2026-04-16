@@ -1,0 +1,76 @@
+# .gitignore - Boti Dival
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.sublime-project
+.sublime-workspace
+
+# Node (si usas npm)
+node_modules/
+package-lock.json
+npm-debug.log
+yarn.lock
+
+# Build
+dist/
+build/
+.parcel-cache/
+
+# Logs
+*.log
+*.logs
+debug.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Cache
+.cache/
+.Next/
+.gatsby
+
+# Análisis local
+*.prof
+.coverage/
+
+# Archivos temporales
+*.tmp
+*.bak
+*.backup
+*~
+
+# IDE específicos
+.NetBeans-marker
+.project
+.settings/
+.classpath
+
+# OS
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Archivos no necesarios en repo
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+# Configuración local (si la creas)
+local-config.js
+credentials.json
