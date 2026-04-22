@@ -26,23 +26,14 @@
             return '/';
         })();
     </script>
-    <link rel="manifest" id="manifestLink" href="">
-    <link rel="stylesheet" id="stylesLink" href="">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23D4AF37' width='100' height='100'/><text x='50' y='70' font-size='60' font-weight='bold' fill='%23000'>🍺</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23D4AF37' width='180' height='180' rx='40'/><text x='90' y='130' font-size='100' font-weight='bold' fill='%23000' text-anchor='middle'>🍺</text></svg>">
-    <script>
-        // Cargar estilos y manifest dinámicamente
-        document.getElementById('manifestLink').href = window.BASE_URL + 'manifest.json';
-        document.getElementById('stylesLink').href = window.BASE_URL + 'styles.css';
-    </script>
 </head>
 <body>
     <!-- Cargar configuración -->
-    <script id="configScript" src=""></script>
-    <script>
-        // Cargar config.js dinámicamente
-        document.getElementById('configScript').src = window.BASE_URL + 'config.js';
-    </script>
+    <script src="config.js"></script>
     <!-- Notificación flotante -->
     <div id="notification" class="notification"></div>
 
@@ -52,7 +43,7 @@
             <div class="container">
                 <div class="navbar-brand">
                     <div class="logo">
-                        <img id="logoImg" src="" alt="Boti Dival Logo" class="logo-img" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
+                        <img src="img1.jpeg" alt="Boti Dival Logo" class="logo-img" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
                         <div>
                             <h1>Boti Dival</h1>
                             <p class="tagline">Botillería Premium & Delivery Nocturno</p>
@@ -69,7 +60,7 @@
                         <a href="#home" class="nav-link">Inicio</a>
                         <a href="#catalogo" class="nav-link">Catálogo</a>
                         <a href="#ubicacion" class="nav-link">Ubicación</a>
-                        <a id="adminLink" href="" class="nav-link admin-link">🔐 Panel Admin</a>
+                        <a href="admin-login.html" class="nav-link admin-link">🔐 Panel Admin</a>
                         <a href="#carrito" class="cart-link">
                             <span class="cart-icon">🛒</span>
                             <span id="cartCount" class="cart-count">0</span>
@@ -528,7 +519,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <img id="footerLogoImg" src="" alt="Boti Dival Logo" class="footer-logo-img">
+                        <img src="img1.jpeg" alt="Boti Dival Logo" class="footer-logo-img">
                         <h4>Boti Dival</h4>
                     </div>
                     <p>Botillería Premium con más de 20 años de experiencia sirviendo calidad y confianza en Coltauco</p>
@@ -573,15 +564,6 @@
         </div>
     </footer>
 
-    <script id="mainScript" src=""></script>
-    <script>
-        // Cargar script principal dinámicamente
-        document.getElementById('mainScript').src = window.BASE_URL + 'script.js';
-        
-        // Cargar imágenes con BASE_URL
-        document.getElementById('logoImg').src = window.BASE_URL + 'img1.jpeg';
-        document.getElementById('footerLogoImg').src = window.BASE_URL + 'img1.jpeg';
-        document.getElementById('adminLink').href = window.BASE_URL + 'admin-login.html';
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
