@@ -1,0 +1,66 @@
+/* Estilos adicionales para el panel administrativo */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar {
+    height: 100vh;
+    position: fixed;
+    top: 56px; /* Altura del navbar */
+    left: 0;
+    width: 250px;
+    z-index: 1000;
+    padding-top: 20px;
+}
+
+.sidebar .nav-link {
+    color: #333;
+    padding: 10px 20px;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #e9ecef;
+}
+
+.sidebar .nav-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: static;
+        height: auto;
+        width: 100%;
+    }
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Estilos para móviles */
+@media (max-width: 576px) {
+    .container-fluid {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+}

@@ -37,8 +37,192 @@ const PRODUCTS = [
     { id: 23, name: 'Jugo Natural Naranja 1L', category: 'bebidas', price: 3900, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4G_uhNlGkt2ZFszVfMzLGPC57SoyWuE_foA&s', description: 'Fresco y natural' },
 ];
 
+// Configuración de delivery
+const DELIVERY_ZONES = {
+    'doñihue': {
+        name: 'Doñihue',
+        sectors: {
+            'centro': { name: 'Centro', cost: 6600 },
+            'cerrillos': { name: 'Cerrillos', cost: 6000 }
+        }
+    },
+    'coltauco': {
+        name: 'Coltauco',
+        sectors: {
+            'quimávida': { name: 'Quimávida', cost: 6000 },
+            'lo_de_cuevas': { name: 'Lo de Cuevas', cost: 5800 },
+            'hijuela_del_medio': { name: 'Hijuela del Medio', cost: 5800 },
+            'rinconada_de_parral': { name: 'Rinconada de Parral', cost: 4700 },
+            'cuesta_de_idahue': { name: 'Cuesta de Idahue', cost: 4600 },
+            'el_molino': { name: 'El Molino', cost: 4300 },
+            'montegrande': { name: 'Montegrande', cost: 4200 },
+            'el_loreto': { name: 'El Loreto', cost: 4000 }
+        }
+    }
+};
+
 let cart = [];
 let currentFilter = 'all';
+let selectedComuna = '';
+let selectedSector = '';
+let deliveryCost = 0;
+
+// Variables para promociones y videos
+let promociones = JSON.parse(localStorage.getItem('promociones')) || [
+    {
+        id: 1,
+        image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
+        title: 'Happy Hour - 2x1 en Cervezas',
+        description: 'Todas las tardes de 18:00 a 20:00, lleva 2 cervezas y paga solo 1. ¡Perfecto para el after office!',
+        price: 3500,
+        active: true,
+        createdAt: new Date().toISOString()
+    },
+    {
+        id: 2,
+        image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=300&fit=crop',
+        title: 'Pack Familiar - Pisco + Bebidas',
+        description: 'Botella de pisco Capel + 6 gaseosas premium. Ideal para reuniones familiares.',
+        price: 15900,
+        active: true,
+        createdAt: new Date().toISOString()
+    }
+];
+let videos = JSON.parse(localStorage.getItem('videos')) || [
+    {
+        id: 1,
+        videoId: 'dQw4w9WgXcQ',
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        title: 'Conoce Nuestra Carta Premium',
+        description: 'Descubre nuestra selección de bebidas premium y productos exclusivos.',
+        active: true,
+        createdAt: new Date().toISOString()
+    }
+];
+let deliveryStatus = JSON.parse(localStorage.getItem('deliveryStatus')) !== null ? JSON.parse(localStorage.getItem('deliveryStatus')) : true;
+
+// Variables para control de pedidos
+let pedidosHistorial = JSON.parse(localStorage.getItem('pedidosHistorial')) || [];
+
+// Inicializar datos de ejemplo si no existen
+if (pedidosHistorial.length === 0) {
+    const fechaHoy = new Date();
+    const fechaAyer = new Date(fechaHoy);
+    fechaAyer.setDate(fechaAyer.getDate() - 1);
+    
+    pedidosHistorial = [
+        {
+            id: 1001,
+            fecha: fechaHoy.toISOString(),
+            tipo: 'delivery',
+            cliente: {
+                nombre: 'Juan Pérez',
+                telefono: '+56912345678',
+                comuna: 'Coltauco',
+                sector: 'Centro',
+                direccion: 'Calle Principal 123',
+                coordenadas: '-34.4567, -71.1234'
+            },
+            productos: [
+                { id: 1, nombre: 'Cerveza Artesanal Golden', cantidad: 2, precioUnitario: 3500, subtotal: 7000 },
+                { id: 5, nombre: 'Pisco Capel Añejo', cantidad: 1, precioUnitario: 12900, subtotal: 12900 }
+            ],
+            costos: {
+                subtotal: 19900,
+                delivery: 0,
+                total: 19900
+            },
+            comentarios: 'Entregar después de las 20:00'
+        },
+        {
+            id: 1002,
+            fecha: fechaAyer.toISOString(),
+            tipo: 'delivery',
+            cliente: {
+                nombre: 'María González',
+                telefono: '+56987654321',
+                comuna: 'Doñihue',
+                sector: 'Centro',
+                direccion: 'Avenida Central 456',
+                coordenadas: ''
+            },
+            productos: [
+                { id: 7, nombre: 'Whisky Johnny Walker Red', cantidad: 1, precioUnitario: 17900, subtotal: 17900 }
+            ],
+            costos: {
+                subtotal: 17900,
+                delivery: 6600,
+                total: 24500
+            },
+            comentarios: 'Llamar al llegar'
+        },
+        {
+            id: 1003,
+            fecha: fechaHoy.toISOString(),
+            tipo: 'presencial',
+            cliente: {
+                nombre: 'Carlos Rodríguez',
+                telefono: '+56955556666',
+                comuna: 'Coltauco',
+                sector: 'Centro',
+                direccion: 'Local - Retiro en tienda',
+                coordenadas: ''
+            },
+            productos: [
+                { id: 4, nombre: 'Six Pack Cerveza Lager', cantidad: 1, precioUnitario: 18900, subtotal: 18900 }
+            ],
+            costos: {
+                subtotal: 18900,
+                delivery: 0,
+                total: 18900
+            },
+            comentarios: 'Cliente frecuente'
+        }
+    ];
+    localStorage.setItem('pedidosHistorial', JSON.stringify(pedidosHistorial));
+}
+
+// Inicializar datos de ejemplo si no existen
+if (!localStorage.getItem('promociones')) {
+    localStorage.setItem('promociones', JSON.stringify([
+        {
+            id: 1,
+            image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
+            title: 'Happy Hour - 2x1 en Cervezas',
+            description: 'Todas las tardes de 18:00 a 20:00, lleva 2 cervezas y paga solo 1. ¡Perfecto para el after office!',
+            price: 3500,
+            active: true,
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 2,
+            image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=300&fit=crop',
+            title: 'Pack Familiar - Pisco + Bebidas',
+            description: 'Botella de pisco Capel + 6 gaseosas premium. Ideal para reuniones familiares.',
+            price: 15900,
+            active: true,
+            createdAt: new Date().toISOString()
+        }
+    ]));
+}
+
+if (!localStorage.getItem('videos')) {
+    localStorage.setItem('videos', JSON.stringify([
+        {
+            id: 1,
+            videoId: 'dQw4w9WgXcQ',
+            url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            title: 'Conoce Nuestra Carta Premium',
+            description: 'Descubre nuestra selección de bebidas premium y productos exclusivos.',
+            active: true,
+            createdAt: new Date().toISOString()
+        }
+    ]));
+}
+
+// Recargar variables después de inicialización
+promociones = JSON.parse(localStorage.getItem('promociones')) || [];
+videos = JSON.parse(localStorage.getItem('videos')) || [];
 
 /* ==================== CARRUSEL ==================== */
 
@@ -261,7 +445,7 @@ function updateCartUI() {
     
     cartCount.textContent = totalItems;
     summaryItems.textContent = totalItems;
-    summaryTotal.textContent = `$${subtotal.toLocaleString('es-CL')}`;
+    summaryTotal.textContent = `$${(subtotal + deliveryCost).toLocaleString('es-CL')}`;
 
     if (cart.length === 0) {
         emptyCart.style.display = 'block';
@@ -306,7 +490,7 @@ function updateCartUI() {
             `).join('');
 
             document.getElementById('subtotal').textContent = `$${subtotal.toLocaleString('es-CL')}`;
-            document.getElementById('totalPrice').textContent = `$${subtotal.toLocaleString('es-CL')}`;
+            document.getElementById('totalPrice').textContent = `$${(subtotal + deliveryCost).toLocaleString('es-CL')}`;
             
             cartForm.style.display = 'block';
             cartSummary.style.display = 'block';
@@ -319,7 +503,19 @@ function updateCartUI() {
 let cartExpanded = false;
 
 function openCart() {
-    openCartSummaryModal();
+    if (cart.length === 0) {
+        showNotificationMessage('🛒 Tu carrito está vacío. Agrega productos primero.');
+        return;
+    }
+    
+    // Abrir panel lateral directamente con flujo de pago
+    document.getElementById('cartPanel').classList.add('active');
+    document.getElementById('cartOverlay').classList.add('active');
+    document.getElementById('fullSections').style.display = 'block';
+    document.getElementById('miniSummary').style.display = 'none';
+    updateStepIndicator(1);
+    updateCartUI();
+    initializeDeliveryOptions();
 }
 
 function closeCart() {
@@ -507,9 +703,28 @@ function openOrderForm() {
                                 <input type="tel" id="modalClientPhone" placeholder="+56 9 XXXX XXXX" required>
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Comuna *</label>
+                                <select id="modalClientComuna" onchange="updateSectores()" required>
+                                    <option value="">Seleccionar comuna</option>
+                                    <option value="doñihue">Doñihue</option>
+                                    <option value="coltauco">Coltauco</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sector *</label>
+                                <select id="modalClientSector" disabled required>
+                                    <option value="">Seleccionar sector</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label>Dirección completa *</label>
                             <input type="text" id="modalClientAddress" placeholder="Dirección con referencias" required>
+                        </div>
+                        <div class="form-group">
+                            <label id="deliveryCostLabel">Costo de Delivery: --</label>
                         </div>
                         <div class="form-group">
                             <label>Comentarios</label>
@@ -518,7 +733,7 @@ function openOrderForm() {
                     </div>
 
                     <div class="order-notice">
-                        <p>⚠️ <strong>Importante:</strong> El costo de envío se calcula según la distancia. Te lo cotizamos al confirmar tu pedido.</p>
+                        <p>💰 <strong>Costo de envío calculado automáticamente</strong> según tu comuna y sector.</p>
                     </div>
 
                     <div class="order-actions">
@@ -553,6 +768,61 @@ function handleEscapeKey(event) {
     }
 }
 
+function updateSectores() {
+    const comunaSelect = document.getElementById('modalClientComuna');
+    const sectorSelect = document.getElementById('modalClientSector');
+    const comuna = comunaSelect.value;
+    
+    // Limpiar opciones anteriores
+    sectorSelect.innerHTML = '<option value="">Seleccionar sector</option>';
+    sectorSelect.disabled = true;
+    
+    if (comuna && DELIVERY_ZONES[comuna]) {
+        const sectores = DELIVERY_ZONES[comuna].sectors;
+        Object.keys(sectores).forEach(sectorKey => {
+            const option = document.createElement('option');
+            option.value = sectorKey;
+            option.textContent = sectores[sectorKey].name;
+            sectorSelect.appendChild(option);
+        });
+        sectorSelect.disabled = false;
+    }
+    
+    updateDeliveryCost();
+}
+
+function updateDeliveryCost() {
+    const comunaSelect = document.getElementById('modalClientComuna');
+    const sectorSelect = document.getElementById('modalClientSector');
+    const costLabel = document.getElementById('deliveryCostLabel');
+    
+    const comuna = comunaSelect.value;
+    const sector = sectorSelect.value;
+    
+    if (comuna && sector && DELIVERY_ZONES[comuna] && DELIVERY_ZONES[comuna].sectors[sector]) {
+        const cost = DELIVERY_ZONES[comuna].sectors[sector].cost;
+        costLabel.textContent = `Costo de Delivery: $${cost.toLocaleString('es-CL')}`;
+        costLabel.style.color = '#1e40af';
+        costLabel.style.fontWeight = 'bold';
+    } else {
+        costLabel.textContent = 'Costo de Delivery: --';
+        costLabel.style.color = '#6b7280';
+        costLabel.style.fontWeight = 'normal';
+    }
+    
+    // Agregar event listener para actualizar costo cuando cambie el sector
+    sectorSelect.addEventListener('change', updateDeliveryCost);
+}
+
+function calculateDeliveryCost(comuna, sector) {
+    if (!comuna || !sector) return 0;
+    
+    const zone = DELIVERY_ZONES[comuna];
+    if (!zone || !zone.sectors[sector]) return 0;
+    
+    return zone.sectors[sector].cost;
+}
+
 function closeOrderModal() {
     const modal = document.getElementById('orderModal');
     if (modal) {
@@ -569,6 +839,8 @@ function submitOrder(event) {
 
     const name = document.getElementById('modalClientName').value.trim();
     const phone = document.getElementById('modalClientPhone').value.trim();
+    const comuna = document.getElementById('modalClientComuna').value;
+    const sector = document.getElementById('modalClientSector').value;
     const address = document.getElementById('modalClientAddress').value.trim();
     const comments = document.getElementById('modalClientComments').value.trim();
 
@@ -592,6 +864,18 @@ function submitOrder(event) {
         return;
     }
 
+    if (!comuna) {
+        alert('Por favor selecciona tu comuna');
+        document.getElementById('modalClientComuna').focus();
+        return;
+    }
+
+    if (!sector) {
+        alert('Por favor selecciona tu sector');
+        document.getElementById('modalClientSector').focus();
+        return;
+    }
+
     if (!address) {
         alert('Por favor ingresa tu dirección completa');
         document.getElementById('modalClientAddress').focus();
@@ -603,44 +887,73 @@ function submitOrder(event) {
         return;
     }
 
+    // Calcular costos
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const deliveryCost = calculateDeliveryCost(comuna, sector);
+    const total = subtotal + deliveryCost;
+
     // Confirmación final
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const confirmMessage = `¿Confirmar pedido?\n\nProductos: ${cart.length}\nTotal: $${total.toLocaleString('es-CL')}\nDirección: ${address}\n\nSe abrirá WhatsApp para enviar el pedido.`;
+    const confirmMessage = `¿Confirmar pedido?\n\nProductos: ${cart.length}\nSubtotal: $${subtotal.toLocaleString('es-CL')}\nDelivery: $${deliveryCost.toLocaleString('es-CL')}\nTOTAL: $${total.toLocaleString('es-CL')}\n\nDirección: ${DELIVERY_ZONES[comuna].name} - ${DELIVERY_ZONES[comuna].sectors[sector].name}\n\nSe abrirá WhatsApp para enviar el pedido.`;
 
     if (!confirm(confirmMessage)) {
         return;
     }
 
-    // Generar mensaje de WhatsApp con formato de boleta
-    const timestamp = new Date().toLocaleString('es-CL');
-    const itemsList = cart.map((item, index) =>
-        `${index + 1}. ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-CL')}`
-    ).join('\n');
+    // Crear mensaje para WhatsApp
+    let message = `🛒 *NUEVO PEDIDO - Boti Dival*\n\n`;
+    message += `👤 *Cliente:* ${name}\n`;
+    message += `📞 *Teléfono:* ${phone}\n`;
+    message += `📍 *Ubicación:* ${DELIVERY_ZONES[comuna].name} - ${DELIVERY_ZONES[comuna].sectors[sector].name}\n`;
+    message += `🏠 *Dirección:* ${address}\n\n`;
 
-    const subtotal = total;
+    message += `🛍️ *PRODUCTOS:*\n`;
+    cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        message += `• ${item.name} x${item.quantity} = $${itemTotal.toLocaleString('es-CL')}\n`;
+    });
 
-    let message = `NUEVA BOLETA DE PEDIDO BOTI DIVAL\n`;
-    message += `========================================\n`;
-    message += `Cliente: ${name}\n`;
-    message += `Teléfono: ${phone}\n`;
-    message += `Dirección: ${address}\n`;
-    message += `Fecha / Hora: ${timestamp}\n`;
-    message += `========================================\n`;
-    message += `DETALLE DE PRODUCTOS:\n`;
-    message += `${itemsList}\n`;
-    message += `========================================\n`;
-    message += `SUBTOTAL: $${subtotal.toLocaleString('es-CL')}\n`;
-    message += `ENVÍO: A cotizar según distancia\n`;
-    message += `TOTAL: $${subtotal.toLocaleString('es-CL')}\n`;
+    message += `\n💰 *RESUMEN DE COSTOS:*\n`;
+    message += `• Subtotal productos: $${subtotal.toLocaleString('es-CL')}\n`;
+    message += `• Costo de delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
+    message += `• *TOTAL: $${total.toLocaleString('es-CL')}*\n\n`;
 
     if (comments) {
-        message += `========================================\n`;
-        message += `Comentarios:\n${comments}\n`;
+        message += `📝 *Comentarios:* ${comments}\n\n`;
     }
 
     message += `========================================\n`;
-    message += `Por favor confirme disponibilidad y costo de envío.\n`;
-    message += `Gracias por su preferencia.`;
+    message += `✅ Pedido listo para confirmar y procesar.`;
+
+    // Registrar pedido en historial
+    const nuevoPedido = {
+        id: Date.now(),
+        fecha: new Date().toISOString(),
+        tipo: 'delivery',
+        cliente: {
+            nombre: name,
+            telefono: phone,
+            comuna: DELIVERY_ZONES[comuna].name,
+            sector: DELIVERY_ZONES[comuna].sectors[sector].name,
+            direccion: address,
+            coordenadas: ''
+        },
+        productos: cart.map(item => ({
+            id: item.id,
+            nombre: item.name,
+            cantidad: item.quantity,
+            precioUnitario: item.price,
+            subtotal: item.price * item.quantity
+        })),
+        costos: {
+            subtotal: subtotal,
+            delivery: deliveryCost,
+            total: total
+        },
+        comentarios: comments || ''
+    };
+
+    pedidosHistorial.push(nuevoPedido);
+    localStorage.setItem('pedidosHistorial', JSON.stringify(pedidosHistorial));
 
     // Abrir WhatsApp
     const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
@@ -838,7 +1151,843 @@ function clearCart() {
     }
 }
 
-/* ==================== FINALIZAR PEDIDO ==================== */
+/* ==================== FUNCIONES DE DELIVERY Y PAGO ==================== */
+
+function initializeDeliveryOptions() {
+    const comunaSelect = document.getElementById('clientComuna');
+    comunaSelect.innerHTML = '<option value="">Selecciona tu comuna</option>';
+    
+    Object.keys(DELIVERY_ZONES).forEach(comuna => {
+        const option = document.createElement('option');
+        option.value = comuna;
+        option.textContent = DELIVERY_ZONES[comuna].name;
+        comunaSelect.appendChild(option);
+    });
+    
+    // Reset sector
+    document.getElementById('clientSector').innerHTML = '<option value="">Primero selecciona comuna</option>';
+    selectedComuna = '';
+    selectedSector = '';
+    deliveryCost = 0;
+    updateTotalPrice();
+}
+
+function updateSectorOptions() {
+    const comunaSelect = document.getElementById('clientComuna');
+    const sectorSelect = document.getElementById('clientSector');
+    const selectedComunaValue = comunaSelect.value;
+    
+    if (!selectedComunaValue) {
+        sectorSelect.innerHTML = '<option value="">Primero selecciona comuna</option>';
+        return;
+    }
+    
+    selectedComuna = selectedComunaValue;
+    const sectors = DELIVERY_ZONES[selectedComuna].sectors;
+    
+    sectorSelect.innerHTML = '<option value="">Selecciona tu sector</option>';
+    Object.keys(sectors).forEach(sector => {
+        const option = document.createElement('option');
+        option.value = sector;
+        option.textContent = `${sectors[sector].name} (+$${sectors[sector].cost})`;
+        sectorSelect.appendChild(option);
+    });
+    
+    calculateDelivery();
+}
+
+function calculateDelivery() {
+    const sectorSelect = document.getElementById('clientSector');
+    const selectedSectorValue = sectorSelect.value;
+    
+    if (!selectedSectorValue || !selectedComuna) {
+        deliveryCost = 0;
+    } else {
+        selectedSector = selectedSectorValue;
+        deliveryCost = DELIVERY_ZONES[selectedComuna].sectors[selectedSector].cost;
+    }
+    
+    document.getElementById('deliveryCost').textContent = `$${deliveryCost.toLocaleString('es-CL')}`;
+    updateTotalPrice();
+}
+
+function updateTotalPrice() {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = subtotal + deliveryCost;
+    
+    document.getElementById('subtotal').textContent = `$${subtotal.toLocaleString('es-CL')}`;
+    document.getElementById('totalPrice').textContent = `$${total.toLocaleString('es-CL')}`;
+}
+
+function getCurrentLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                document.getElementById('manualLocation').value = `${lat}, ${lng}`;
+                showNotificationMessage('📍 Ubicación obtenida correctamente');
+            },
+            (error) => {
+                showNotificationMessage('⚠️ No se pudo obtener tu ubicación. Ingresa manualmente.');
+            }
+        );
+    } else {
+        showNotificationMessage('⚠️ Tu navegador no soporta geolocalización.');
+    }
+}
+
+function showOrderSummary() {
+    const clientName = document.getElementById('clientName').value.trim();
+    const clientPhone = document.getElementById('clientPhone').value.trim();
+    const clientComuna = document.getElementById('clientComuna').value;
+    const clientSector = document.getElementById('clientSector').value;
+    const clientAddress = document.getElementById('clientAddress').value.trim();
+    const clientComments = document.getElementById('clientComments').value.trim();
+    const manualLocation = document.getElementById('manualLocation').value.trim();
+
+    // Validaciones
+    if (!clientName) {
+        showNotificationMessage('⚠️ Por favor ingresa tu nombre completo');
+        document.getElementById('clientName').focus();
+        return;
+    }
+
+    if (!clientPhone) {
+        showNotificationMessage('⚠️ Por favor ingresa tu número de teléfono');
+        document.getElementById('clientPhone').focus();
+        return;
+    }
+
+    if (!clientComuna) {
+        showNotificationMessage('⚠️ Por favor selecciona tu comuna');
+        document.getElementById('clientComuna').focus();
+        return;
+    }
+
+    if (!clientSector) {
+        showNotificationMessage('⚠️ Por favor selecciona tu sector');
+        document.getElementById('clientSector').focus();
+        return;
+    }
+
+    if (!clientAddress) {
+        showNotificationMessage('⚠️ Por favor ingresa tu dirección específica');
+        document.getElementById('clientAddress').focus();
+        return;
+    }
+
+    if (cart.length === 0) {
+        showNotificationMessage('🛒 Tu carrito está vacío');
+        return;
+    }
+
+    // Crear modal de resumen
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = subtotal + deliveryCost;
+    
+    const comunaName = DELIVERY_ZONES[clientComuna].name;
+    const sectorName = DELIVERY_ZONES[clientComuna].sectors[clientSector].name;
+    
+    let summaryHTML = `
+        <div class="order-modal-overlay" id="orderSummaryModal">
+            <div class="order-modal">
+                <div class="order-modal-header">
+                    <h3>📋 Resumen de tu Pedido</h3>
+                    <button class="modal-close" onclick="closeOrderSummary()">✕</button>
+                </div>
+                <div class="order-modal-content">
+                    <div class="summary-section">
+                        <h4>👤 Datos del Cliente</h4>
+                        <p><strong>Nombre:</strong> ${clientName}</p>
+                        <p><strong>Teléfono:</strong> ${clientPhone}</p>
+                        <p><strong>Ubicación:</strong> ${comunaName} - ${sectorName}</p>
+                        <p><strong>Dirección:</strong> ${clientAddress}</p>
+                        ${manualLocation ? `<p><strong>Coordenadas:</strong> ${manualLocation}</p>` : ''}
+                        ${clientComments ? `<p><strong>Comentarios:</strong> ${clientComments}</p>` : ''}
+                    </div>
+                    
+                    <div class="summary-section">
+                        <h4>🛒 Productos</h4>
+                        ${cart.map(item => `
+                            <div class="summary-item">
+                                <span>${item.name} x${item.quantity}</span>
+                                <span>$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="summary-section">
+                        <h4>💰 Total</h4>
+                        <div class="summary-item">
+                            <span>Subtotal productos:</span>
+                            <span>$${subtotal.toLocaleString('es-CL')}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Delivery (${comunaName} - ${sectorName}):</span>
+                            <span>$${deliveryCost.toLocaleString('es-CL')}</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span><strong>TOTAL:</strong></span>
+                            <span><strong>$${total.toLocaleString('es-CL')}</strong></span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeOrderSummary()">← Modificar</button>
+                        <button type="button" class="btn btn-success" onclick="sendOrderToWhatsApp()">
+                            📲 Confirmar y enviar por WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', summaryHTML);
+}
+
+function closeOrderSummary() {
+    const modal = document.getElementById('orderSummaryModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function sendOrderToWhatsApp() {
+    const clientName = document.getElementById('clientName').value.trim();
+    const clientPhone = document.getElementById('clientPhone').value.trim();
+    const clientComuna = document.getElementById('clientComuna').value;
+    const clientSector = document.getElementById('clientSector').value;
+    const clientAddress = document.getElementById('clientAddress').value.trim();
+    const clientComments = document.getElementById('clientComments').value.trim();
+    const manualLocation = document.getElementById('manualLocation').value.trim();
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = subtotal + deliveryCost;
+    
+    const comunaName = DELIVERY_ZONES[clientComuna].name;
+    const sectorName = DELIVERY_ZONES[clientComuna].sectors[clientSector].name;
+    
+    // Registrar pedido en historial
+    const nuevoPedido = {
+        id: Date.now(),
+        fecha: new Date().toISOString(),
+        tipo: deliveryCost > 0 ? 'delivery' : 'presencial',
+        cliente: {
+            nombre: clientName,
+            telefono: clientPhone,
+            comuna: comunaName,
+            sector: sectorName,
+            direccion: clientAddress,
+            coordenadas: manualLocation
+        },
+        productos: cart.map(item => ({
+            id: item.id,
+            nombre: item.name,
+            cantidad: item.quantity,
+            precioUnitario: item.price,
+            subtotal: item.price * item.quantity
+        })),
+        costos: {
+            subtotal: subtotal,
+            delivery: deliveryCost,
+            total: total
+        },
+        comentarios: clientComments
+    };
+    
+    pedidosHistorial.push(nuevoPedido);
+    localStorage.setItem('pedidosHistorial', JSON.stringify(pedidosHistorial));
+    
+    let message = `🍺 *PEDIDO Boti Dival*\n\n`;
+    message += `👤 *Cliente:* ${clientName}\n`;
+    message += `📞 *Teléfono:* ${clientPhone}\n`;
+    message += `📍 *Ubicación:* ${comunaName} - ${sectorName}\n`;
+    message += `🏠 *Dirección:* ${clientAddress}\n`;
+    if (manualLocation) message += `📌 *Coordenadas:* ${manualLocation}\n`;
+    if (clientComments) message += `💬 *Comentarios:* ${clientComments}\n\n`;
+    
+    message += `🛒 *PRODUCTOS:*\n`;
+    cart.forEach(item => {
+        message += `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
+    });
+    
+    message += `\n💰 *SUBTOTAL:* $${subtotal.toLocaleString('es-CL')}\n`;
+    message += `🚚 *DELIVERY:* $${deliveryCost.toLocaleString('es-CL')}\n`;
+    message += `💵 *TOTAL:* $${total.toLocaleString('es-CL')}\n\n`;
+    
+    message += `✅ *Pedido listo para confirmar*`;
+    
+    const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    
+    // Cerrar modal y panel
+    closeOrderSummary();
+    closeCart();
+    
+    // Limpiar carrito después del pedido
+    clearCart();
+    showNotificationMessage('✅ Pedido enviado por WhatsApp y registrado en el historial.');
+}
+
+/* ==================== FUNCIONES DE PROMOCIONES ==================== */
+
+function showPromoForm() {
+    document.getElementById('promoForm').style.display = 'block';
+    document.getElementById('promoCreateForm').reset();
+}
+
+function hidePromoForm() {
+    document.getElementById('promoForm').style.display = 'none';
+}
+
+function savePromocion(event) {
+    event.preventDefault();
+    
+    const image = document.getElementById('promoImage').value;
+    const title = document.getElementById('promoTitle').value;
+    const description = document.getElementById('promoDescription').value;
+    const price = document.getElementById('promoPrice').value;
+    
+    const nuevaPromo = {
+        id: Date.now(),
+        image: image,
+        title: title,
+        description: description,
+        price: price ? parseInt(price) : null,
+        active: true,
+        createdAt: new Date().toISOString()
+    };
+    
+    promociones.push(nuevaPromo);
+    localStorage.setItem('promociones', JSON.stringify(promociones));
+    
+    hidePromoForm();
+    renderPromociones();
+    updateWebPromociones();
+    showNotificationMessage('✅ Promoción creada exitosamente');
+}
+
+function deletePromocion(id) {
+    if (confirm('¿Estás seguro de eliminar esta promoción?')) {
+        promociones = promociones.filter(p => p.id !== id);
+        localStorage.setItem('promociones', JSON.stringify(promociones));
+        renderPromociones();
+        updateWebPromociones();
+        showNotificationMessage('🗑️ Promoción eliminada');
+    }
+}
+
+function togglePromocion(id) {
+    const promo = promociones.find(p => p.id === id);
+    if (promo) {
+        promo.active = !promo.active;
+        localStorage.setItem('promociones', JSON.stringify(promociones));
+        renderPromociones();
+        updateWebPromociones();
+        showNotificationMessage(promo.active ? '✅ Promoción activada' : '⏸️ Promoción pausada');
+    }
+}
+
+function renderPromociones() {
+    const grid = document.getElementById('promocionesGrid');
+    grid.innerHTML = promociones.map(promo => `
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="${promo.image}" class="card-img-top" alt="${promo.title}" style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${promo.title}</h5>
+                    <p class="card-text flex-grow-1">${promo.description}</p>
+                    ${promo.price ? `<p class="card-text"><strong>$${promo.price.toLocaleString('es-CL')}</strong></p>` : ''}
+                    <div class="mt-auto">
+                        <button class="btn btn-sm ${promo.active ? 'btn-warning' : 'btn-success'}" onclick="togglePromocion(${promo.id})">
+                            ${promo.active ? '⏸️ Pausar' : '▶️ Activar'}
+                        </button>
+                        <button class="btn btn-sm btn-danger ms-1" onclick="deletePromocion(${promo.id})">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+/* ==================== FUNCIONES DE VIDEOS ==================== */
+
+function showVideoForm() {
+    document.getElementById('videoForm').style.display = 'block';
+    document.getElementById('videoCreateForm').reset();
+}
+
+function hideVideoForm() {
+    document.getElementById('videoForm').style.display = 'none';
+}
+
+function saveVideo(event) {
+    event.preventDefault();
+    
+    const url = document.getElementById('videoUrl').value;
+    const title = document.getElementById('videoTitle').value;
+    const description = document.getElementById('videoDescription').value;
+    
+    // Extraer ID de YouTube
+    const videoId = extractYouTubeId(url);
+    if (!videoId) {
+        showNotificationMessage('⚠️ URL de YouTube inválida');
+        return;
+    }
+    
+    const nuevoVideo = {
+        id: Date.now(),
+        videoId: videoId,
+        url: url,
+        title: title,
+        description: description,
+        active: true,
+        createdAt: new Date().toISOString()
+    };
+    
+    videos.push(nuevoVideo);
+    localStorage.setItem('videos', JSON.stringify(videos));
+    
+    hideVideoForm();
+    renderVideos();
+    updateWebVideos();
+    showNotificationMessage('✅ Video subido exitosamente');
+}
+
+function extractYouTubeId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length == 11) ? match[2] : null;
+}
+
+function deleteVideo(id) {
+    if (confirm('¿Estás seguro de eliminar este video?')) {
+        videos = videos.filter(v => v.id !== id);
+        localStorage.setItem('videos', JSON.stringify(videos));
+        renderVideos();
+        updateWebVideos();
+        showNotificationMessage('🗑️ Video eliminado');
+    }
+}
+
+function toggleVideo(id) {
+    const video = videos.find(v => v.id === id);
+    if (video) {
+        video.active = !video.active;
+        localStorage.setItem('videos', JSON.stringify(videos));
+        renderVideos();
+        updateWebVideos();
+        showNotificationMessage(video.active ? '✅ Video activado' : '⏸️ Video pausado');
+    }
+}
+
+function renderVideos() {
+    const grid = document.getElementById('videosGrid');
+    grid.innerHTML = videos.map(video => `
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="ratio ratio-16x9 mb-3">
+                        <iframe src="https://www.youtube.com/embed/${video.videoId}" 
+                                title="${video.title}" 
+                                allowfullscreen></iframe>
+                    </div>
+                    <h5 class="card-title">${video.title}</h5>
+                    ${video.description ? `<p class="card-text">${video.description}</p>` : ''}
+                    <div class="mt-auto">
+                        <button class="btn btn-sm ${video.active ? 'btn-warning' : 'btn-success'}" onclick="toggleVideo(${video.id})">
+                            ${video.active ? '⏸️ Pausar' : '▶️ Activar'}
+                        </button>
+                        <button class="btn btn-sm btn-danger ms-1" onclick="deleteVideo(${video.id})">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+/* ==================== FUNCIONES DE ESTADO DELIVERY ==================== */
+
+function setDeliveryStatus(status) {
+    deliveryStatus = status;
+    localStorage.setItem('deliveryStatus', JSON.stringify(deliveryStatus));
+    updateDeliveryStatusUI();
+    updateWebDeliveryStatus();
+    showNotificationMessage(status ? '🚚 Delivery activado' : '🏪 Solo ventas presenciales activado');
+}
+
+function updateDeliveryStatusUI() {
+    const statusDot = document.getElementById('deliveryStatusDot');
+    const statusText = document.getElementById('deliveryStatusText');
+    const currentStatus = document.getElementById('deliveryCurrentStatus');
+    const activateBtn = document.getElementById('activateDeliveryBtn');
+    const deactivateBtn = document.getElementById('deactivateDeliveryBtn');
+    
+    if (deliveryStatus) {
+        statusDot.className = 'status-dot active';
+        statusText.textContent = 'Delivery Activo';
+        currentStatus.textContent = 'El servicio de delivery está funcionando normalmente.';
+        activateBtn.style.display = 'none';
+        deactivateBtn.style.display = 'inline-block';
+    } else {
+        statusDot.className = 'status-dot inactive';
+        statusText.textContent = 'Solo Ventas Presenciales';
+        currentStatus.textContent = 'El delivery está fuera de servicio. Solo se aceptan ventas presenciales.';
+        activateBtn.style.display = 'inline-block';
+        deactivateBtn.style.display = 'none';
+    }
+}
+
+function updateWebDeliveryStatus() {
+    // Esta función se ejecutará en la página principal para actualizar el estado
+    if (typeof updateDeliveryDisplay === 'function') {
+        updateDeliveryDisplay(deliveryStatus);
+    }
+}
+
+/* ==================== INICIALIZACIÓN ==================== */
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar promociones
+    renderPromociones();
+    
+    // Inicializar videos
+    renderVideos();
+    
+    // Inicializar estado delivery
+    updateDeliveryStatusUI();
+    
+    // Inicializar control de pedidos (solo en dashboard)
+    if (document.getElementById('control-pedidosSection')) {
+        renderPedidosDashboard();
+        renderPedidosHistorial();
+    }
+    
+    // Event listeners para formularios
+    document.getElementById('promoCreateForm').addEventListener('submit', savePromocion);
+    document.getElementById('videoCreateForm').addEventListener('submit', saveVideo);
+});
+
+/* ==================== FUNCIONES DE CONTROL DE PEDIDOS ==================== */
+
+function getPedidosStats() {
+    const hoy = new Date().toDateString();
+    const estaSemana = new Date();
+    estaSemana.setDate(estaSemana.getDate() - 7);
+    
+    const stats = {
+        totalPedidos: pedidosHistorial.length,
+        pedidosHoy: pedidosHistorial.filter(p => new Date(p.fecha).toDateString() === hoy).length,
+        pedidosSemana: pedidosHistorial.filter(p => new Date(p.fecha) >= estaSemana).length,
+        pedidosDelivery: pedidosHistorial.filter(p => p.tipo === 'delivery').length,
+        pedidosPresenciales: pedidosHistorial.filter(p => p.tipo === 'presencial').length,
+        totalIngresos: pedidosHistorial.reduce((sum, p) => sum + p.costos.total, 0),
+        ingresosHoy: pedidosHistorial
+            .filter(p => new Date(p.fecha).toDateString() === hoy)
+            .reduce((sum, p) => sum + p.costos.total, 0),
+        ingresosDelivery: pedidosHistorial
+            .filter(p => p.tipo === 'delivery')
+            .reduce((sum, p) => sum + p.costos.delivery, 0)
+    };
+    
+    return stats;
+}
+
+function renderPedidosDashboard() {
+    const stats = getPedidosStats();
+    
+    // Actualizar estadísticas en el dashboard
+    document.getElementById('totalPedidos').textContent = stats.totalPedidos;
+    document.getElementById('pedidosHoy').textContent = stats.pedidosHoy;
+    document.getElementById('pedidosSemana').textContent = stats.pedidosSemana;
+    document.getElementById('pedidosDelivery').textContent = stats.pedidosDelivery;
+    document.getElementById('pedidosPresenciales').textContent = stats.pedidosPresenciales;
+    document.getElementById('totalIngresos').textContent = `$${stats.totalIngresos.toLocaleString('es-CL')}`;
+    document.getElementById('ingresosHoy').textContent = `$${stats.ingresosHoy.toLocaleString('es-CL')}`;
+    document.getElementById('ingresosDelivery').textContent = `$${stats.ingresosDelivery.toLocaleString('es-CL')}`;
+}
+
+function renderPedidosHistorial(filtroTipo = 'todos', filtroFecha = '') {
+    let pedidosFiltrados = pedidosHistorial;
+    
+    // Aplicar filtros
+    if (filtroTipo !== 'todos') {
+        pedidosFiltrados = pedidosFiltrados.filter(p => p.tipo === filtroTipo);
+    }
+    
+    if (filtroFecha) {
+        const fechaFiltro = new Date(filtroFecha).toDateString();
+        pedidosFiltrados = pedidosFiltrados.filter(p => new Date(p.fecha).toDateString() === fechaFiltro);
+    }
+    
+    // Ordenar por fecha descendente
+    pedidosFiltrados.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    
+    const tbody = document.getElementById('pedidosTableBody');
+    tbody.innerHTML = pedidosFiltrados.map(pedido => {
+        const fecha = new Date(pedido.fecha).toLocaleDateString('es-CL');
+        const hora = new Date(pedido.fecha).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        
+        return `
+            <tr>
+                <td>${pedido.id}</td>
+                <td>${fecha} ${hora}</td>
+                <td>${pedido.cliente.nombre}</td>
+                <td>${pedido.tipo === 'delivery' ? '🚚 Delivery' : '🏪 Presencial'}</td>
+                <td>${pedido.cliente.comuna} - ${pedido.cliente.sector}</td>
+                <td>${pedido.productos.length} productos</td>
+                <td>$${pedido.costos.delivery.toLocaleString('es-CL')}</td>
+                <td><strong>$${pedido.costos.total.toLocaleString('es-CL')}</strong></td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="verDetallePedido(${pedido.id})">
+                        👁️ Ver
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function verDetallePedido(pedidoId) {
+    const pedido = pedidosHistorial.find(p => p.id === pedidoId);
+    if (!pedido) return;
+    
+    const fecha = new Date(pedido.fecha).toLocaleDateString('es-CL');
+    const hora = new Date(pedido.fecha).toLocaleTimeString('es-CL');
+    
+    let detalleHTML = `
+        <div class="order-modal-overlay" id="pedidoDetailModal">
+            <div class="order-modal order-modal--large">
+                <div class="order-modal-header">
+                    <h3>📋 Detalle del Pedido #${pedido.id}</h3>
+                    <button class="modal-close" onclick="closePedidoDetail()">✕</button>
+                </div>
+                <div class="order-modal-content">
+                    <div class="pedido-info-grid">
+                        <div class="info-section">
+                            <h4>📅 Información General</h4>
+                            <p><strong>Fecha:</strong> ${fecha} ${hora}</p>
+                            <p><strong>Tipo:</strong> ${pedido.tipo === 'delivery' ? '🚚 Delivery' : '🏪 Presencial'}</p>
+                            <p><strong>Estado:</strong> ✅ Completado</p>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h4>👤 Datos del Cliente</h4>
+                            <p><strong>Nombre:</strong> ${pedido.cliente.nombre}</p>
+                            <p><strong>Teléfono:</strong> ${pedido.cliente.telefono}</p>
+                            <p><strong>Ubicación:</strong> ${pedido.cliente.comuna} - ${pedido.cliente.sector}</p>
+                            <p><strong>Dirección:</strong> ${pedido.cliente.direccion}</p>
+                            ${pedido.cliente.coordenadas ? `<p><strong>Coordenadas:</strong> ${pedido.cliente.coordenadas}</p>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h4>🛒 Productos</h4>
+                        <div class="productos-lista">
+                            ${pedido.productos.map(prod => `
+                                <div class="producto-item">
+                                    <span class="producto-nombre">${prod.nombre}</span>
+                                    <span class="producto-cantidad">x${prod.cantidad}</span>
+                                    <span class="producto-precio">$${(prod.precioUnitario * prod.cantidad).toLocaleString('es-CL')}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h4>💰 Resumen de Costos</h4>
+                        <div class="costos-resumen">
+                            <div class="costo-item">
+                                <span>Subtotal productos:</span>
+                                <span>$${pedido.costos.subtotal.toLocaleString('es-CL')}</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>Costo de delivery:</span>
+                                <span>$${pedido.costos.delivery.toLocaleString('es-CL')}</span>
+                            </div>
+                            <div class="costo-item total">
+                                <span><strong>TOTAL:</strong></span>
+                                <span><strong>$${pedido.costos.total.toLocaleString('es-CL')}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${pedido.comentarios ? `
+                        <div class="info-section">
+                            <h4>💬 Comentarios</h4>
+                            <p>${pedido.comentarios}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="order-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closePedidoDetail()">Cerrar</button>
+                        <button type="button" class="btn btn-success" onclick="reenviarPedidoWhatsApp(${pedido.id})">
+                            📲 Reenviar por WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', detalleHTML);
+}
+
+function closePedidoDetail() {
+    const modal = document.getElementById('pedidoDetailModal');
+    if (modal) modal.remove();
+}
+
+function reenviarPedidoWhatsApp(pedidoId) {
+    const pedido = pedidosHistorial.find(p => p.id === pedidoId);
+    if (!pedido) return;
+    
+    let message = `🍺 *REENVÍO PEDIDO Boti Dival #${pedido.id}*\n\n`;
+    message += `👤 *Cliente:* ${pedido.cliente.nombre}\n`;
+    message += `📞 *Teléfono:* ${pedido.cliente.telefono}\n`;
+    message += `📍 *Ubicación:* ${pedido.cliente.comuna} - ${pedido.cliente.sector}\n`;
+    message += `🏠 *Dirección:* ${pedido.cliente.direccion}\n`;
+    if (pedido.cliente.coordenadas) message += `📌 *Coordenadas:* ${pedido.cliente.coordenadas}\n`;
+    if (pedido.comentarios) message += `💬 *Comentarios:* ${pedido.comentarios}\n\n`;
+    
+    message += `🛒 *PRODUCTOS:*\n`;
+    pedido.productos.forEach(item => {
+        message += `• ${item.nombre} x${item.cantidad} - $${(item.precioUnitario * item.cantidad).toLocaleString('es-CL')}\n`;
+    });
+    
+    message += `\n💰 *SUBTOTAL:* $${pedido.costos.subtotal.toLocaleString('es-CL')}\n`;
+    message += `🚚 *DELIVERY:* $${pedido.costos.delivery.toLocaleString('es-CL')}\n`;
+    message += `💵 *TOTAL:* $${pedido.costos.total.toLocaleString('es-CL')}\n\n`;
+    
+    message += `🔄 *Pedido reenviado para confirmación*`;
+    
+    const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function filtrarPedidos() {
+    const tipoFiltro = document.getElementById('filtroTipo').value;
+    const fechaFiltro = document.getElementById('filtroFecha').value;
+    renderPedidosHistorial(tipoFiltro, fechaFiltro);
+}
+
+function limpiarFiltros() {
+    document.getElementById('filtroTipo').value = 'todos';
+    document.getElementById('filtroFecha').value = '';
+    renderPedidosHistorial();
+}
+
+function updateWebPromociones() {
+    const section = document.getElementById('promoWebSection');
+    const grid = document.getElementById('promoWebGrid');
+    
+    const activePromos = promociones.filter(p => p.active);
+    
+    if (activePromos.length > 0) {
+        section.style.display = 'block';
+        grid.innerHTML = activePromos.map(promo => `
+            <div class="promo-web-card">
+                <img src="${promo.image}" alt="${promo.title}" class="promo-web-image">
+                <div class="promo-web-content">
+                    <h3 class="promo-web-title">${promo.title}</h3>
+                    <p class="promo-web-description">${promo.description}</p>
+                    ${promo.price ? `<p class="promo-web-price">$${promo.price.toLocaleString('es-CL')}</p>` : ''}
+                </div>
+            </div>
+        `).join('');
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+function updateWebVideos() {
+    const section = document.getElementById('videosWebSection');
+    const grid = document.getElementById('videosWebGrid');
+    
+    const activeVideos = videos.filter(v => v.active);
+    
+    if (activeVideos.length > 0) {
+        section.style.display = 'block';
+        grid.innerHTML = activeVideos.map(video => `
+            <div class="video-web-card">
+                <iframe src="https://www.youtube.com/embed/${video.videoId}" 
+                        class="video-web-iframe" 
+                        title="${video.title}" 
+                        allowfullscreen></iframe>
+                <div class="video-web-content">
+                    <h3 class="video-web-title">${video.title}</h3>
+                    ${video.description ? `<p class="video-web-description">${video.description}</p>` : ''}
+                </div>
+            </div>
+        `).join('');
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+function updateDeliveryDisplay(status) {
+    const banner = document.getElementById('deliveryStatusBanner');
+    const statusBar = document.getElementById('statusBar');
+    const statusDot = statusBar.querySelector('.status-dot');
+    const statusText = statusBar.querySelector('.status-text');
+    
+    if (!status) {
+        // Mostrar banner de "solo ventas presenciales"
+        banner.style.display = 'block';
+        
+        // Actualizar barra de estado
+        statusDot.classList.remove('active');
+        statusDot.classList.add('inactive');
+        statusText.textContent = '⏰ Solo ventas presenciales';
+        
+        // Ocultar features de delivery
+        const features = statusBar.querySelectorAll('.feature-badge');
+        features.forEach(feature => {
+            if (feature.textContent.includes('Delivery')) {
+                feature.style.display = 'none';
+            }
+        });
+    } else {
+        // Ocultar banner
+        banner.style.display = 'none';
+        
+        // Restaurar barra de estado
+        statusDot.classList.remove('inactive');
+        statusDot.classList.add('active');
+        statusText.textContent = '⏰ Abierto hasta las 00:30';
+        
+        // Mostrar features de delivery
+        const features = statusBar.querySelectorAll('.feature-badge');
+        features.forEach(feature => {
+            feature.style.display = 'inline-block';
+        });
+    }
+}
+
+/* ==================== INICIALIZACIÓN DE CONTENIDO DINÁMICO ==================== */
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar promociones activas
+    updateWebPromociones();
+    
+    // Cargar videos activos
+    updateWebVideos();
+    
+    // Cargar estado del delivery
+    updateDeliveryDisplay(deliveryStatus);
+    
+    // Inicializar carrusel
+    initializeCarousel();
+    
+    // Inicializar búsqueda
+    initializeSearch();
+});
 
 function finalizeOrder() {
     const clientName = document.getElementById('clientName').value.trim();

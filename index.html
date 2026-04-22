@@ -16,14 +16,33 @@
     <meta name="keywords" content="botillería, delivery, coltauco, bebidas, pisco, vino, cerveza, othiggins, chile">
     <meta name="author" content="Boti Dival">
     <title>Boti Dival - Botillería Premium | Delivery Nocturno</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="styles.css">
+    <script>
+        // Calcular BASE_URL antes de cargar recursos
+        window.BASE_URL = (() => {
+            const href = window.location.href;
+            if (href.includes('github.io') || href.includes('botidival')) {
+                return '/botidival/';
+            }
+            return '/';
+        })();
+    </script>
+    <link rel="manifest" id="manifestLink" href="">
+    <link rel="stylesheet" id="stylesLink" href="">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23D4AF37' width='100' height='100'/><text x='50' y='70' font-size='60' font-weight='bold' fill='%23000'>🍺</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23D4AF37' width='180' height='180' rx='40'/><text x='90' y='130' font-size='100' font-weight='bold' fill='%23000' text-anchor='middle'>🍺</text></svg>">
+    <script>
+        // Cargar estilos y manifest dinámicamente
+        document.getElementById('manifestLink').href = window.BASE_URL + 'manifest.json';
+        document.getElementById('stylesLink').href = window.BASE_URL + 'styles.css';
+    </script>
 </head>
 <body>
     <!-- Cargar configuración -->
-    <script src="config.js"></script>
+    <script id="configScript" src=""></script>
+    <script>
+        // Cargar config.js dinámicamente
+        document.getElementById('configScript').src = window.BASE_URL + 'config.js';
+    </script>
     <!-- Notificación flotante -->
     <div id="notification" class="notification"></div>
 
@@ -33,7 +52,7 @@
             <div class="container">
                 <div class="navbar-brand">
                     <div class="logo">
-                        <img src="img1.jpeg" alt="Boti Dival Logo" class="logo-img" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
+                        <img id="logoImg" src="" alt="Boti Dival Logo" class="logo-img" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
                         <div>
                             <h1>Boti Dival</h1>
                             <p class="tagline">Botillería Premium & Delivery Nocturno</p>
@@ -50,6 +69,7 @@
                         <a href="#home" class="nav-link">Inicio</a>
                         <a href="#catalogo" class="nav-link">Catálogo</a>
                         <a href="#ubicacion" class="nav-link">Ubicación</a>
+                        <a id="adminLink" href="" class="nav-link admin-link">🔐 Panel Admin</a>
                         <a href="#carrito" class="cart-link">
                             <span class="cart-icon">🛒</span>
                             <span id="cartCount" class="cart-count">0</span>
@@ -136,6 +156,34 @@
                     placeholder="🔍 Buscar productos (cerveza, pisco, vino, snacks...)"
                 >
                 <div id="searchResults" class="search-results"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner de estado del delivery -->
+    <div id="deliveryStatusBanner" class="delivery-status-banner" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        Servicio de Delivery Fuera de Servicio - Solo Ventas Presenciales
+    </div>
+
+    <!-- Sección de Promociones Dinámicas -->
+    <section class="promo-web-section" id="promoWebSection" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">🎁 <span class="highlight">Promociones Especiales</span></h2>
+            <p class="section-subtitle">Descubre nuestras ofertas exclusivas del día</p>
+            <div class="promo-web-grid" id="promoWebGrid">
+                <!-- Promociones se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Videos Promocionales -->
+    <section class="videos-web-section" id="videosWebSection" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">🎬 <span class="highlight">Videos Promocionales</span></h2>
+            <p class="section-subtitle">Conoce más sobre nuestros productos y servicios</p>
+            <div class="videos-web-grid" id="videosWebGrid">
+                <!-- Videos se cargarán aquí dinámicamente -->
             </div>
         </div>
     </section>
@@ -327,35 +375,68 @@
                     <input type="text" id="clientName" placeholder="Tu nombre completo" required>
                 </div>
                 <div class="form-group">
-                    <label>Dirección *</label>
-                    <input type="text" id="clientAddress" placeholder="Dirección completa con referencias" required>
-                </div>
-                <div class="form-group">
                     <label>Teléfono *</label>
                     <input type="tel" id="clientPhone" placeholder="+56 9 XXXX XXXX" required>
+                </div>
+                <div class="form-group">
+                    <label>Comuna *</label>
+                    <select id="clientComuna" required onchange="updateSectorOptions()">
+                        <option value="">Selecciona tu comuna</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sector *</label>
+                    <select id="clientSector" required onchange="calculateDelivery()">
+                        <option value="">Primero selecciona comuna</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Dirección específica *</label>
+                    <input type="text" id="clientAddress" placeholder="Calle, número, referencias" required>
+                </div>
+                <div class="form-group">
+                    <label>Ubicación</label>
+                    <div class="location-options">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="getCurrentLocation()">
+                            📍 Usar mi ubicación actual
+                        </button>
+                        <input type="text" id="manualLocation" placeholder="O ingresa coordenadas manualmente (opcional)">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Comentarios</label>
                     <textarea id="clientComments" placeholder="Ej: Sin hielo, dejar en portón, llamar al llegar..." rows="3"></textarea>
                 </div>
                 <div class="form-group info-box">
-                    <p><strong>⚠️ Información importante:</strong> El costo del envío se calcula según la distancia. Te lo cotizamos al confirmar tu pedido por WhatsApp.</p>
+                    <p><strong>🚚 Costo de Delivery:</strong> Se calcula automáticamente según tu comuna y sector.</p>
                 </div>
             </div>
 
             <div id="cartSummary" class="cart-summary collapsible-section" style="display: none;">
                 <div class="summary-row">
-                    <span>Subtotal:</span>
+                    <span>Subtotal productos:</span>
                     <span id="subtotal">$0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Costo de delivery:</span>
+                    <span id="deliveryCost">$0</span>
                 </div>
                 <div class="summary-row highlight">
                     <span>Total:</span>
                     <span id="totalPrice">$0</span>
                 </div>
+                <div class="order-options">
+                    <button class="btn btn-success btn-block" onclick="sendOrderToWhatsApp()">
+                        📲 Enviar pedido por WhatsApp
+                    </button>
+                    <button class="btn btn-outline-primary btn-block" onclick="showOrderSummary()">
+                        👁️ Ver resumen completo
+                    </button>
+                </div>
             </div>
 
-            <button id="checkoutBtn" class="btn btn-primary btn-block collapsible-section" style="display: none;" onclick="finalizeOrder()">
-                Enviar Pedido por WhatsApp 📲
+            <button id="checkoutBtn" class="btn btn-primary btn-block collapsible-section" style="display: none;" onclick="showOrderSummary()">
+                👁️ Ver resumen y confirmar pedido
             </button>
         </div>
     </div>
@@ -447,7 +528,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <img src="img1.jpeg" alt="Boti Dival Logo" class="footer-logo-img">
+                        <img id="footerLogoImg" src="" alt="Boti Dival Logo" class="footer-logo-img">
                         <h4>Boti Dival</h4>
                     </div>
                     <p>Botillería Premium con más de 20 años de experiencia sirviendo calidad y confianza en Coltauco</p>
@@ -492,6 +573,15 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script id="mainScript" src=""></script>
+    <script>
+        // Cargar script principal dinámicamente
+        document.getElementById('mainScript').src = window.BASE_URL + 'script.js';
+        
+        // Cargar imágenes con BASE_URL
+        document.getElementById('logoImg').src = window.BASE_URL + 'img1.jpeg';
+        document.getElementById('footerLogoImg').src = window.BASE_URL + 'img1.jpeg';
+        document.getElementById('adminLink').href = window.BASE_URL + 'admin-login.html';
+    </script>
 </body>
 </html>

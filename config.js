@@ -4,6 +4,18 @@
  * Solo reemplaza los valores en este archivo
  */
 
+// ========== CONFIGURACIÓN AUTOMÁTICA DE RUTAS ==========
+// Detecta si estamos en GitHub Pages o localhost y ajusta las rutas
+const BASE_URL = (() => {
+    const href = window.location.href;
+    // Si está en GitHub Pages (botidival)
+    if (href.includes('github.io') || href.includes('botidival')) {
+        return '/botidival/';
+    }
+    // Si está en localhost o servidor local
+    return '/';
+})();
+
 const CONFIG = {
     // ========== INFORMACIÓN DEL NEGOCIO ==========
     BUSINESS: {
