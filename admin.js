@@ -11,88 +11,131 @@ if (!window.BASE_URL) {
     })();
 }
 
+console.log('📋 admin.js cargado');
+console.log('BASE_URL:', window.BASE_URL);
+
 /**
  * ==================== PROTECCIÓN DE ACCESO ====================
  * Verificar autenticación en páginas protegidas
  */
-function checkAuthentication() {
-    if (!Auth.isAuthenticated()) {
-        // Redirigir a login si no está autenticado
-        window.location.href = window.BASE_URL + 'admin-login.html';
-        return false;
-    }
-    return true;
-}
 
-/**
- * Verificar si es admin
- */
-function checkAdminAccess() {
-    if (!Auth.hasRole('admin')) {
-        alert('⛔ Acceso denegado. Solo administradores pueden acceder.');
-        window.location.href = window.BASE_URL + 'index.html';
-        return false;
+// Proteger dashboard - verificar al cargar la página
+function protectDashboard() {
+    const isAdminDashboard = window.location.href.includes('admin-dashboard.html');
+    
+    if (!isAdminDashboard) {
+        console.log('ℹ️  No es dashboard, saltando protección');
+        return;
     }
-    return true;
-}
 
-/**
- * Proteger dashboard
- */
-window.addEventListener('DOMContentLoaded', () => {
-    if (window.location.href.includes('admin-dashboard.html')) {
-        // Dar tiempo para que Auth se cargue completamente
+    console.log('🔐 Verificando acceso al dashboard...');
+
+    // Verificar si existe Auth
+    if (typeof Auth === 'undefined') {
+        console.error('❌ Auth no está disponible');
+        alert('Error: Sistema de autenticación no cargado');
         setTimeout(() => {
-            console.log('🔐 Verificando autenticación...');
-            console.log('Auth cargado:', typeof Auth !== 'undefined');
-            console.log('Autenticado:', Auth.isAuthenticated());
-            
-            if (!checkAuthentication()) {
-                console.log('❌ No autenticado - redirigiendo a login');
-                return;
-            }
-            
-            if (!checkAdminAccess()) {
-                console.log('❌ Sin permisos de admin - redirigiendo');
-                return;
-            }
-            
-            console.log('✅ Acceso concedido al dashboard');
-            // Mostrar información del usuario
-            displayUserInfo();
-        }, 100);
+            window.location.href = window.BASE_URL + 'admin-login.html?error=system';
+        }, 1000);
+        return;
     }
-});
+
+    // Cargar la sesión
+    Auth.loadSession();
+    
+    // Verificar autenticación
+    if (!Auth.isAuthenticated()) {
+        console.warn('⚠️  Usuario no autenticado - redirigiendo a login');
+        window.location.href = window.BASE_URL + 'admin-login.html';
+        return;
+    }
+
+    const user = Auth.getCurrentUser();
+    console.log('✅ Usuario autenticado:', user);
+
+    // Verificar rol
+    if (!Auth.hasRole('admin')) {
+        console.error('❌ Usuario no tiene rol de admin');
+        alert('Acceso denegado. Solo administradores pueden acceder.');
+        Auth.logout();
+        window.location.href = window.BASE_URL + 'index.html';
+        return;
+    }
+
+    console.log('✅ Usuario es admin - acceso concedido');
+    
+    // Mostrar información del usuario
+    displayUserInfo();
+    
+    // Configurar logout
+    setupLogout();
+}
 
 /**
  * Mostrar información del usuario autenticado
  */
 function displayUserInfo() {
     const user = Auth.getCurrentUser();
-    const userNameElement = document.querySelector('.user-name, [data-user-name]');
-    const userRoleElement = document.querySelector('.user-role, [data-user-role]');
+    if (!user) return;
+
+    // Buscar elementos donde mostrar la info del usuario
+    const userNameElements = document.querySelectorAll('[data-user-name], .user-name, #userName, .navbar-brand');
+    const userRoleElements = document.querySelectorAll('[data-user-role], .user-role, #userRole');
     
-    if (userNameElement && user) {
-        userNameElement.textContent = user.name;
-    }
-    if (userRoleElement && user) {
-        userRoleElement.textContent = user.role === 'admin' ? 'Administrador' : 'Usuario';
-    }
+    userNameElements.forEach(el => {
+        if (el.classList.contains('navbar-brand')) {
+            el.textContent = `Panel Admin - ${user.name}`;
+        } else if (el.id || el.classList.contains('user-name')) {
+            el.textContent = user.name;
+        }
+    });
+
+    userRoleElements.forEach(el => {
+        el.textContent = user.role === 'admin' ? 'Administrador' : 'Usuario';
+    });
+
+    console.log('👤 Información del usuario mostrada');
 }
 
 /**
- * Logout functionality - Usar sistema seguro
+ * Configurar logout
  */
-if (document.getElementById('logoutBtn')) {
-    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+function setupLogout() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (!logoutBtn) {
+        console.warn('⚠️  Botón de logout no encontrado');
+        return;
+    }
+
+    logoutBtn.addEventListener('click', function(e) {
         e.preventDefault();
         
         if (confirm('¿Está seguro que desea cerrar sesión?')) {
             Auth.logout();
+            console.log('👋 Logout realizado');
             window.location.href = window.BASE_URL + 'admin-login.html?reason=logout';
         }
     });
+
+    console.log('🔗 Logout configurado');
 }
+
+/**
+ * Ejecutar protección cuando la página cargue
+ */
+if (document.readyState === 'loading') {
+    // Aún está cargando
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('📄 DOMContentLoaded - ejecutando protección');
+        protectDashboard();
+    });
+} else {
+    // Ya está cargado
+    console.log('✅ DOM ya cargado - ejecutando protección inmediatamente');
+    protectDashboard();
+}
+
+console.log('✅ admin.js configurado completamente');
 
 // Navigation between sections
 const navLinks = document.querySelectorAll('.nav-link[data-section]');
