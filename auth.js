@@ -199,22 +199,37 @@ class AuthSystem {
         };
 
         // Guardar sesión en localStorage
-        localStorage.setItem('auth_session', JSON.stringify(session));
-        this.currentUser = session.user;
+        try {
+            localStorage.setItem('auth_session', JSON.stringify(session));
+            this.currentUser = session.user;
+            
+            console.log('💾 Sesión guardada en localStorage');
+            console.log('📊 Sesión:', {
+                user: session.user,
+                expiresAt: new Date(session.expiresAt),
+                token: session.token.substring(0, 20) + '...'
+            });
 
-        // Log de seguridad
-        this.logSecurityEvent('LOGIN_SUCCESS', {
-            email,
-            role: user.role,
-            timestamp: new Date().toISOString()
-        });
+            // Log de seguridad
+            this.logSecurityEvent('LOGIN_SUCCESS', {
+                email,
+                role: user.role,
+                timestamp: new Date().toISOString()
+            });
 
-        return {
-            success: true,
-            message: `Bienvenido ${user.name}`,
-            user: session.user,
-            role: user.role
-        };
+            return {
+                success: true,
+                message: `Bienvenido ${user.name}`,
+                user: session.user,
+                role: user.role
+            };
+        } catch (error) {
+            console.error('❌ Error guardando sesión:', error);
+            return {
+                success: false,
+                error: 'Error al guardar la sesión'
+            };
+        }
     }
 
     /**
@@ -240,15 +255,18 @@ class AuthSystem {
         const sessionData = localStorage.getItem('auth_session');
         
         if (!sessionData) {
+            console.log('ℹ️  No hay sesión guardada');
             this.currentUser = null;
             return;
         }
 
         try {
             const session = JSON.parse(sessionData);
+            console.log('📦 Sesión encontrada:', session.user);
 
             // Verificar expiración
             if (session.expiresAt < Date.now()) {
+                console.log('⏰ Sesión expirada');
                 this.logout();
                 return;
             }
@@ -256,12 +274,15 @@ class AuthSystem {
             // Verificar token
             const tokenPayload = this.verifyJWT(session.token);
             if (!tokenPayload) {
+                console.log('🔑 Token inválido');
                 this.logout();
                 return;
             }
 
             this.currentUser = session.user;
+            console.log('✅ Sesión cargada exitosamente:', this.currentUser);
         } catch (e) {
+            console.error('❌ Error cargando sesión:', e);
             this.logout();
         }
     }

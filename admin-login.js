@@ -4,6 +4,15 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Verificar que Auth y USERS_DATABASE estén cargados
+    if (typeof Auth === 'undefined' || typeof USERS_DATABASE === 'undefined') {
+        console.error('❌ Error: Auth o USERS_DATABASE no están cargados');
+        document.body.innerHTML = '<h1 style="color:red; padding:20px;">Error: Sistema de autenticación no cargado. Por favor recarga la página.</h1>';
+        return;
+    }
+
+    console.log('✅ Sistema de autenticación cargado correctamente');
+
     // Elementos del DOM
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
@@ -129,9 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Intentar login
             const result = Auth.login(email, password);
+            console.log('📝 Resultado de login:', result);
 
             if (result.success) {
                 // Login exitoso
+                console.log('✅ Login exitoso para:', email);
                 showSuccessAnimation();
 
                 // Guardar email si está marcado "Recordarme"
@@ -144,14 +155,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Redirigir según el rol
                 setTimeout(() => {
                     const user = Auth.getCurrentUser();
+                    console.log('👤 Usuario actual:', user);
+                    console.log('🔑 BASE_URL:', window.BASE_URL);
+                    
                     if (user.role === 'admin') {
-                        window.location.href = window.BASE_URL + 'admin-dashboard.html';
+                        const redirectUrl = window.BASE_URL + 'admin-dashboard.html';
+                        console.log('🚀 Redirigiendo a:', redirectUrl);
+                        window.location.href = redirectUrl;
                     } else {
-                        window.location.href = window.BASE_URL + 'index.html';
+                        const redirectUrl = window.BASE_URL + 'index.html';
+                        console.log('🚀 Redirigiendo a:', redirectUrl);
+                        window.location.href = redirectUrl;
                     }
                 }, 1000);
             } else {
                 // Login fallido
+                console.log('❌ Login fallido:', result.error);
                 setLoginButtonState(false);
                 
                 if (result.locked) {

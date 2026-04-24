@@ -41,11 +41,26 @@ function checkAdminAccess() {
  */
 window.addEventListener('DOMContentLoaded', () => {
     if (window.location.href.includes('admin-dashboard.html')) {
-        checkAuthentication();
-        checkAdminAccess();
-        
-        // Mostrar información del usuario
-        displayUserInfo();
+        // Dar tiempo para que Auth se cargue completamente
+        setTimeout(() => {
+            console.log('🔐 Verificando autenticación...');
+            console.log('Auth cargado:', typeof Auth !== 'undefined');
+            console.log('Autenticado:', Auth.isAuthenticated());
+            
+            if (!checkAuthentication()) {
+                console.log('❌ No autenticado - redirigiendo a login');
+                return;
+            }
+            
+            if (!checkAdminAccess()) {
+                console.log('❌ Sin permisos de admin - redirigiendo');
+                return;
+            }
+            
+            console.log('✅ Acceso concedido al dashboard');
+            // Mostrar información del usuario
+            displayUserInfo();
+        }, 100);
     }
 });
 
