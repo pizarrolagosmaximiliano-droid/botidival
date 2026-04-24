@@ -1,4 +1,4 @@
-// admin.js - Funcionalidad del panel administrativo
+// admin.js - Funcionalidad del panel administrativo con autenticación segura
 
 // Configurar BASE_URL si no está definido
 if (!window.BASE_URL) {
@@ -11,35 +11,71 @@ if (!window.BASE_URL) {
     })();
 }
 
-// Login functionality
-if (document.getElementById('loginForm')) {
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-
-        // Simple authentication (in a real app, this would be server-side)
-        if (username === 'admin' && password === 'password') {
-            localStorage.setItem('adminLoggedIn', 'true');
-            window.location.href = window.BASE_URL + 'admin-dashboard.html';
-        } else {
-            document.getElementById('errorMessage').style.display = 'block';
-        }
-    });
+/**
+ * ==================== PROTECCIÓN DE ACCESO ====================
+ * Verificar autenticación en páginas protegidas
+ */
+function checkAuthentication() {
+    if (!Auth.isAuthenticated()) {
+        // Redirigir a login si no está autenticado
+        window.location.href = window.BASE_URL + 'admin-login.html';
+        return false;
+    }
+    return true;
 }
 
-// Check if logged in for dashboard
-if (window.location.pathname.includes('admin-dashboard.html') || window.location.href.includes('admin-dashboard.html')) {
-    if (!localStorage.getItem('adminLoggedIn')) {
-        window.location.href = window.BASE_URL + 'admin-login.html';
+/**
+ * Verificar si es admin
+ */
+function checkAdminAccess() {
+    if (!Auth.hasRole('admin')) {
+        alert('⛔ Acceso denegado. Solo administradores pueden acceder.');
+        window.location.href = window.BASE_URL + 'index.html';
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Proteger dashboard
+ */
+window.addEventListener('DOMContentLoaded', () => {
+    if (window.location.href.includes('admin-dashboard.html')) {
+        checkAuthentication();
+        checkAdminAccess();
+        
+        // Mostrar información del usuario
+        displayUserInfo();
+    }
+});
+
+/**
+ * Mostrar información del usuario autenticado
+ */
+function displayUserInfo() {
+    const user = Auth.getCurrentUser();
+    const userNameElement = document.querySelector('.user-name, [data-user-name]');
+    const userRoleElement = document.querySelector('.user-role, [data-user-role]');
+    
+    if (userNameElement && user) {
+        userNameElement.textContent = user.name;
+    }
+    if (userRoleElement && user) {
+        userRoleElement.textContent = user.role === 'admin' ? 'Administrador' : 'Usuario';
     }
 }
 
-// Logout functionality
+/**
+ * Logout functionality - Usar sistema seguro
+ */
 if (document.getElementById('logoutBtn')) {
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-        localStorage.removeItem('adminLoggedIn');
-        window.location.href = window.BASE_URL + 'admin-login.html';
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        if (confirm('¿Está seguro que desea cerrar sesión?')) {
+            Auth.logout();
+            window.location.href = window.BASE_URL + 'admin-login.html?reason=logout';
+        }
     });
 }
 
