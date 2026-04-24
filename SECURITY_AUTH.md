@@ -19,22 +19,8 @@ Se ha implementado un **sistema de autenticación profesional y seguro** para Bo
 ### Admin
 ```
 Email: admin@botidival.com
-Contraseña: AdminSecuro2025!
+Contraseña: 58442332
 Rol: Administrador (acceso total)
-```
-
-### Cliente
-```
-Email: cliente@botidival.com
-Contraseña: Cliente2025!
-Rol: Usuario (acceso limitado)
-```
-
-### Gerente
-```
-Email: gerente@botidival.com
-Contraseña: Gerente2025!
-Rol: Administrador (acceso limitado a reportes)
 ```
 
 ---

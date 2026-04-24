@@ -3,8 +3,7 @@
  * Sistema profesional de autenticación con encriptación, JWT y roles
  * 
  * CREDENCIALES DE PRUEBA (DESARROLLO):
- * - Admin: usuario: "admin@botidival.com" | contraseña: "AdminSecuro2025!"
- * - Usuario: usuario: "cliente@botidival.com" | contraseña: "Cliente2025!"
+ * - Admin: usuario: "admin@botidival.com" | contraseña: "58442332"
  * ==================== ==================== ====================
  */
 

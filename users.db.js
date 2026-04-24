@@ -1,6 +1,6 @@
 /**
  * ==================== BASE DE DATOS DE USUARIOS ====================
- * Base de datos local con usuarios de prueba (SOLO DESARROLLO)
+ * Base de datos local con usuario admin (SOLO DESARROLLO)
  * 
  * ⚠️ IMPORTANTE PARA PRODUCCIÓN:
  * - Mover a un servidor seguro (Node.js + Express)
@@ -18,8 +18,8 @@ class UsersDatabase {
                 email: 'admin@botidival.com',
                 name: 'Administrador Boti Dival',
                 role: 'admin',
-                // Contraseña: "AdminSecuro2025!"
-                passwordHash: this.simpleHash('AdminSecuro2025!'),
+                // Contraseña: "58442332"
+                passwordHash: this.simpleHash('58442332'),
                 createdAt: new Date('2025-01-01'),
                 status: 'active',
                 permissions: [
@@ -29,37 +29,6 @@ class UsersDatabase {
                     'manage_promotions',
                     'view_reports',
                     'manage_settings'
-                ]
-            },
-            {
-                id: 'cliente-001',
-                email: 'cliente@botidival.com',
-                name: 'Cliente Premium',
-                role: 'cliente',
-                // Contraseña: "Cliente2025!"
-                passwordHash: this.simpleHash('Cliente2025!'),
-                createdAt: new Date('2025-02-15'),
-                status: 'active',
-                permissions: [
-                    'view_products',
-                    'place_order',
-                    'view_my_orders',
-                    'edit_profile'
-                ]
-            },
-            {
-                id: 'admin-002',
-                email: 'gerente@botidival.com',
-                name: 'Gerente de Ventas',
-                role: 'admin',
-                // Contraseña: "Gerente2025!"
-                passwordHash: this.simpleHash('Gerente2025!'),
-                createdAt: new Date('2025-01-10'),
-                status: 'active',
-                permissions: [
-                    'view_dashboard',
-                    'manage_orders',
-                    'view_reports'
                 ]
             }
         ];
@@ -237,30 +206,10 @@ class UsersDatabase {
                 email: 'admin@botidival.com',
                 name: 'Administrador Boti Dival',
                 role: 'admin',
-                passwordHash: this.simpleHash('AdminSecuro2025!'),
+                passwordHash: this.simpleHash('58442332'),
                 createdAt: new Date('2025-01-01'),
                 status: 'active',
                 permissions: ['view_dashboard', 'manage_orders', 'manage_products', 'manage_promotions', 'view_reports', 'manage_settings']
-            },
-            {
-                id: 'cliente-001',
-                email: 'cliente@botidival.com',
-                name: 'Cliente Premium',
-                role: 'cliente',
-                passwordHash: this.simpleHash('Cliente2025!'),
-                createdAt: new Date('2025-02-15'),
-                status: 'active',
-                permissions: ['view_products', 'place_order', 'view_my_orders', 'edit_profile']
-            },
-            {
-                id: 'admin-002',
-                email: 'gerente@botidival.com',
-                name: 'Gerente de Ventas',
-                role: 'admin',
-                passwordHash: this.simpleHash('Gerente2025!'),
-                createdAt: new Date('2025-01-10'),
-                status: 'active',
-                permissions: ['view_dashboard', 'manage_orders', 'view_reports']
             }
         ];
         this.saveToStorage();
