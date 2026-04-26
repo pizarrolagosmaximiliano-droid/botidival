@@ -67,6 +67,17 @@ let selectedComuna = '';
 let selectedSector = '';
 let deliveryCost = 0;
 
+function saveCartState() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function loadCartState() {
+    const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    if (Array.isArray(storedCart)) {
+        cart = storedCart.filter(item => item && item.id && item.quantity > 0);
+    }
+}
+
 // Variables para promociones y videos
 let promociones = JSON.parse(localStorage.getItem('promociones')) || [
     {
@@ -97,6 +108,14 @@ let videos = JSON.parse(localStorage.getItem('videos')) || [
         description: 'Descubre nuestra selección de bebidas premium y productos exclusivos.',
         active: true,
         createdAt: new Date().toISOString()
+    }
+];
+let carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || [
+    {
+        id: 1,
+        image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200&h=800&fit=crop',
+        title: 'Promociones destacadas',
+        active: true
     }
 ];
 let deliveryStatus = JSON.parse(localStorage.getItem('deliveryStatus')) !== null ? JSON.parse(localStorage.getItem('deliveryStatus')) : true;
@@ -223,6 +242,7 @@ if (!localStorage.getItem('videos')) {
 // Recargar variables después de inicialización
 promociones = JSON.parse(localStorage.getItem('promociones')) || [];
 videos = JSON.parse(localStorage.getItem('videos')) || [];
+carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || carouselImages;
 
 /* ==================== CARRUSEL ==================== */
 
@@ -326,7 +346,10 @@ function setupEventListeners() {
     });
 
     // Carrito
-    document.querySelector('.cart-link').addEventListener('click', openCart);
+    document.querySelector('.cart-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        openOrderMenu();
+    });
     
     // Menu móvil
     const menuToggle = document.getElementById('menuToggle');
@@ -411,6 +434,7 @@ function addToCart(productId, quantity = 1, showNotification = false) {
 
     updateCartUI();
     updateProductQuantityDisplay();
+    saveCartState();
 
     if (showNotification) {
         showNotificationMessage(`✓ ${product.name} agregado al carrito`);
@@ -443,36 +467,41 @@ function updateCartUI() {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
-    cartCount.textContent = totalItems;
-    summaryItems.textContent = totalItems;
-    summaryTotal.textContent = `$${(subtotal + deliveryCost).toLocaleString('es-CL')}`;
+    if (cartCount) cartCount.textContent = totalItems;
+    if (summaryItems) summaryItems.textContent = totalItems;
+    if (summaryTotal) summaryTotal.textContent = `$${(subtotal + deliveryCost).toLocaleString('es-CL')}`;
 
     if (cart.length === 0) {
-        emptyCart.style.display = 'block';
-        cartItems.innerHTML = '';
-        miniSummary.style.display = 'none';
-        fullSections.style.display = 'none';
+        if (emptyCart) emptyCart.style.display = 'block';
+        if (cartItems) cartItems.innerHTML = '';
+        if (miniSummary) miniSummary.style.display = 'none';
+        if (fullSections) fullSections.style.display = 'none';
     } else {
-        emptyCart.style.display = 'none';
-        miniSummary.style.display = 'block';
+        if (emptyCart) emptyCart.style.display = 'none';
+        if (miniSummary) miniSummary.style.display = 'block';
 
         // Generar vista previa de productos en el resumen compacto
         const cartPreview = document.getElementById('cartPreview');
-        cartPreview.innerHTML = cart.slice(0, 4).map(item => `
+        if (cartPreview) {
+            cartPreview.innerHTML = cart.slice(0, 4).map(item => `
             <div class="cart-preview-item">
                 <span class="cart-preview-name">${item.name}</span>
                 <span class="cart-preview-qty">x${item.quantity}</span>
                 <span class="cart-preview-price">$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
             </div>
         `).join('');
+        }
 
         if (cart.length > 4) {
-            cartPreview.innerHTML += `<div class="cart-preview-item" style="justify-content: center; font-size: 0.8rem; color: var(--text-secondary);">... y ${cart.length - 4} producto(s) más</div>`;
+            if (cartPreview) {
+                cartPreview.innerHTML += `<div class="cart-preview-item" style="justify-content: center; font-size: 0.8rem; color: var(--text-secondary);">... y ${cart.length - 4} producto(s) más</div>`;
+            }
         }
 
         // Render items only when expanded
         if (fullSections.style.display !== 'none') {
-            cartItems.innerHTML = cart.map(item => `
+            if (cartItems) {
+                cartItems.innerHTML = cart.map(item => `
                 <div class="cart-item">
                     <div class="cart-item-info">
                         <div class="cart-item-name">${item.name}</div>
@@ -488,13 +517,16 @@ function updateCartUI() {
                     </div>
                 </div>
             `).join('');
+            }
 
-            document.getElementById('subtotal').textContent = `$${subtotal.toLocaleString('es-CL')}`;
-            document.getElementById('totalPrice').textContent = `$${(subtotal + deliveryCost).toLocaleString('es-CL')}`;
+            const subtotalEl = document.getElementById('subtotal');
+            const totalPriceEl = document.getElementById('totalPrice');
+            if (subtotalEl) subtotalEl.textContent = `$${subtotal.toLocaleString('es-CL')}`;
+            if (totalPriceEl) totalPriceEl.textContent = `$${(subtotal + deliveryCost).toLocaleString('es-CL')}`;
             
-            cartForm.style.display = 'block';
-            cartSummary.style.display = 'block';
-            checkoutBtn.style.display = 'block';
+            if (cartForm) cartForm.style.display = 'block';
+            if (cartSummary) cartSummary.style.display = 'block';
+            if (checkoutBtn) checkoutBtn.style.display = 'block';
         }
     }
 }
@@ -516,6 +548,16 @@ function openCart() {
     updateStepIndicator(1);
     updateCartUI();
     initializeDeliveryOptions();
+}
+
+function openOrderMenu() {
+    if (cart.length === 0) {
+        showNotificationMessage('🛒 Tu carrito está vacío. Agrega productos para continuar.');
+        scrollToSection('catalogo');
+        return;
+    }
+
+    openOrderForm();
 }
 
 function closeCart() {
@@ -693,6 +735,13 @@ function openOrderForm() {
                 <form class="order-form" onsubmit="submitOrder(event)">
                     <div class="form-section">
                         <h4>📍 Datos de Entrega</h4>
+                        <div class="form-group">
+                            <label>Tipo de venta *</label>
+                            <select id="modalOrderType" onchange="toggleOrderTypeFields()" required>
+                                <option value="delivery">Delivery</option>
+                                <option value="presencial">Retiro presencial</option>
+                            </select>
+                        </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Nombre completo *</label>
@@ -703,7 +752,7 @@ function openOrderForm() {
                                 <input type="tel" id="modalClientPhone" placeholder="+56 9 XXXX XXXX" required>
                             </div>
                         </div>
-                        <div class="form-row">
+                        <div class="form-row order-delivery-field">
                             <div class="form-group">
                                 <label>Comuna *</label>
                                 <select id="modalClientComuna" onchange="updateSectores()" required>
@@ -719,11 +768,11 @@ function openOrderForm() {
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group order-delivery-field">
                             <label>Dirección completa *</label>
                             <input type="text" id="modalClientAddress" placeholder="Dirección con referencias" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group order-delivery-field">
                             <label id="deliveryCostLabel">Costo de Delivery: --</label>
                         </div>
                         <div class="form-group">
@@ -759,6 +808,7 @@ function openOrderForm() {
     // Animar entrada
     setTimeout(() => {
         modal.classList.add('active');
+        toggleOrderTypeFields();
     }, 10);
 }
 
@@ -795,6 +845,14 @@ function updateDeliveryCost() {
     const comunaSelect = document.getElementById('modalClientComuna');
     const sectorSelect = document.getElementById('modalClientSector');
     const costLabel = document.getElementById('deliveryCostLabel');
+    const orderTypeSelect = document.getElementById('modalOrderType');
+
+    if (orderTypeSelect && orderTypeSelect.value === 'presencial') {
+        costLabel.textContent = 'Costo de Delivery: $0 (Retiro presencial)';
+        costLabel.style.color = '#059669';
+        costLabel.style.fontWeight = 'bold';
+        return;
+    }
     
     const comuna = comunaSelect.value;
     const sector = sectorSelect.value;
@@ -812,6 +870,31 @@ function updateDeliveryCost() {
     
     // Agregar event listener para actualizar costo cuando cambie el sector
     sectorSelect.addEventListener('change', updateDeliveryCost);
+}
+
+function toggleOrderTypeFields() {
+    const orderType = document.getElementById('modalOrderType')?.value || 'delivery';
+    const deliveryFields = document.querySelectorAll('.order-delivery-field');
+    const comunaSelect = document.getElementById('modalClientComuna');
+    const sectorSelect = document.getElementById('modalClientSector');
+    const addressInput = document.getElementById('modalClientAddress');
+
+    const isDelivery = orderType === 'delivery';
+
+    deliveryFields.forEach(field => {
+        field.style.display = isDelivery ? '' : 'none';
+    });
+
+    if (comunaSelect) comunaSelect.required = isDelivery;
+    if (sectorSelect) sectorSelect.required = isDelivery;
+    if (addressInput) {
+        addressInput.required = isDelivery;
+        if (!isDelivery) {
+            addressInput.value = 'Retiro en local';
+        }
+    }
+
+    updateDeliveryCost();
 }
 
 function calculateDeliveryCost(comuna, sector) {
@@ -837,6 +920,7 @@ function closeOrderModal() {
 function submitOrder(event) {
     event.preventDefault();
 
+    const orderType = document.getElementById('modalOrderType').value;
     const name = document.getElementById('modalClientName').value.trim();
     const phone = document.getElementById('modalClientPhone').value.trim();
     const comuna = document.getElementById('modalClientComuna').value;
@@ -864,19 +948,19 @@ function submitOrder(event) {
         return;
     }
 
-    if (!comuna) {
+    if (orderType === 'delivery' && !comuna) {
         alert('Por favor selecciona tu comuna');
         document.getElementById('modalClientComuna').focus();
         return;
     }
 
-    if (!sector) {
+    if (orderType === 'delivery' && !sector) {
         alert('Por favor selecciona tu sector');
         document.getElementById('modalClientSector').focus();
         return;
     }
 
-    if (!address) {
+    if (orderType === 'delivery' && !address) {
         alert('Por favor ingresa tu dirección completa');
         document.getElementById('modalClientAddress').focus();
         return;
@@ -889,11 +973,16 @@ function submitOrder(event) {
 
     // Calcular costos
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliveryCost = calculateDeliveryCost(comuna, sector);
+    const deliveryCost = orderType === 'delivery' ? calculateDeliveryCost(comuna, sector) : 0;
     const total = subtotal + deliveryCost;
 
+    const ubicacionTexto = orderType === 'delivery'
+        ? `${DELIVERY_ZONES[comuna].name} - ${DELIVERY_ZONES[comuna].sectors[sector].name}`
+        : 'Retiro presencial en local';
+    const direccionTexto = orderType === 'delivery' ? address : 'Retiro en local';
+
     // Confirmación final
-    const confirmMessage = `¿Confirmar pedido?\n\nProductos: ${cart.length}\nSubtotal: $${subtotal.toLocaleString('es-CL')}\nDelivery: $${deliveryCost.toLocaleString('es-CL')}\nTOTAL: $${total.toLocaleString('es-CL')}\n\nDirección: ${DELIVERY_ZONES[comuna].name} - ${DELIVERY_ZONES[comuna].sectors[sector].name}\n\nSe abrirá WhatsApp para enviar el pedido.`;
+    const confirmMessage = `¿Confirmar pedido?\n\nTipo: ${orderType === 'delivery' ? 'Delivery' : 'Retiro presencial'}\nProductos: ${cart.length}\nSubtotal: $${subtotal.toLocaleString('es-CL')}\nDelivery: $${deliveryCost.toLocaleString('es-CL')}\nTOTAL: $${total.toLocaleString('es-CL')}\n\nUbicación: ${ubicacionTexto}\n\nSe abrirá WhatsApp para enviar el pedido.`;
 
     if (!confirm(confirmMessage)) {
         return;
@@ -901,10 +990,11 @@ function submitOrder(event) {
 
     // Crear mensaje para WhatsApp
     let message = `🛒 *NUEVO PEDIDO - Boti Dival*\n\n`;
+    message += `🧾 *Tipo de venta:* ${orderType === 'delivery' ? 'Delivery' : 'Retiro presencial'}\n`;
     message += `👤 *Cliente:* ${name}\n`;
     message += `📞 *Teléfono:* ${phone}\n`;
-    message += `📍 *Ubicación:* ${DELIVERY_ZONES[comuna].name} - ${DELIVERY_ZONES[comuna].sectors[sector].name}\n`;
-    message += `🏠 *Dirección:* ${address}\n\n`;
+    message += `📍 *Ubicación:* ${ubicacionTexto}\n`;
+    message += `🏠 *Dirección:* ${direccionTexto}\n\n`;
 
     message += `🛍️ *PRODUCTOS:*\n`;
     cart.forEach(item => {
@@ -928,13 +1018,13 @@ function submitOrder(event) {
     const nuevoPedido = {
         id: Date.now(),
         fecha: new Date().toISOString(),
-        tipo: 'delivery',
+        tipo: orderType,
         cliente: {
             nombre: name,
             telefono: phone,
-            comuna: DELIVERY_ZONES[comuna].name,
-            sector: DELIVERY_ZONES[comuna].sectors[sector].name,
-            direccion: address,
+            comuna: orderType === 'delivery' ? DELIVERY_ZONES[comuna].name : 'Local',
+            sector: orderType === 'delivery' ? DELIVERY_ZONES[comuna].sectors[sector].name : 'Retiro',
+            direccion: direccionTexto,
             coordenadas: ''
         },
         productos: cart.map(item => ({
@@ -1003,7 +1093,15 @@ const PROMOS = [
 ];
 
 function addPromoToCart(promoId) {
-    const promo = PROMOS.find(p => p.id === 1000 + promoId);
+    const dynamicPromo = promociones.find(p => p.id === promoId && p.active);
+    const legacyPromo = PROMOS.find(p => p.id === 1000 + promoId);
+    const promo = dynamicPromo ? {
+        id: dynamicPromo.id,
+        name: dynamicPromo.title,
+        price: Number(dynamicPromo.price) || 0,
+        image: dynamicPromo.image,
+        description: dynamicPromo.description
+    } : legacyPromo;
     if (!promo) return;
 
     // Agregar como producto especial
@@ -1146,6 +1244,8 @@ function clearCart() {
     if (confirm('¿Vaciar carrito?')) {
         cart = [];
         updateCartUI();
+        updateProductQuantityDisplay();
+        saveCartState();
         showNotificationMessage('🗑️ Carrito vaciado');
         showMiniMenu();
     }
@@ -1427,7 +1527,10 @@ function sendOrderToWhatsApp() {
     closeCart();
     
     // Limpiar carrito después del pedido
-    clearCart();
+    cart = [];
+    updateCartUI();
+    updateProductQuantityDisplay();
+    saveCartState();
     showNotificationMessage('✅ Pedido enviado por WhatsApp y registrado en el historial.');
 }
 
@@ -1492,6 +1595,7 @@ function togglePromocion(id) {
 
 function renderPromociones() {
     const grid = document.getElementById('promocionesGrid');
+    if (!grid) return;
     grid.innerHTML = promociones.map(promo => `
         <div class="col-md-4 mb-4">
             <div class="card h-100">
@@ -1587,6 +1691,7 @@ function toggleVideo(id) {
 
 function renderVideos() {
     const grid = document.getElementById('videosGrid');
+    if (!grid) return;
     grid.innerHTML = videos.map(video => `
         <div class="col-md-6 mb-4">
             <div class="card h-100">
@@ -1669,9 +1774,16 @@ document.addEventListener('DOMContentLoaded', function() {
         renderPedidosHistorial();
     }
     
-    // Event listeners para formularios
-    document.getElementById('promoCreateForm').addEventListener('submit', savePromocion);
-    document.getElementById('videoCreateForm').addEventListener('submit', saveVideo);
+    // Event listeners para formularios (solo si existen en la vista actual)
+    const promoForm = document.getElementById('promoCreateForm');
+    if (promoForm) {
+        promoForm.addEventListener('submit', savePromocion);
+    }
+
+    const videoForm = document.getElementById('videoCreateForm');
+    if (videoForm) {
+        videoForm.addEventListener('submit', saveVideo);
+    }
 });
 
 /* ==================== FUNCIONES DE CONTROL DE PEDIDOS ==================== */
@@ -1884,51 +1996,55 @@ function limpiarFiltros() {
 }
 
 function updateWebPromociones() {
-    const section = document.getElementById('promoWebSection');
-    const grid = document.getElementById('promoWebGrid');
+    const exclusiveTrack = document.getElementById('promoExclusiveTrack');
     
     const activePromos = promociones.filter(p => p.active);
-    
-    if (activePromos.length > 0) {
-        section.style.display = 'block';
-        grid.innerHTML = activePromos.map(promo => `
-            <div class="promo-web-card">
-                <img src="${promo.image}" alt="${promo.title}" class="promo-web-image">
-                <div class="promo-web-content">
-                    <h3 class="promo-web-title">${promo.title}</h3>
-                    <p class="promo-web-description">${promo.description}</p>
-                    ${promo.price ? `<p class="promo-web-price">$${promo.price.toLocaleString('es-CL')}</p>` : ''}
+
+    if (exclusiveTrack) {
+        exclusiveTrack.innerHTML = activePromos.map((promo) => `
+            <div class="promo-card">
+                <div class="promo-image">
+                    <img src="${promo.image}" alt="${promo.title}">
+                    <div class="promo-badge">🔥 ACTIVA</div>
+                </div>
+                <div class="promo-content">
+                    <h3>${promo.title}</h3>
+                    <p class="promo-description">${promo.description}</p>
+                    <div class="promo-pricing">
+                        ${promo.previousPrice ? `<span class="original-price">$${Number(promo.previousPrice).toLocaleString('es-CL')}</span>` : ''}
+                        ${promo.price ? `<span class="current-price">$${Number(promo.price).toLocaleString('es-CL')}</span>` : ''}
+                    </div>
+                    <button class="btn btn-primary" onclick="addPromoToCart(${promo.id})">Agregar al Carrito</button>
                 </div>
             </div>
         `).join('');
-    } else {
-        section.style.display = 'none';
     }
 }
 
 function updateWebVideos() {
-    const section = document.getElementById('videosWebSection');
-    const grid = document.getElementById('videosWebGrid');
-    
-    const activeVideos = videos.filter(v => v.active);
-    
-    if (activeVideos.length > 0) {
-        section.style.display = 'block';
-        grid.innerHTML = activeVideos.map(video => `
-            <div class="video-web-card">
-                <iframe src="https://www.youtube.com/embed/${video.videoId}" 
-                        class="video-web-iframe" 
-                        title="${video.title}" 
-                        allowfullscreen></iframe>
-                <div class="video-web-content">
-                    <h3 class="video-web-title">${video.title}</h3>
-                    ${video.description ? `<p class="video-web-description">${video.description}</p>` : ''}
-                </div>
-            </div>
-        `).join('');
-    } else {
+    const section = document.getElementById('imagesCarouselSection');
+    const track = document.getElementById('imagesCarouselTrack');
+    if (!section || !track) return;
+
+    carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || [];
+    const activeImages = carouselImages.filter((img) => img.active !== false);
+
+    if (activeImages.length === 0) {
         section.style.display = 'none';
+        return;
     }
+
+    section.style.display = 'block';
+    track.innerHTML = activeImages.map((img) => `
+        <div class="promo-card">
+            <div class="promo-image">
+                <img src="${img.image}" alt="${img.title || 'Imagen promocional'}">
+            </div>
+            <div class="promo-content">
+                <h3>${img.title || 'Imagen promocional'}</h3>
+            </div>
+        </div>
+    `).join('');
 }
 
 function updateDeliveryDisplay(status) {
@@ -1944,7 +2060,7 @@ function updateDeliveryDisplay(status) {
         // Actualizar barra de estado
         statusDot.classList.remove('active');
         statusDot.classList.add('inactive');
-        statusText.textContent = '⏰ Solo ventas presenciales';
+        statusText.textContent = '⏰ Delivery No Disponible';
         
         // Ocultar features de delivery
         const features = statusBar.querySelectorAll('.feature-badge');
@@ -1960,7 +2076,7 @@ function updateDeliveryDisplay(status) {
         // Restaurar barra de estado
         statusDot.classList.remove('inactive');
         statusDot.classList.add('active');
-        statusText.textContent = '⏰ Abierto hasta las 00:30';
+        statusText.textContent = '⏰ Delivery Disponible';
         
         // Mostrar features de delivery
         const features = statusBar.querySelectorAll('.feature-badge');
@@ -1981,12 +2097,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Cargar estado del delivery
     updateDeliveryDisplay(deliveryStatus);
-    
-    // Inicializar carrusel
-    initializeCarousel();
-    
-    // Inicializar búsqueda
-    initializeSearch();
+});
+
+window.addEventListener('storage', (event) => {
+    if (event.key === 'promociones') {
+        promociones = JSON.parse(localStorage.getItem('promociones')) || [];
+        updateWebPromociones();
+    }
+    if (event.key === 'carouselImages') {
+        carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || [];
+        updateWebVideos();
+    }
+    if (event.key === 'deliveryStatus') {
+        deliveryStatus = JSON.parse(localStorage.getItem('deliveryStatus'));
+        updateDeliveryDisplay(deliveryStatus !== null ? deliveryStatus : true);
+    }
 });
 
 function finalizeOrder() {
@@ -2050,6 +2175,9 @@ function finalizeOrder() {
     // Limpiar formulario y carrito
     setTimeout(() => {
         cart = [];
+        saveCartState();
+        updateCartUI();
+        updateProductQuantityDisplay();
         document.getElementById('clientName').value = '';
         document.getElementById('clientAddress').value = '';
         document.getElementById('clientPhone').value = '';
@@ -2211,6 +2339,7 @@ function addKeyboardShortcuts() {
 /* ==================== INICIALIZACIÓN MEJORADA ==================== */
 
 function initializeApp() {
+    loadCartState();
     renderProducts(PRODUCTS);
     setupEventListeners();
     updateStatus();

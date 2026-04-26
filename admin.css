@@ -1,66 +1,85 @@
-/* Estilos adicionales para el panel administrativo */
-
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .sidebar {
-    height: 100vh;
-    position: fixed;
-    top: 56px; /* Altura del navbar */
-    left: 0;
-    width: 250px;
-    z-index: 1000;
-    padding-top: 20px;
+    min-height: calc(100vh - 56px);
+    position: sticky;
+    top: 56px;
+    border-radius: 12px;
 }
 
 .sidebar .nav-link {
-    color: #333;
-    padding: 10px 20px;
+    color: #334155;
+    border-radius: 10px;
+    margin: 4px 0;
+    padding: 10px 12px;
+    transition: all 0.2s ease;
 }
 
 .sidebar .nav-link:hover {
-    background-color: #e9ecef;
+    background: #e2e8f0;
 }
 
 .sidebar .nav-link.active {
-    background-color: #007bff;
-    color: white;
+    background: #1d4ed8;
+    color: #fff;
+}
+
+.card {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.status-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+.status-dot.active {
+    background-color: #16a34a;
+    box-shadow: 0 0 10px rgba(22, 163, 74, 0.5);
+}
+
+.status-dot.inactive {
+    background-color: #dc2626;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.pedido-info-grid {
+    display: grid;
+    gap: 8px;
+}
+
+.pedido-info-grid > div {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 4px;
 }
 
 @media (max-width: 768px) {
     .sidebar {
         position: static;
-        height: auto;
-        width: 100%;
+        min-height: auto;
+        top: 0;
+        margin-bottom: 16px;
     }
 }
 
-.card {
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.table-responsive {
-    overflow-x: auto;
-}
-
-/* Estilos para móviles */
-@media (max-width: 576px) {
-    .container-fluid {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-
-    .card-body {
-        padding: 1rem;
-    }
-
-    .btn {
-        font-size: 0.9rem;
-        padding: 0.5rem 1rem;
-    }
-}

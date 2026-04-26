@@ -157,24 +157,15 @@
         Servicio de Delivery Fuera de Servicio - Solo Ventas Presenciales
     </div>
 
-    <!-- Sección de Promociones Dinámicas -->
-    <section class="promo-web-section" id="promoWebSection" style="display: none;">
+    <!-- Sección de Carrusel Dinámico -->
+    <section class="videos-web-section" id="imagesCarouselSection" style="display: none;">
         <div class="container">
-            <h2 class="section-title">🎁 <span class="highlight">Promociones Especiales</span></h2>
-            <p class="section-subtitle">Descubre nuestras ofertas exclusivas del día</p>
-            <div class="promo-web-grid" id="promoWebGrid">
-                <!-- Promociones se cargarán aquí dinámicamente -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Sección de Videos Promocionales -->
-    <section class="videos-web-section" id="videosWebSection" style="display: none;">
-        <div class="container">
-            <h2 class="section-title">🎬 <span class="highlight">Videos Promocionales</span></h2>
-            <p class="section-subtitle">Conoce más sobre nuestros productos y servicios</p>
-            <div class="videos-web-grid" id="videosWebGrid">
-                <!-- Videos se cargarán aquí dinámicamente -->
+            <h2 class="section-title">🖼️ <span class="highlight">Galería Promocional</span></h2>
+            <p class="section-subtitle">Novedades y promociones destacadas</p>
+            <div id="imagesCarouselWeb" class="promo-carousel">
+                <div class="promo-track" id="imagesCarouselTrack">
+                    <!-- Imágenes del carrusel admin -->
+                </div>
             </div>
         </div>
     </section>
@@ -186,74 +177,8 @@
             <p class="section-subtitle">Descubre nuestras ofertas especiales y combos premium para cada ocasión</p>
             
             <div class="promo-carousel">
-                <div class="promo-track">
-                    <div class="promo-card">
-                        <div class="promo-image">
-                            <img src="https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop" alt="Pack Pisco Party">
-                            <div class="promo-badge">🔥 MÁS VENDIDO</div>
-                        </div>
-                        <div class="promo-content">
-                            <h3>Pack Pisco Party</h3>
-                            <p class="promo-description">Pisco Capel Añejo + Bebida 3L + Hielo premium + Copas</p>
-                            <div class="promo-pricing">
-                                <span class="original-price">$25.900</span>
-                                <span class="current-price">$19.900</span>
-                                <span class="discount">23% OFF</span>
-                            </div>
-                            <button class="btn btn-primary" onclick="addPromoToCart(1)">Agregar al Carrito</button>
-                        </div>
-                    </div>
-                    
-                    <div class="promo-card">
-                        <div class="promo-image">
-                            <img src="https://cdnx.jumpseller.com/cerveza-mas-56/image/22316272/resize/640/640?1655388937" alt="Combo Cervecero">
-                            <div class="promo-badge">⭐ PREMIUM</div>
-                        </div>
-                        <div class="promo-content">
-                            <h3>Combo Cervecero Premium</h3>
-                            <p class="promo-description">6 Cervezas Artesanales + Snacks variados + Hielo</p>
-                            <div class="promo-pricing">
-                                <span class="original-price">$28.900</span>
-                                <span class="current-price">$24.900</span>
-                                <span class="discount">14% OFF</span>
-                            </div>
-                            <button class="btn btn-primary" onclick="addPromoToCart(2)">Agregar al Carrito</button>
-                        </div>
-                    </div>
-                    
-                    <div class="promo-card">
-                        <div class="promo-image">
-                            <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=300&fit=crop" alt="Kit Vino Nocturno">
-                            <div class="promo-badge">🌙 NOCTURNO</div>
-                        </div>
-                        <div class="promo-content">
-                            <h3>Kit Vino Nocturno</h3>
-                            <p class="promo-description">2 Vinos Premium + Hielo + Copas + Snacks gourmet</p>
-                            <div class="promo-pricing">
-                                <span class="original-price">$35.900</span>
-                                <span class="current-price">$29.900</span>
-                                <span class="discount">17% OFF</span>
-                            </div>
-                            <button class="btn btn-primary" onclick="addPromoToCart(3)">Agregar al Carrito</button>
-                        </div>
-                    </div>
-                    
-                    <div class="promo-card">
-                        <div class="promo-image">
-                            <img src="https://images.unsplash.com/photo-1608270861620-7c80b6ff7435?w=400&h=300&fit=crop" alt="Combo Familiar">
-                            <div class="promo-badge">👨‍👩‍👧‍👦 FAMILIAR</div>
-                        </div>
-                        <div class="promo-content">
-                            <h3>Combo Familiar</h3>
-                            <p class="promo-description">Vino + Cervezas + Snacks + Bebidas no alcohólicas</p>
-                            <div class="promo-pricing">
-                                <span class="original-price">$32.900</span>
-                                <span class="current-price">$27.900</span>
-                                <span class="discount">15% OFF</span>
-                            </div>
-                            <button class="btn btn-primary" onclick="addPromoToCart(4)">Agregar al Carrito</button>
-                        </div>
-                    </div>
+                <div class="promo-track" id="promoExclusiveTrack">
+                    <!-- Promociones activas del admin -->
                 </div>
                 
                 <button class="promo-nav prev" onclick="scrollPromo(-1)">‹</button>

@@ -1,6 +1,5 @@
-// admin.js - Funcionalidad del panel administrativo con autenticación segura
+// admin.js - Panel administrativo profesional
 
-// Configurar BASE_URL si no está definido
 if (!window.BASE_URL) {
     window.BASE_URL = (() => {
         const href = window.location.href;
@@ -11,809 +10,513 @@ if (!window.BASE_URL) {
     })();
 }
 
-console.log('📋 admin.js cargado');
-console.log('BASE_URL:', window.BASE_URL);
+const STORAGE_KEYS = {
+    pedidos: 'pedidosHistorial',
+    promociones: 'promociones',
+    carousel: 'carouselImages',
+    delivery: 'deliveryStatus'
+};
 
-/**
- * ==================== PROTECCIÓN DE ACCESO ====================
- * Verificar autenticación en páginas protegidas
- */
+const ORDER_STATUS = ['nuevo', 'preparando', 'en-camino', 'entregado', 'cancelado'];
 
-// Proteger dashboard - verificar al cargar la página
+let editingPromoId = null;
+let editingCarouselId = null;
+
+function readStorageArray(key) {
+    const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+}
+
+function writeStorageArray(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function ensurePedidosHaveStatus() {
+    const pedidos = readStorageArray(STORAGE_KEYS.pedidos);
+    let changed = false;
+    pedidos.forEach((pedido) => {
+        if (!pedido.estado) {
+            pedido.estado = 'nuevo';
+            changed = true;
+        }
+    });
+    if (changed) {
+        writeStorageArray(STORAGE_KEYS.pedidos, pedidos);
+    }
+}
+
 function protectDashboard() {
-    const isAdminDashboard = window.location.href.includes('admin-dashboard.html');
-    
-    if (!isAdminDashboard) {
-        console.log('ℹ️  No es dashboard, saltando protección');
-        return;
-    }
+    const isDashboard = window.location.href.includes('admin-dashboard.html');
+    if (!isDashboard) return;
 
-    console.log('🔐 Verificando acceso al dashboard...');
-
-    // Verificar si existe Auth
     if (typeof Auth === 'undefined') {
-        console.error('❌ Auth no está disponible');
-        alert('Error: Sistema de autenticación no cargado');
-        setTimeout(() => {
-            window.location.href = window.BASE_URL + 'admin-login.html?error=system';
-        }, 1000);
+        alert('Error: Sistema de autenticacion no cargado.');
+        window.location.href = window.BASE_URL + 'admin-login.html?error=system';
         return;
     }
 
-    // Cargar la sesión
     Auth.loadSession();
-    
-    // Verificar autenticación
-    if (!Auth.isAuthenticated()) {
-        console.warn('⚠️  Usuario no autenticado - redirigiendo a login');
+    if (!Auth.isAuthenticated() || !Auth.hasRole('admin')) {
+        Auth.logout();
         window.location.href = window.BASE_URL + 'admin-login.html';
         return;
     }
 
     const user = Auth.getCurrentUser();
-    console.log('✅ Usuario autenticado:', user);
-
-    // Verificar rol
-    if (!Auth.hasRole('admin')) {
-        console.error('❌ Usuario no tiene rol de admin');
-        alert('Acceso denegado. Solo administradores pueden acceder.');
-        Auth.logout();
-        window.location.href = window.BASE_URL + 'index.html';
-        return;
-    }
-
-    console.log('✅ Usuario es admin - acceso concedido');
-    
-    // Mostrar información del usuario
-    displayUserInfo();
-    
-    // Configurar logout
+    const brand = document.querySelector('.navbar-brand');
+    if (brand && user) brand.textContent = `Panel Admin - ${user.name}`;
     setupLogout();
 }
 
-/**
- * Mostrar información del usuario autenticado
- */
-function displayUserInfo() {
-    const user = Auth.getCurrentUser();
-    if (!user) return;
-
-    // Buscar elementos donde mostrar la info del usuario
-    const userNameElements = document.querySelectorAll('[data-user-name], .user-name, #userName, .navbar-brand');
-    const userRoleElements = document.querySelectorAll('[data-user-role], .user-role, #userRole');
-    
-    userNameElements.forEach(el => {
-        if (el.classList.contains('navbar-brand')) {
-            el.textContent = `Panel Admin - ${user.name}`;
-        } else if (el.id || el.classList.contains('user-name')) {
-            el.textContent = user.name;
-        }
-    });
-
-    userRoleElements.forEach(el => {
-        el.textContent = user.role === 'admin' ? 'Administrador' : 'Usuario';
-    });
-
-    console.log('👤 Información del usuario mostrada');
-}
-
-/**
- * Configurar logout
- */
 function setupLogout() {
     const logoutBtn = document.getElementById('logoutBtn');
-    if (!logoutBtn) {
-        console.warn('⚠️  Botón de logout no encontrado');
-        return;
-    }
-
-    logoutBtn.addEventListener('click', function(e) {
+    if (!logoutBtn) return;
+    logoutBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        
-        if (confirm('¿Está seguro que desea cerrar sesión?')) {
+        if (confirm('Cerrar sesion de administrador?')) {
             Auth.logout();
-            console.log('👋 Logout realizado');
             window.location.href = window.BASE_URL + 'admin-login.html?reason=logout';
         }
     });
-
-    console.log('🔗 Logout configurado');
 }
 
-/**
- * Ejecutar protección cuando la página cargue
- */
-if (document.readyState === 'loading') {
-    // Aún está cargando
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('📄 DOMContentLoaded - ejecutando protección');
-        protectDashboard();
-    });
-} else {
-    // Ya está cargado
-    console.log('✅ DOM ya cargado - ejecutando protección inmediatamente');
-    protectDashboard();
-}
-
-console.log('✅ admin.js configurado completamente');
-
-// Navigation between sections
-const navLinks = document.querySelectorAll('.nav-link[data-section]');
-const sections = document.querySelectorAll('[id$="Section"]');
-
-navLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const sectionId = this.getAttribute('data-section') + 'Section';
-
-        // Hide all sections
-        sections.forEach(section => {
-            section.style.display = 'none';
+function setupNavigation() {
+    const navLinks = document.querySelectorAll('.nav-link[data-section]');
+    const sections = document.querySelectorAll('[id$="Section"]');
+    navLinks.forEach((link) => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sectionId = `${link.getAttribute('data-section')}Section`;
+            sections.forEach((section) => {
+                section.style.display = 'none';
+            });
+            const target = document.getElementById(sectionId);
+            if (target) target.style.display = 'block';
+            navLinks.forEach((nav) => nav.classList.remove('active'));
+            link.classList.add('active');
         });
-
-        // Show selected section
-        document.getElementById(sectionId).style.display = 'block';
-
-        // Update active nav link
-        navLinks.forEach(navLink => navLink.classList.remove('active'));
-        this.classList.add('active');
-    });
-});
-
-// WhatsApp integration
-function sendWhatsAppMessage(phone, message) {
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
-}
-
-// WhatsApp buttons in pedidos
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('whatsapp-btn')) {
-        const phone = e.target.getAttribute('data-phone');
-        const message = e.target.getAttribute('data-message');
-        sendWhatsAppMessage(phone, message);
-    }
-});
-
-// WhatsApp form
-if (document.getElementById('whatsappForm')) {
-    document.getElementById('whatsappForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const phone = document.getElementById('phoneNumber').value;
-        const message = document.getElementById('message').value;
-        sendWhatsAppMessage(phone, message);
     });
 }
 
-// Mock data updates (in a real app, this would come from an API)
-function updateDashboardStats() {
-    // Simulate fetching data
-    setTimeout(() => {
-        document.getElementById('pedidosHoy').textContent = Math.floor(Math.random() * 20) + 10;
-        document.getElementById('ventasTotales').textContent = '$' + (Math.floor(Math.random() * 2000) + 1000) + '.00';
-        document.getElementById('pedidosPendientes').textContent = Math.floor(Math.random() * 10) + 1;
-        document.getElementById('clientesActivos').textContent = Math.floor(Math.random() * 100) + 20;
-    }, 1000);
+function sumMoney(pedidos) {
+    return pedidos.reduce((sum, p) => sum + (p?.costos?.total || 0), 0);
 }
 
-// Update stats on page load
-if (document.getElementById('dashboardSection')) {
-    updateDashboardStats();
-}// Panel Administrativo - Dashboard
-class AdminDashboard {
-    constructor() {
-        this.isLoggedIn = false;
-        this.adminUser = {
-            username: 'admin',
-            password: '1234' // Cambiar en producción
-        };
-        this.orders = JSON.parse(localStorage.getItem('orders')) || [];
-        this.promotions = JSON.parse(localStorage.getItem('promotions')) || this.getDefaultPromotions();
-        this.deliveryActive = JSON.parse(localStorage.getItem('deliveryActive') !== null ? localStorage.getItem('deliveryActive') : true);
-    }
+function getDashboardStats() {
+    const pedidos = readStorageArray(STORAGE_KEYS.pedidos);
+    const now = new Date();
+    const dayStart = new Date(now);
+    dayStart.setHours(0, 0, 0, 0);
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - 7);
+    const monthStart = new Date(now);
+    monthStart.setDate(now.getDate() - 30);
 
-    getDefaultPromotions() {
-        return [
-            { id: 1, title: 'Pack Pisco Party', description: 'Pisco + Bebida + Hielo', discount: '23%', image: '', active: true },
-            { id: 2, title: 'Combo Cervecero', description: '6 Cervezas + Snacks', discount: '14%', image: '', active: true }
-        ];
-    }
+    const today = pedidos.filter((p) => new Date(p.fecha) >= dayStart);
+    const week = pedidos.filter((p) => new Date(p.fecha) >= weekStart);
+    const month = pedidos.filter((p) => new Date(p.fecha) >= monthStart);
 
-    // Validar login
-    validateLogin(username, password) {
-        if (username === this.adminUser.username && password === this.adminUser.password) {
-            this.isLoggedIn = true;
-            localStorage.setItem('adminLoggedIn', 'true');
-            return true;
-        }
-        return false;
-    }
-
-    logout() {
-        this.isLoggedIn = false;
-        localStorage.removeItem('adminLoggedIn');
-        this.showLoginForm();
-    }
-
-    // Crear/actualizar promoción
-    savePromotion(id, title, description, discount, image) {
-        if (id) {
-            const index = this.promotions.findIndex(p => p.id === id);
-            if (index !== -1) {
-                this.promotions[index] = { id, title, description, discount, image, active: this.promotions[index].active };
-            }
-        } else {
-            const newId = Math.max(...this.promotions.map(p => p.id), 0) + 1;
-            this.promotions.push({ id: newId, title, description, discount, image, active: true });
-        }
-        localStorage.setItem('promotions', JSON.stringify(this.promotions));
-        return true;
-    }
-
-    // Eliminar promoción
-    deletePromotion(id) {
-        this.promotions = this.promotions.filter(p => p.id !== id);
-        localStorage.setItem('promotions', JSON.stringify(this.promotions));
-    }
-
-    // Controlar estado de delivery
-    toggleDelivery() {
-        this.deliveryActive = !this.deliveryActive;
-        localStorage.setItem('deliveryActive', JSON.stringify(this.deliveryActive));
-        return this.deliveryActive;
-    }
-
-    // Guardar pedido
-    saveOrder(orderData) {
-        const order = {
-            id: Date.now(),
-            date: new Date().toLocaleDateString('es-CL'),
-            time: new Date().toLocaleTimeString('es-CL'),
-            cliente: orderData.cliente,
-            items: orderData.items,
-            subtotal: orderData.subtotal,
-            deliveryPrice: orderData.deliveryPrice,
-            total: orderData.total,
-            status: 'pendiente',
-            notas: orderData.notas
-        };
-        this.orders.push(order);
-        localStorage.setItem('orders', JSON.stringify(this.orders));
-        return order;
-    }
-
-    // Obtener estadísticas
-    getStatistics() {
-        const stats = {
-            totalOrders: this.orders.length,
-            totalRevenue: this.orders.reduce((sum, o) => sum + o.total, 0),
-            totalDelivery: this.orders.reduce((sum, o) => sum + o.deliveryPrice, 0),
-            ordersByCommune: {}
-        };
-
-        // Agrupar por comuna
-        this.orders.forEach(o => {
-            const commune = o.cliente.comuna || 'Otros';
-            stats.ordersByCommune[commune] = (stats.ordersByCommune[commune] || 0) + 1;
-        });
-
-        return stats;
-    }
-
-    // Renderizar panel administrativo
-    renderAdminPanel() {
-        if (!this.isLoggedIn) {
-            this.showLoginForm();
-            return;
-        }
-
-        const html = `
-            <div id="adminPanel" class="admin-panel">
-                <div class="admin-header">
-                    <h1>📊 Panel Administrativo - Boti Dival</h1>
-                    <button class="btn btn-danger" onclick="adminDashboard.logout()">Cerrar Sesión</button>
-                </div>
-
-                <div class="admin-tabs">
-                    <button class="tab-btn active" onclick="switchAdminTab('dashboard')">Dashboard</button>
-                    <button class="tab-btn" onclick="switchAdminTab('promotions')">Promociones</button>
-                    <button class="tab-btn" onclick="switchAdminTab('orders')">Pedidos</button>
-                    <button class="tab-btn" onclick="switchAdminTab('reports')">Reportes</button>
-                    <button class="tab-btn" onclick="switchAdminTab('settings')">Configuración</button>
-                </div>
-
-                <!-- TAB: Dashboard -->
-                <div id="dashboardTab" class="admin-tab active">
-                    <div class="dashboard-stats">
-                        <div class="stat-card">
-                            <h3>📦 Total de Pedidos</h3>
-                            <p class="stat-number">${this.orders.length}</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3>💰 Ingresos Totales</h3>
-                            <p class="stat-number">$${this.getStatistics().totalRevenue.toLocaleString('es-CL')}</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3>🚚 Ganancias Delivery</h3>
-                            <p class="stat-number">$${this.getStatistics().totalDelivery.toLocaleString('es-CL')}</p>
-                        </div>
-                    </div>
-
-                    <div class="recent-orders">
-                        <h3>📋 Últimos Pedidos</h3>
-                        <table class="orders-table">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Cliente</th>
-                                    <th>Comuna</th>
-                                    <th>Total</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${this.orders.slice(-5).reverse().map(o => `
-                                    <tr>
-                                        <td>${o.date}</td>
-                                        <td>${o.cliente.nombre}</td>
-                                        <td>${o.cliente.comuna}</td>
-                                        <td>$${o.total.toLocaleString('es-CL')}</td>
-                                        <td><span class="status-badge">${o.status}</span></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- TAB: Promotions -->
-                <div id="promotionsTab" class="admin-tab">
-                    <div class="promotions-actions">
-                        <button class="btn btn-primary" onclick="openPromoForm()">+ Nueva Promoción</button>
-                    </div>
-
-                    <div id="promoForm" class="promo-form" style="display: none;">
-                        <h3>Crear/Editar Promoción</h3>
-                        <form onsubmit="savePromoForm(event)">
-                            <input type="hidden" id="promoId">
-                            <div class="form-group">
-                                <label>Título *</label>
-                                <input type="text" id="promoTitle" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Descripción *</label>
-                                <textarea id="promoDescription" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Descuento (%) *</label>
-                                <input type="number" id="promoDiscount" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Imagen (URL)</label>
-                                <input type="url" id="promoImage" placeholder="https://...">
-                            </div>
-                            <button type="submit" class="btn btn-success">Guardar</button>
-                            <button type="button" class="btn btn-secondary" onclick="closePromoForm()">Cancelar</button>
-                        </form>
-                    </div>
-
-                    <div class="promotions-list">
-                        ${this.promotions.map(p => `
-                            <div class="promo-admin-card">
-                                <div class="promo-header">
-                                    <h4>${p.title}</h4>
-                                    <span class="promo-badge">${p.discount}</span>
-                                </div>
-                                <p>${p.description}</p>
-                                <div class="promo-actions">
-                                    <button class="btn btn-sm btn-primary" onclick="editPromo(${p.id})">Editar</button>
-                                    <button class="btn btn-sm btn-danger" onclick="deletePromo(${p.id})">Eliminar</button>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <!-- TAB: Orders -->
-                <div id="ordersTab" class="admin-tab">
-                    <div class="filters">
-                        <input type="date" id="dateFilter" onchange="filterOrdersByDate()">
-                        <select id="communeFilter" onchange="filterOrdersByCommune()">
-                            <option value="">Todas las comunas</option>
-                            ${Object.keys(this.getStatistics().ordersByCommune).map(c => `<option value="${c}">${c}</option>`).join('')}
-                        </select>
-                    </div>
-
-                    <table class="orders-table full">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Hora</th>
-                                <th>Cliente</th>
-                                <th>Teléfono</th>
-                                <th>Dirección</th>
-                                <th>Comuna</th>
-                                <th>Sector</th>
-                                <th>Costo Delivery</th>
-                                <th>Total</th>
-                                <th>Ver</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordersTableBody">
-                            ${this.orders.map(o => `
-                                <tr>
-                                    <td>${o.date}</td>
-                                    <td>${o.time}</td>
-                                    <td>${o.cliente.nombre}</td>
-                                    <td>${o.cliente.telefono}</td>
-                                    <td>${o.cliente.direccion}</td>
-                                    <td>${o.cliente.comuna}</td>
-                                    <td>${o.cliente.sector}</td>
-                                    <td>$${o.deliveryPrice.toLocaleString('es-CL')}</td>
-                                    <td>$${o.total.toLocaleString('es-CL')}</td>
-                                    <td><button class="btn btn-sm btn-info" onclick="viewOrder(${o.id})">Ver</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- TAB: Reports -->
-                <div id="reportsTab" class="admin-tab">
-                    <div class="reports-grid">
-                        <div class="report-card">
-                            <h3>📈 Pedidos por Comuna</h3>
-                            <ul>
-                                ${Object.entries(this.getStatistics().ordersByCommune).map(([c, count]) => `
-                                    <li>${c}: <strong>${count}</strong> pedidos</li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                        <div class="report-card">
-                            <h3>💹 Resumen Financiero</h3>
-                            <ul>
-                                <li>Total Ingresos: <strong>$${this.getStatistics().totalRevenue.toLocaleString('es-CL')}</strong></li>
-                                <li>Ingresos por Delivery: <strong>$${this.getStatistics().totalDelivery.toLocaleString('es-CL')}</strong></li>
-                                <li>Ingresos por Productos: <strong>$${(this.getStatistics().totalRevenue - this.getStatistics().totalDelivery).toLocaleString('es-CL')}</strong></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB: Settings -->
-                <div id="settingsTab" class="admin-tab">
-                    <div class="settings-group">
-                        <h3>🚚 Estado del Delivery</h3>
-                        <div class="setting-item">
-                            <label>Delivery Status</label>
-                            <button class="btn btn-toggle ${this.deliveryActive ? 'active' : ''}" onclick="toggleDeliveryStatus()">
-                                ${this.deliveryActive ? '✓ Activo' : '✕ Inactivo'}
-                            </button>
-                            <p class="setting-note">${this.deliveryActive ? 'El delivery está disponible' : 'Mostrando: Solo ventas presenciales disponibles'}</p>
-                        </div>
-                    </div>
-
-                    <div class="settings-group">
-                        <h3>📥 Exportar Datos</h3>
-                        <button class="btn btn-primary" onclick="exportOrdersToCSV()">📊 Descargar Pedidos (CSV)</button>
-                        <button class="btn btn-primary" onclick="exportReportsToExcel()">📈 Descargar Reporte (Excel)</button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        document.body.insertAdjacentHTML('afterbegin', html);
-    }
-
-    showLoginForm() {
-        const loginHTML = `
-            <div id="adminLoginModal" class="modal-overlay">
-                <div class="modal-content">
-                    <h2>🔐 Acceso Administrativo</h2>
-                    <form onsubmit="handleAdminLogin(event)">
-                        <div class="form-group">
-                            <label>Usuario</label>
-                            <input type="text" id="adminUsername" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Contraseña</label>
-                            <input type="password" id="adminPassword" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Ingresar</button>
-                    </form>
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('afterbegin', loginHTML);
-    }
-}
-
-// Instancia global
-let adminDashboard = new AdminDashboard();
-
-// Funciones globales del admin
-function switchAdminTab(tabName) {
-    document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(tabName + 'Tab').classList.add('active');
-    event.target.classList.add('active');
-}
-
-function handleAdminLogin(e) {
-    e.preventDefault();
-    const username = document.getElementById('adminUsername').value;
-    const password = document.getElementById('adminPassword').value;
-    if (adminDashboard.validateLogin(username, password)) {
-        document.getElementById('adminLoginModal').remove();
-        adminDashboard.renderAdminPanel();
-    } else {
-        alert('Credenciales incorrectas');
-    }
-}
-
-function openPromoForm() {
-    document.getElementById('promoForm').style.display = 'block';
-}
-
-function closePromoForm() {
-    document.getElementById('promoForm').style.display = 'none';
-    document.getElementById('promoId').value = '';
-    document.getElementById('promoTitle').value = '';
-    document.getElementById('promoDescription').value = '';
-    document.getElementById('promoDiscount').value = '';
-}
-
-function savePromoForm(e) {
-    e.preventDefault();
-    const id = document.getElementById('promoId').value ? parseInt(document.getElementById('promoId').value) : null;
-    adminDashboard.savePromotion(id, 
-        document.getElementById('promoTitle').value,
-        document.getElementById('promoDescription').value,
-        document.getElementById('promoDiscount').value,
-        document.getElementById('promoImage').value
-    );
-    closePromoForm();
-    location.reload();
-}
-
-function deletePromo(id) {
-    if (confirm('¿Eliminar esta promoción?')) {
-        adminDashboard.deletePromotion(id);
-        location.reload();
-    }
-}
-
-function toggleDeliveryStatus() {
-    const newStatus = adminDashboard.toggleDelivery();
-    alert(`Delivery ${newStatus ? 'Activado' : 'Desactivado'}`);
-    location.reload();
-}
-
-function exportOrdersToCSV() {
-    let csv = 'Fecha,Hora,Cliente,Teléfono,Dirección,Comuna,Sector,Delivery,Total\n';
-    adminDashboard.orders.forEach(o => {
-        csv += `${o.date},${o.time},"${o.cliente.nombre}",${o.cliente.telefono},"${o.cliente.direccion}",${o.cliente.comuna},${o.cliente.sector},${o.deliveryPrice},${o.total}\n`;
-    });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `pedidos-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-}
-
-// ===== FUNCIONES DE CONTROL DE PEDIDOS =====
-
-// Variables globales para control de pedidos
-let pedidosFiltrados = [];
-
-// Inicializar dashboard de pedidos cuando se carga la página
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.pathname.includes('admin-dashboard.html')) {
-        // Inicializar dashboard de control de pedidos
-        renderPedidosDashboard();
-        renderPedidosHistorial();
-    }
-});
-
-// Calcular estadísticas de pedidos
-function getPedidosStats() {
-    const hoy = new Date();
-    const inicioSemana = new Date(hoy);
-    inicioSemana.setDate(hoy.getDate() - 7);
-    
-    const stats = {
-        totalPedidos: pedidosHistorial.length,
-        pedidosHoy: 0,
-        pedidosSemana: 0,
-        pedidosDelivery: 0,
-        ingresosTotales: 0,
-        ingresosHoy: 0,
-        ingresosDelivery: 0
+    return {
+        totalPedidos: pedidos.length,
+        pedidosHoy: today.length,
+        ventasHoy: sumMoney(today),
+        ventasSemana: sumMoney(week),
+        ventasMes: sumMoney(month),
+        ingresosTiempoReal: sumMoney(pedidos)
     };
-    
-    pedidosHistorial.forEach(pedido => {
-        const fechaPedido = new Date(pedido.fecha);
-        
-        // Pedidos de hoy
-        if (fechaPedido.toDateString() === hoy.toDateString()) {
-            stats.pedidosHoy++;
-            stats.ingresosHoy += pedido.costos.total;
-        }
-        
-        // Pedidos de la semana
-        if (fechaPedido >= inicioSemana) {
-            stats.pedidosSemana++;
-        }
-        
-        // Pedidos delivery
-        if (pedido.tipo === 'delivery') {
-            stats.pedidosDelivery++;
-            stats.ingresosDelivery += pedido.costos.delivery;
-        }
-        
-        // Ingresos totales
-        stats.ingresosTotales += pedido.costos.total;
+}
+
+function renderDashboard() {
+    const stats = getDashboardStats();
+    document.getElementById('metricPedidos').textContent = stats.totalPedidos;
+    document.getElementById('metricPedidosHoy').textContent = stats.pedidosHoy;
+    document.getElementById('metricVentasHoy').textContent = `$${stats.ventasHoy.toLocaleString('es-CL')}`;
+    document.getElementById('metricVentasSemana').textContent = `$${stats.ventasSemana.toLocaleString('es-CL')}`;
+    document.getElementById('metricVentasMes').textContent = `$${stats.ventasMes.toLocaleString('es-CL')}`;
+    document.getElementById('metricIngresos').textContent = `$${stats.ingresosTiempoReal.toLocaleString('es-CL')}`;
+}
+
+function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
     });
-    
-    return stats;
 }
 
-// Renderizar dashboard de estadísticas
-function renderPedidosDashboard() {
-    const stats = getPedidosStats();
-    
-    document.getElementById('totalPedidos').textContent = stats.totalPedidos;
-    document.getElementById('pedidosHoy').textContent = stats.pedidosHoy;
-    document.getElementById('pedidosSemana').textContent = stats.pedidosSemana;
-    document.getElementById('pedidosDelivery').textContent = stats.pedidosDelivery;
-    
-    document.getElementById('ingresosTotales').textContent = `$${stats.ingresosTotales.toLocaleString('es-CL')}`;
-    document.getElementById('ingresosHoy').textContent = `$${stats.ingresosHoy.toLocaleString('es-CL')}`;
-    document.getElementById('ingresosDelivery').textContent = `$${stats.ingresosDelivery.toLocaleString('es-CL')}`;
-}
+async function savePromocion(event) {
+    event.preventDefault();
+    const imageFile = document.getElementById('promoImageFile').files[0];
+    const imageUrl = document.getElementById('promoImageUrl').value.trim();
+    const title = document.getElementById('promoTitle').value.trim();
+    const description = document.getElementById('promoDescription').value.trim();
+    const currentPrice = Number(document.getElementById('promoPrice').value || 0);
+    const previousPriceValue = document.getElementById('promoPreviousPrice').value;
+    const previousPrice = previousPriceValue ? Number(previousPriceValue) : null;
 
-// Renderizar tabla de historial de pedidos
-function renderPedidosHistorial(filtrados = null) {
-    const pedidos = filtrados || pedidosHistorial;
-    const tbody = document.getElementById('pedidosTableBody');
-    
-    tbody.innerHTML = pedidos.map(pedido => {
-        const fecha = new Date(pedido.fecha);
-        const productosCount = pedido.productos.length;
-        const productosText = productosCount === 1 ? 
-            pedido.productos[0].nombre : 
-            `${productosCount} productos`;
-        
-        return `
-            <tr>
-                <td>${pedido.id}</td>
-                <td>${fecha.toLocaleDateString('es-CL')} ${fecha.toLocaleTimeString('es-CL', {hour: '2-digit', minute: '2-digit'})}</td>
-                <td>${pedido.cliente.nombre}</td>
-                <td>
-                    <span class="badge ${pedido.tipo === 'delivery' ? 'bg-primary' : 'bg-secondary'}">
-                        ${pedido.tipo === 'delivery' ? '🚚 Delivery' : '🏪 Presencial'}
-                    </span>
-                </td>
-                <td>${pedido.cliente.comuna} - ${pedido.cliente.sector}</td>
-                <td>${productosText}</td>
-                <td>$${pedido.costos.delivery.toLocaleString('es-CL')}</td>
-                <td><strong>$${pedido.costos.total.toLocaleString('es-CL')}</strong></td>
-                <td>
-                    <button class="btn btn-sm btn-info" onclick="verDetallePedido(${pedido.id})">
-                        <i class="fas fa-eye"></i> Ver
-                    </button>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-// Filtrar pedidos
-function filtrarPedidos() {
-    const tipoFiltro = document.getElementById('filtroTipo').value;
-    const fechaFiltro = document.getElementById('filtroFecha').value;
-    
-    let filtrados = pedidosHistorial;
-    
-    // Filtrar por tipo
-    if (tipoFiltro !== 'todos') {
-        filtrados = filtrados.filter(p => p.tipo === tipoFiltro);
+    if (!title || !description || !currentPrice) {
+        alert('Completa titulo, descripcion y precio actual.');
+        return;
     }
-    
-    // Filtrar por fecha
-    if (fechaFiltro) {
-        const fechaSeleccionada = new Date(fechaFiltro);
-        filtrados = filtrados.filter(p => {
-            const fechaPedido = new Date(p.fecha);
-            return fechaPedido.toDateString() === fechaSeleccionada.toDateString();
+
+    let image = imageUrl;
+    if (imageFile) {
+        image = await readFileAsDataUrl(imageFile);
+    }
+    if (!image) {
+        alert('Debes subir una imagen o pegar URL.');
+        return;
+    }
+
+    const promociones = readStorageArray(STORAGE_KEYS.promociones);
+    if (editingPromoId) {
+        const promo = promociones.find((p) => p.id === editingPromoId);
+        if (promo) {
+            promo.image = image;
+            promo.title = title;
+            promo.description = description;
+            promo.price = currentPrice;
+            promo.previousPrice = previousPrice;
+        }
+    } else {
+        promociones.unshift({
+            id: Date.now(),
+            image,
+            title,
+            description,
+            price: currentPrice,
+            previousPrice,
+            active: true,
+            createdAt: new Date().toISOString()
         });
     }
-    
-    renderPedidosHistorial(filtrados);
+    writeStorageArray(STORAGE_KEYS.promociones, promociones);
+    resetPromoForm();
+    renderPromociones();
 }
 
-// Limpiar filtros
-function limpiarFiltros() {
-    document.getElementById('filtroTipo').value = 'todos';
-    document.getElementById('filtroFecha').value = '';
-    renderPedidosHistorial();
+function editPromocion(id) {
+    const promociones = readStorageArray(STORAGE_KEYS.promociones);
+    const promo = promociones.find((p) => p.id === id);
+    if (!promo) return;
+    editingPromoId = id;
+    document.getElementById('promoTitle').value = promo.title;
+    document.getElementById('promoDescription').value = promo.description;
+    document.getElementById('promoPrice').value = promo.price || '';
+    document.getElementById('promoPreviousPrice').value = promo.previousPrice || '';
+    document.getElementById('promoImageUrl').value = promo.image?.startsWith('data:') ? '' : promo.image;
+    document.getElementById('promoSaveBtn').textContent = 'Actualizar promocion';
 }
 
-// Ver detalle del pedido
-function verDetallePedido(id) {
-    const pedido = pedidosHistorial.find(p => p.id === id);
+function deletePromocion(id) {
+    if (!confirm('Eliminar esta promocion?')) return;
+    const promociones = readStorageArray(STORAGE_KEYS.promociones).filter((p) => p.id !== id);
+    writeStorageArray(STORAGE_KEYS.promociones, promociones);
+    renderPromociones();
+}
+
+function togglePromocion(id) {
+    const promociones = readStorageArray(STORAGE_KEYS.promociones);
+    const promo = promociones.find((p) => p.id === id);
+    if (!promo) return;
+    promo.active = !promo.active;
+    writeStorageArray(STORAGE_KEYS.promociones, promociones);
+    renderPromociones();
+}
+
+function resetPromoForm() {
+    editingPromoId = null;
+    document.getElementById('promoCreateForm').reset();
+    document.getElementById('promoSaveBtn').textContent = 'Guardar promocion';
+}
+
+function renderPromociones() {
+    const promociones = readStorageArray(STORAGE_KEYS.promociones);
+    const grid = document.getElementById('promocionesGrid');
+    grid.innerHTML = promociones.map((promo) => `
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="${promo.image}" class="card-img-top" alt="${promo.title}" style="height:200px;object-fit:cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${promo.title}</h5>
+                    <p class="card-text text-muted">${promo.description}</p>
+                    <div class="mb-2">
+                        ${promo.previousPrice ? `<span class="text-muted text-decoration-line-through me-2">$${promo.previousPrice.toLocaleString('es-CL')}</span>` : ''}
+                        <span class="fw-bold text-success">$${promo.price.toLocaleString('es-CL')}</span>
+                    </div>
+                    <div class="mt-auto d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm ${promo.active ? 'btn-warning' : 'btn-success'}" onclick="togglePromocion(${promo.id})">
+                            ${promo.active ? 'Desactivar' : 'Activar'}
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="editPromocion(${promo.id})">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePromocion(${promo.id})">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function saveCarouselImage(event) {
+    event.preventDefault();
+    const imageFile = document.getElementById('carouselImageFile').files[0];
+    const imageUrl = document.getElementById('carouselImageUrl').value.trim();
+    const title = document.getElementById('carouselImageTitle').value.trim();
+    let image = imageUrl;
+    if (imageFile) {
+        image = await readFileAsDataUrl(imageFile);
+    }
+    if (!image) {
+        alert('Debes subir imagen o URL.');
+        return;
+    }
+    const images = readStorageArray(STORAGE_KEYS.carousel);
+    if (editingCarouselId) {
+        const current = images.find((img) => img.id === editingCarouselId);
+        if (current) {
+            current.image = image;
+            current.title = title || current.title;
+        }
+    } else {
+        images.push({ id: Date.now(), image, title: title || 'Imagen promocional', active: true });
+    }
+    writeStorageArray(STORAGE_KEYS.carousel, images);
+    resetCarouselForm();
+    renderCarouselAdmin();
+}
+
+function resetCarouselForm() {
+    editingCarouselId = null;
+    document.getElementById('carouselCreateForm').reset();
+    document.getElementById('carouselSaveBtn').textContent = 'Guardar imagen';
+}
+
+function editCarouselImage(id) {
+    const images = readStorageArray(STORAGE_KEYS.carousel);
+    const item = images.find((img) => img.id === id);
+    if (!item) return;
+    editingCarouselId = id;
+    document.getElementById('carouselImageTitle').value = item.title || '';
+    document.getElementById('carouselImageUrl').value = item.image?.startsWith('data:') ? '' : item.image;
+    document.getElementById('carouselSaveBtn').textContent = 'Actualizar imagen';
+}
+
+function deleteCarouselImage(id) {
+    if (!confirm('Eliminar imagen del carrusel?')) return;
+    const images = readStorageArray(STORAGE_KEYS.carousel).filter((img) => img.id !== id);
+    writeStorageArray(STORAGE_KEYS.carousel, images);
+    renderCarouselAdmin();
+}
+
+function moveCarouselImage(id, direction) {
+    const images = readStorageArray(STORAGE_KEYS.carousel);
+    const index = images.findIndex((img) => img.id === id);
+    if (index < 0) return;
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= images.length) return;
+    [images[index], images[nextIndex]] = [images[nextIndex], images[index]];
+    writeStorageArray(STORAGE_KEYS.carousel, images);
+    renderCarouselAdmin();
+}
+
+function toggleCarouselImage(id) {
+    const images = readStorageArray(STORAGE_KEYS.carousel);
+    const item = images.find((img) => img.id === id);
+    if (!item) return;
+    item.active = !item.active;
+    writeStorageArray(STORAGE_KEYS.carousel, images);
+    renderCarouselAdmin();
+}
+
+function renderCarouselAdmin() {
+    const images = readStorageArray(STORAGE_KEYS.carousel);
+    const grid = document.getElementById('carouselGrid');
+    grid.innerHTML = images.map((item, idx) => `
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="${item.image}" alt="${item.title}" class="card-img-top" style="height:200px;object-fit:cover;">
+                <div class="card-body">
+                    <h6>${item.title || `Imagen ${idx + 1}`}</h6>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm ${item.active ? 'btn-warning' : 'btn-success'}" onclick="toggleCarouselImage(${item.id})">${item.active ? 'Ocultar' : 'Mostrar'}</button>
+                        <button class="btn btn-sm btn-primary" onclick="editCarouselImage(${item.id})">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCarouselImage(${item.id})">Eliminar</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="moveCarouselImage(${item.id}, -1)">↑</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="moveCarouselImage(${item.id}, 1)">↓</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getOrderStatusBadge(status) {
+    const map = {
+        nuevo: 'bg-primary',
+        preparando: 'bg-warning text-dark',
+        'en-camino': 'bg-info text-dark',
+        entregado: 'bg-success',
+        cancelado: 'bg-danger'
+    };
+    return map[status] || 'bg-secondary';
+}
+
+function updateOrderStatus(id, status) {
+    const pedidos = readStorageArray(STORAGE_KEYS.pedidos);
+    const pedido = pedidos.find((p) => p.id === id);
     if (!pedido) return;
-    
-    // Llenar modal con datos del pedido
-    document.getElementById('modalPedidoId').textContent = pedido.id;
-    document.getElementById('modalClienteNombre').textContent = pedido.cliente.nombre;
-    document.getElementById('modalClienteTelefono').textContent = pedido.cliente.telefono;
-    document.getElementById('modalClienteComuna').textContent = pedido.cliente.comuna;
-    document.getElementById('modalClienteSector').textContent = pedido.cliente.sector;
-    document.getElementById('modalClienteDireccion').textContent = pedido.cliente.direccion;
-    document.getElementById('modalClienteCoordenadas').textContent = pedido.cliente.coordenadas || 'No especificadas';
-    
-    const fecha = new Date(pedido.fecha);
-    document.getElementById('modalPedidoFecha').textContent = 
-        `${fecha.toLocaleDateString('es-CL')} ${fecha.toLocaleTimeString('es-CL')}`;
-    document.getElementById('modalPedidoTipo').textContent = 
-        pedido.tipo === 'delivery' ? '🚚 Delivery' : '🏪 Presencial';
-    document.getElementById('modalPedidoComentarios').textContent = pedido.comentarios || 'Sin comentarios';
-    
-    // Llenar tabla de productos
-    const productosTable = document.getElementById('modalProductosTable');
-    productosTable.innerHTML = pedido.productos.map(producto => `
+    pedido.estado = status;
+    writeStorageArray(STORAGE_KEYS.pedidos, pedidos);
+    renderOrders();
+    renderDashboard();
+}
+
+function renderOrders() {
+    const tbody = document.getElementById('pedidosTableBody');
+    let pedidos = readStorageArray(STORAGE_KEYS.pedidos);
+    pedidos = pedidos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    tbody.innerHTML = pedidos.map((pedido) => `
         <tr>
-            <td>${producto.nombre}</td>
-            <td>${producto.cantidad}</td>
-            <td>$${producto.precioUnitario.toLocaleString('es-CL')}</td>
-            <td>$${producto.subtotal.toLocaleString('es-CL')}</td>
+            <td>${pedido.id}</td>
+            <td>${new Date(pedido.fecha).toLocaleDateString('es-CL')} ${new Date(pedido.fecha).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}</td>
+            <td>${pedido.cliente?.nombre || '-'}</td>
+            <td><span class="badge ${pedido.tipo === 'delivery' ? 'bg-primary' : 'bg-secondary'}">${pedido.tipo === 'delivery' ? 'Delivery' : 'Presencial'}</span></td>
+            <td><span class="badge ${getOrderStatusBadge(pedido.estado || 'nuevo')}">${pedido.estado || 'nuevo'}</span></td>
+            <td>${pedido.cliente?.comuna || '-'} - ${pedido.cliente?.sector || '-'}</td>
+            <td>$${(pedido.costos?.total || 0).toLocaleString('es-CL')}</td>
+            <td>
+                <div class="btn-group btn-group-sm mb-1">
+                    ${ORDER_STATUS.map((status) => `<button class="btn btn-outline-dark" onclick="updateOrderStatus(${pedido.id}, '${status}')">${status}</button>`).join('')}
+                </div>
+                <button class="btn btn-sm btn-info" onclick="verDetallePedido(${pedido.id})">Detalle</button>
+            </td>
         </tr>
     `).join('');
-    
-    // Llenar resumen de costos
-    document.getElementById('modalSubtotal').textContent = pedido.costos.subtotal.toLocaleString('es-CL');
-    document.getElementById('modalDelivery').textContent = pedido.costos.delivery.toLocaleString('es-CL');
-    document.getElementById('modalTotal').textContent = pedido.costos.total.toLocaleString('es-CL');
-    
-    // Configurar botón de reenviar
-    document.getElementById('reenviarPedidoBtn').onclick = () => reenviarPedidoWhatsApp(id);
-    
-    // Mostrar modal
-    const modal = new bootstrap.Modal(document.getElementById('pedidoDetailModal'));
-    modal.show();
 }
 
-// Reenviar pedido por WhatsApp
-function reenviarPedidoWhatsApp(id) {
-    const pedido = pedidosHistorial.find(p => p.id === id);
+function verDetallePedido(id) {
+    const pedidos = readStorageArray(STORAGE_KEYS.pedidos);
+    const pedido = pedidos.find((p) => p.id === id);
     if (!pedido) return;
-    
-    // Construir mensaje de WhatsApp
-    let mensaje = `🛒 *PEDIDO #${pedido.id}*\n\n`;
-    mensaje += `👤 *Cliente:* ${pedido.cliente.nombre}\n`;
-    mensaje += `📞 *Teléfono:* ${pedido.cliente.telefono}\n`;
-    mensaje += `📍 *Dirección:* ${pedido.cliente.direccion}, ${pedido.cliente.sector}, ${pedido.cliente.comuna}\n\n`;
-    
-    mensaje += `🛍️ *PRODUCTOS:*\n`;
-    pedido.productos.forEach(producto => {
-        mensaje += `• ${producto.nombre} x${producto.cantidad} = $${producto.subtotal.toLocaleString('es-CL')}\n`;
-    });
-    
-    mensaje += `\n💰 *TOTAL:* $${pedido.costos.total.toLocaleString('es-CL')}`;
-    if (pedido.costos.delivery > 0) {
-        mensaje += ` (Delivery: $${pedido.costos.delivery.toLocaleString('es-CL')})`;
-    }
-    
-    if (pedido.comentarios) {
-        mensaje += `\n\n📝 *Comentarios:* ${pedido.comentarios}`;
-    }
-    
-    // Codificar mensaje para URL
-    const mensajeCodificado = encodeURIComponent(mensaje);
-    const numeroWhatsApp = pedido.cliente.telefono.replace(/\D/g, ''); // Solo números
-    
-    // Abrir WhatsApp
-    window.open(`https://wa.me/56${numeroWhatsApp}?text=${mensajeCodificado}`, '_blank');
+
+    document.getElementById('modalPedidoId').textContent = pedido.id;
+    document.getElementById('modalClienteNombre').textContent = pedido.cliente?.nombre || '-';
+    document.getElementById('modalClienteTelefono').textContent = pedido.cliente?.telefono || '-';
+    document.getElementById('modalClienteComuna').textContent = pedido.cliente?.comuna || '-';
+    document.getElementById('modalClienteSector').textContent = pedido.cliente?.sector || '-';
+    document.getElementById('modalClienteDireccion').textContent = pedido.cliente?.direccion || '-';
+    document.getElementById('modalClienteCoordenadas').textContent = pedido.cliente?.coordenadas || '-';
+    document.getElementById('modalPedidoFecha').textContent = new Date(pedido.fecha).toLocaleString('es-CL');
+    document.getElementById('modalPedidoTipo').textContent = pedido.tipo || '-';
+    document.getElementById('modalPedidoComentarios').textContent = pedido.comentarios || '-';
+    document.getElementById('modalSubtotal').textContent = (pedido.costos?.subtotal || 0).toLocaleString('es-CL');
+    document.getElementById('modalDelivery').textContent = (pedido.costos?.delivery || 0).toLocaleString('es-CL');
+    document.getElementById('modalTotal').textContent = (pedido.costos?.total || 0).toLocaleString('es-CL');
+    document.getElementById('modalProductosTable').innerHTML = (pedido.productos || []).map((p) => `
+        <tr>
+            <td>${p.nombre}</td>
+            <td>${p.cantidad}</td>
+            <td>$${(p.precioUnitario || 0).toLocaleString('es-CL')}</td>
+            <td>$${(p.subtotal || 0).toLocaleString('es-CL')}</td>
+        </tr>
+    `).join('');
+
+    new bootstrap.Modal(document.getElementById('pedidoDetailModal')).show();
 }
+
+function triggerNewOrderAlert() {
+    const alertEl = document.getElementById('newOrderAlert');
+    if (alertEl) {
+        alertEl.classList.remove('d-none');
+        setTimeout(() => alertEl.classList.add('d-none'), 3500);
+    }
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+        oscillator.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.12);
+    } catch (_e) {
+        // Sin audio disponible
+    }
+}
+
+function watchOrdersRealtime() {
+    const currentCount = readStorageArray(STORAGE_KEYS.pedidos).length;
+    const prevCount = Number(sessionStorage.getItem('adminOrderCount') || 0);
+    if (currentCount > prevCount && prevCount !== 0) {
+        triggerNewOrderAlert();
+    }
+    sessionStorage.setItem('adminOrderCount', String(currentCount));
+}
+
+function setDeliveryStatus(status) {
+    localStorage.setItem(STORAGE_KEYS.delivery, JSON.stringify(status));
+    renderDeliveryStatus();
+}
+
+function renderDeliveryStatus() {
+    const deliveryStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
+    const current = deliveryStatus !== null ? deliveryStatus : true;
+    const dot = document.getElementById('deliveryStatusDot');
+    const text = document.getElementById('deliveryStatusText');
+    const message = document.getElementById('deliveryCurrentStatus');
+    const activateBtn = document.getElementById('activateDeliveryBtn');
+    const deactivateBtn = document.getElementById('deactivateDeliveryBtn');
+
+    if (current) {
+        dot.className = 'status-dot active';
+        text.textContent = 'Delivery ACTIVO';
+        message.textContent = 'Delivery Disponible para clientes.';
+        activateBtn.style.display = 'none';
+        deactivateBtn.style.display = 'inline-block';
+    } else {
+        dot.className = 'status-dot inactive';
+        text.textContent = 'Delivery INACTIVO';
+        message.textContent = 'Delivery No Disponible. Solo retiro presencial.';
+        activateBtn.style.display = 'inline-block';
+        deactivateBtn.style.display = 'none';
+    }
+}
+
+function bootAdmin() {
+    ensurePedidosHaveStatus();
+    protectDashboard();
+    setupNavigation();
+    renderDashboard();
+    renderPromociones();
+    renderCarouselAdmin();
+    renderOrders();
+    renderDeliveryStatus();
+
+    document.getElementById('promoCreateForm').addEventListener('submit', savePromocion);
+    document.getElementById('carouselCreateForm').addEventListener('submit', saveCarouselImage);
+
+    watchOrdersRealtime();
+    setInterval(() => {
+        renderDashboard();
+        renderOrders();
+        watchOrdersRealtime();
+    }, 3000);
+
+    window.addEventListener('storage', (event) => {
+        if ([STORAGE_KEYS.pedidos, STORAGE_KEYS.promociones, STORAGE_KEYS.carousel, STORAGE_KEYS.delivery].includes(event.key)) {
+            renderDashboard();
+            renderPromociones();
+            renderCarouselAdmin();
+            renderOrders();
+            renderDeliveryStatus();
+            watchOrdersRealtime();
+        }
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootAdmin);
+} else {
+    bootAdmin();
+}
+
