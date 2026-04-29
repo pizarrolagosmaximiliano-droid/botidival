@@ -4740,3 +4740,57 @@ html {
 
 
 
+/* ==================== MEJORAS MÓVILES PROFESIONALES ==================== */
+@media (max-width: 768px) {
+    :root {
+        --touch-target: 48px;
+    }
+
+    /* Botones más grandes y cómodos */
+    .btn, .premium-delivery-btn, .add-to-cart-btn, .mobile-nav-item {
+        min-height: var(--touch-target);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px; /* Evitar zoom en iOS */
+    }
+
+    /* Formuarios fáciles de completar */
+    input, select, textarea {
+        font-size: 16px !important; /* Previene el auto-zoom de iOS */
+        padding: 12px !important;
+        border-radius: 12px !important;
+    }
+
+    /* Secciones mejor separadas */
+    section {
+        padding: 60px 0 !important;
+    }
+
+    /* Panel Admin usable desde celular */
+    .sidebar {
+        padding: 10px !important;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .nav-link {
+        padding: 12px 15px !important;
+        border-radius: 10px !important;
+        margin-bottom: 5px;
+    }
+
+    /* Mejorar el carrito en móvil */
+    .cart-summary {
+        padding: 20px !important;
+    }
+
+    /* Alineación de textos */
+    .section-heading h2 {
+        font-size: 24px;
+        text-align: center;
+    }
+    
+    .section-heading {
+        margin-bottom: 30px;
+    }
+}

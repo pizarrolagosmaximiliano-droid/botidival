@@ -49,7 +49,7 @@ function ensurePedidosHaveStatus() {
     }
 }
 
-function protectDashboard() {
+async function protectDashboard() {
     const isDashboard = window.location.href.includes('admin-dashboard.html');
     if (!isDashboard) return;
 
@@ -59,7 +59,7 @@ function protectDashboard() {
         return;
     }
 
-    Auth.loadSession();
+    await Auth.loadSession();
     if (!Auth.isAuthenticated() || !Auth.hasRole('admin')) {
         Auth.logout();
         window.location.href = window.BASE_URL + 'admin-login.html';

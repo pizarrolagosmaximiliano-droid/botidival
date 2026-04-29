@@ -43,14 +43,12 @@ class UsersDatabase {
     /**
      * Sistema de Hashing Profesional (Simulado con SHA-256)
      */
-    simpleHash(password) {
+    async simpleHash(password) {
         const seed = 'boti-dival-secure-app-' + this.INTERNAL_SALT;
-        if (typeof CryptoJS !== 'undefined') {
-            return CryptoJS.SHA256(password + seed).toString();
-        }
-        // Fallback robusto con doble base64 y rotación simple (si CryptoJS no carga)
-        const firstPass = btoa(password + seed);
-        return btoa(firstPass.split('').reverse().join(''));
+        const msgUint8 = new TextEncoder().encode(password + seed);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     /**
@@ -108,7 +106,7 @@ class UsersDatabase {
             email: userData.email,
             name: userData.name,
             role: userData.role || 'cliente',
-            passwordHash: this.simpleHash(userData.password),
+            passwordHash: await this.simpleHash(userData.password),
             createdAt: new Date(),
             status: 'active',
             permissions: userData.permissions || []

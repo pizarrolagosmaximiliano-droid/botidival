@@ -31,21 +31,19 @@ class AuthSystem {
      * Encriptar contraseña (simple hash SHA-256 para cliente)
      * ⚠️ EN PRODUCCIÓN: Usar bcrypt en el servidor
      */
-    hashPassword(password) {
+    async hashPassword(password) {
         const seed = 'boti-dival-secure-app-boti-dival-premium-v2-2025-system-salt';
-        if (typeof CryptoJS !== 'undefined') {
-            return CryptoJS.SHA256(password + seed).toString();
-        }
-        // Fallback robusto con doble base64 y rotación (Si CryptoJS no está cargado)
-        const firstPass = btoa(password + seed);
-        return btoa(firstPass.split('').reverse().join(''));
+        const msgUint8 = new TextEncoder().encode(password + seed);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     /**
      * Validar contraseña
      */
-    validatePassword(inputPassword, storedHash) {
-        const inputHash = this.hashPassword(inputPassword);
+    async validatePassword(inputPassword, storedHash) {
+        const inputHash = await this.hashPassword(inputPassword);
         return inputHash === storedHash;
     }
 
@@ -53,7 +51,7 @@ class AuthSystem {
      * Generar JWT simple (para cliente)
      * ⚠️ EN PRODUCCIÓN: Generar en el servidor
      */
-    generateJWT(user) {
+    async generateJWT(user) {
         const header = {
             alg: 'HS256',
             typ: 'JWT'
@@ -71,9 +69,8 @@ class AuthSystem {
         const encodedPayload = btoa(JSON.stringify(payload));
 
         // Firma simple (en producción usar HMAC real)
-        const signature = btoa(
-            this.hashPassword(encodedHeader + '.' + encodedPayload).substring(0, 32)
-        );
+        const hash = await this.hashPassword(encodedHeader + '.' + encodedPayload);
+        const signature = btoa(hash.substring(0, 32));
 
         return `${encodedHeader}.${encodedPayload}.${signature}`;
     }
@@ -81,7 +78,7 @@ class AuthSystem {
     /**
      * Verificar JWT
      */
-    verifyJWT(token) {
+    async verifyJWT(token) {
         try {
             const parts = token.split('.');
             if (parts.length !== 3) return null;
@@ -91,6 +88,14 @@ class AuthSystem {
             // Verificar expiración
             if (payload.exp < Math.floor(Date.now() / 1000)) {
                 return null; // Token expirado
+            }
+
+            // Verificar firma (simple)
+            const expectedHash = await this.hashPassword(parts[0] + '.' + parts[1]);
+            const expectedSignature = btoa(expectedHash.substring(0, 32));
+            
+            if (parts[2] !== expectedSignature) {
+                return null; // Firma inválida
             }
 
             return payload;
@@ -148,7 +153,7 @@ class AuthSystem {
     /**
      * LOGIN: Validar credenciales y crear sesión
      */
-    login(email, password) {
+    async login(email, password) {
         // Validar entrada
         if (!email || !password) {
             return {
@@ -168,8 +173,9 @@ class AuthSystem {
 
         // Obtener usuario de la base de datos
         const user = USERS_DATABASE.findByEmail(email);
+        const isValid = user ? await this.validatePassword(password, user.passwordHash) : false;
 
-        if (!user || !this.validatePassword(password, user.passwordHash)) {
+        if (!user || !isValid) {
             const attempts = this.recordFailedAttempt(email);
             const remaining = AUTH_CONFIG.MAX_LOGIN_ATTEMPTS - attempts;
 
@@ -186,7 +192,7 @@ class AuthSystem {
         this.clearFailedAttempts(email);
 
         // Crear sesión
-        const token = this.generateJWT(user);
+        const token = await this.generateJWT(user);
         const session = {
             token,
             user: {
@@ -252,7 +258,7 @@ class AuthSystem {
     /**
      * Cargar sesión existente
      */
-    loadSession() {
+    async loadSession() {
         const sessionData = localStorage.getItem('auth_session');
         
         if (!sessionData) {
@@ -273,7 +279,7 @@ class AuthSystem {
             }
 
             // Verificar token
-            const tokenPayload = this.verifyJWT(session.token);
+            const tokenPayload = await this.verifyJWT(session.token);
             if (!tokenPayload) {
                 console.log('🔑 Token inválido');
                 this.logout();
@@ -369,7 +375,7 @@ class AuthSystem {
     /**
      * Cambiar contraseña
      */
-    changePassword(currentPassword, newPassword) {
+    async changePassword(currentPassword, newPassword) {
         if (!this.isAuthenticated()) {
             return { success: false, error: 'No autenticado' };
         }
@@ -382,12 +388,13 @@ class AuthSystem {
         }
 
         const user = USERS_DATABASE.findByEmail(this.currentUser.email);
+        const isValid = await this.validatePassword(currentPassword, user.passwordHash);
         
-        if (!this.validatePassword(currentPassword, user.passwordHash)) {
+        if (!isValid) {
             return { success: false, error: 'Contraseña actual incorrecta' };
         }
 
-        const newHash = this.hashPassword(newPassword);
+        const newHash = await this.hashPassword(newPassword);
         USERS_DATABASE.updateUserPassword(user.id, newHash);
 
         this.logSecurityEvent('PASSWORD_CHANGED', {

@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await new Promise(resolve => setTimeout(resolve, 500));
 
             // Intentar login
-            const result = Auth.login(email, password);
+            const result = await Auth.login(email, password);
             console.log('📝 Resultado de login:', result);
 
             if (result.success) {
@@ -204,17 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('❌ Login fallido:', result.error);
                 setLoginButtonState(false);
                 
-                // Debug info for the user
-                let debugInfo = ` (Error: ${result.error})`;
-                if (typeof CryptoJS === 'undefined') debugInfo += ' - [!] CryptoLibrary missing';
-                
                 if (result.locked) {
-                    showErrorMessage(result.error + debugInfo);
+                    showErrorMessage(result.error);
                     passwordInput.disabled = true;
                     emailInput.disabled = true;
                     loginBtn.disabled = true;
                 } else {
-                    showErrorMessage(result.error + debugInfo);
+                    showErrorMessage(result.error);
                     passwordInput.value = '';
                     passwordInput.focus();
                 }

@@ -2313,7 +2313,8 @@ function contactShipping() {
         { comuna: "Coltauco", sector: "Cuesta de Idahue", price: 4600 },
         { comuna: "Coltauco", sector: "El Molino", price: 4300 },
         { comuna: "Coltauco", sector: "Montegrande", price: 4200 },
-        { comuna: "Coltauco", sector: "El Loreto", price: 4000 }
+        { comuna: "Coltauco", sector: "El Loreto", price: 4000 },
+        { comuna: "Coltauco", sector: "Almendro", price: 2700 }
     ];
 
     var maxP = 6600, minP = 4000;
