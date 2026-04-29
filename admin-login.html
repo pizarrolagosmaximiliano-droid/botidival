@@ -509,7 +509,7 @@
                                 Recordar sesión
                             </label>
                         </div>
-                        <a href="#" class="forgot-link" onclick="if(confirm('¿Deseas restablecer las credenciales de fábrica y desbloquear la cuenta?')){localStorage.clear(); location.reload();} return false;">Restablecer acceso</a>
+                        <a href="#" class="forgot-link" onclick="window.forceResetAdmin(); return false;">Restablecer acceso</a>
                     </div>
 
                     <button type="submit" class="btn-primary" id="loginBtn">
@@ -539,6 +539,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.0/crypto-js.min.js"></script>
     <script src="users.db.js"></script>
     <script src="auth.js"></script>
+    <script>
+        // SCRIPT DE RESCATE GLOBAL
+        window.forceResetAdmin = () => {
+            if(!confirm('¿Deseas restablecer las credenciales de fábrica y desbloquear la cuenta?')) return;
+            console.log('🚀 Iniciando reset forzado...');
+            localStorage.clear();
+            const STORAGE_KEY = 'boti_dival_users_v2';
+            const defaultAdmin = [{
+                id: 1,
+                email: 'admin@botidival.com',
+                passwordHash: '9675b032f0e8bbb61eb49aeb86c21042ea813bde6e7489963789c628cc0e2398',
+                role: 'admin',
+                name: 'Administrador Dival',
+                active: true
+            }];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultAdmin));
+            alert('✅ Sistema restablecido con éxito. Intenta entrar ahora con la clave 58442332');
+            location.reload();
+        };
+
+        // Verificar integridad del sistema
+        window.addEventListener('load', () => {
+            if (typeof CryptoJS === 'undefined') {
+                alert('⚠️ ERROR: No se pudo cargar la librería de seguridad (CryptoJS). Verifica tu señal de internet o intenta en modo incógnito.');
+            }
+        });
+    </script>
     
     <script>
         // Funcionalidad para mostrar/ocultar contraseña
