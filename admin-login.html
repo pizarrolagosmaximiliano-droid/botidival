@@ -543,23 +543,6 @@
                 icon.style.color = '';
             }
         });
-
-        // Simulación visual de carga al enviar (el código real de autenticación está en admin-login.js)
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const btn = document.getElementById('loginBtn');
-            const spinner = document.getElementById('loginSpinner');
-            const btnText = document.getElementById('loginBtnText');
-            
-            btn.disabled = true;
-            spinner.style.display = 'inline-block';
-            btnText.textContent = 'Verificando...';
-            
-            setTimeout(() => {
-                btn.disabled = false;
-                spinner.style.display = 'none';
-                btnText.textContent = 'Iniciar Sesión';
-            }, 1000);
-        });
     </script>
     <script src="admin-login.js"></script>
 </body>

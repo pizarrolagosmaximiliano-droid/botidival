@@ -223,7 +223,7 @@
     <!-- Catálogo de Productos -->
     <section id="catalogo" class="catalog-section">
         <div class="container">
-            <h2 class="section-title">✨ <span class="highlight">Nuestro Catálogo</span></h2>
+            <h2 class="section-title">✨ <span class="highlight" id="catalogTitle">Nuestro Catálogo</span></h2>
 
             <!-- Filtros por categoría -->
             <div class="category-filters">
@@ -466,6 +466,29 @@
             </div>
         </div>
     </footer>
+
+    <!-- Navegación Móvil (Bottom Bar) -->
+    <div class="mobile-bottom-nav">
+        <a href="#home" class="mobile-nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </a>
+        <a href="#catalogo" class="mobile-nav-item">
+            <span class="nav-icon">🍺</span>
+            <span class="nav-label">Catálogo</span>
+        </a>
+        <a href="javascript:void(0)" class="mobile-nav-item mobile-cart-btn" onclick="openOrderForm()">
+            <div class="mobile-cart-icon-wrapper">
+                <span class="nav-icon">🛒</span>
+                <span id="mobileCartCount" class="cart-badge">0</span>
+            </div>
+            <span class="nav-label">Carrito</span>
+        </a>
+        <a href="#ubicacion" class="mobile-nav-item">
+            <span class="nav-icon">📍</span>
+            <span class="nav-label">Tienda</span>
+        </a>
+    </div>
 
     <script src="script.js"></script>
 </body>

@@ -23,7 +23,7 @@ class UsersDatabase {
                 name: 'Administrador Boti Dival',
                 role: 'admin',
                 // Hash pre-calculado para mayor seguridad (No reversible desde el código)
-                passwordHash: '89182390f0556f87483863776d65373673646537367364653736736465373673', // Hash de la clave actual
+                passwordHash: '9675b032f0e8bbb61eb49aeb86c21042ea813bde6e7489963789c628cc0e2398', // Hash de la clave: 58442332
                 createdAt: new Date('2025-01-01'),
                 status: 'active',
                 permissions: [
@@ -212,7 +212,7 @@ class UsersDatabase {
                 email: 'admin@botidival.com',
                 name: 'Administrador Boti Dival',
                 role: 'admin',
-                passwordHash: '89182390f0556f87483863776d65373673646537367364653736736465373673',
+                passwordHash: '9675b032f0e8bbb61eb49aeb86c21042ea813bde6e7489963789c628cc0e2398',
                 createdAt: new Date('2025-01-01'),
                 status: 'active',
                 permissions: ['view_dashboard', 'manage_orders', 'manage_products', 'manage_promotions', 'view_reports', 'manage_settings']

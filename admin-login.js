@@ -82,14 +82,18 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Habilitar/deshabilitar botón de login
      */
-    function setLoginButtonState(disabled, text = null) {
+    function setLoginButtonState(disabled) {
+        const spinner = document.getElementById('loginSpinner');
+        const btnText = document.getElementById('loginBtnText');
+        
         loginBtn.disabled = disabled;
         
         if (disabled) {
-            const loader = '<span class="loading"></span>';
-            loginBtn.innerHTML = loader + 'Verificando...';
+            if (spinner) spinner.style.display = 'inline-block';
+            if (btnText) btnText.textContent = 'Verificando...';
         } else {
-            loginBtn.innerHTML = 'Iniciar Sesión Segura';
+            if (spinner) spinner.style.display = 'none';
+            if (btnText) btnText.textContent = 'Iniciar Sesión';
         }
     }
 

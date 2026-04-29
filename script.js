@@ -407,6 +407,13 @@ function setupEventListeners() {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentFilter = btn.dataset.category;
+            
+            // Actualizar título del catálogo
+            const catalogTitle = document.getElementById('catalogTitle');
+            if (catalogTitle) {
+                catalogTitle.textContent = btn.querySelector('span:last-child').textContent;
+            }
+
             const filtered = currentFilter === 'all'
                 ? PRODUCTS.filter(p => p.active !== false)
                 : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
@@ -441,10 +448,35 @@ function setupEventListeners() {
     });
 
     // Cerrar menu al hacer clic en un link
-    document.querySelectorAll('.nav-link').forEach(link => {
+    document.querySelectorAll('.nav-link, .mobile-nav-item').forEach(link => {
         link.addEventListener('click', () => {
-            document.getElementById('menuToggle').classList.remove('active');
-            document.querySelector('.nav-links').classList.remove('active');
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.querySelector('.nav-links');
+            if (menuToggle) menuToggle.classList.remove('active');
+            if (navLinks) navLinks.classList.remove('active');
+        });
+    });
+
+    // Actualizar nav activa al hacer scroll
+    window.addEventListener('scroll', () => {
+        const sections = ['home', 'catalogo', 'ubicacion'];
+        let current = '';
+
+        sections.forEach(section => {
+            const element = document.getElementById(section);
+            if (element) {
+                const sectionTop = element.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section;
+                }
+            }
+        });
+
+        document.querySelectorAll('.mobile-nav-item').forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('href') === `#${current}`) {
+                item.classList.add('active');
+            }
         });
     });
 }
@@ -542,8 +574,11 @@ function updateProductQuantityDisplay() {
 
 function updateCartUI() {
     const cartCount = document.getElementById('cartCount');
+    const mobileCartCount = document.getElementById('mobileCartCount');
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
     if (cartCount) cartCount.textContent = totalItems;
+    if (mobileCartCount) mobileCartCount.textContent = totalItems;
 }
 
 function removeItemFromCart(productId) {
