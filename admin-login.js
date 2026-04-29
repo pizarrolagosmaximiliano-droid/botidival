@@ -204,13 +204,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('❌ Login fallido:', result.error);
                 setLoginButtonState(false);
                 
+                // Debug info for the user
+                let debugInfo = ` (Error: ${result.error})`;
+                if (typeof CryptoJS === 'undefined') debugInfo += ' - [!] CryptoLibrary missing';
+                
                 if (result.locked) {
-                    showErrorMessage(result.error);
+                    showErrorMessage(result.error + debugInfo);
                     passwordInput.disabled = true;
                     emailInput.disabled = true;
                     loginBtn.disabled = true;
                 } else {
-                    showErrorMessage(result.error);
+                    showErrorMessage(result.error + debugInfo);
                     passwordInput.value = '';
                     passwordInput.focus();
                 }
