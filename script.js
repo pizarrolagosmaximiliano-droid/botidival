@@ -437,7 +437,7 @@ function setupEventListeners() {
     // Carrito
     document.querySelector('.cart-link').addEventListener('click', (e) => {
         e.preventDefault();
-        openOrderMenu();
+        openOrderForm();
     });
     
     // Menu móvil
@@ -558,6 +558,8 @@ function addToCart(productId, quantity = 1, showNotification = true) {
 
     if (showNotification) {
         showNotificationMessage(`✓ ${product.name} agregado al carrito`);
+        // Abrir automáticamente el formulario de pedido al agregar
+        setTimeout(openOrderForm, 500);
     }
 }
 
@@ -589,6 +591,25 @@ function removeItemFromCart(productId) {
         updateProductQuantityDisplay();
         saveCartState();
         showNotificationMessage(`🗑️ ${item.name} eliminado del carrito`);
+    }
+}
+
+function removeFromCartAndRefresh(productId) {
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+        cart = cart.filter(i => i.id !== productId);
+        updateCartUI();
+        updateProductQuantityDisplay();
+        saveCartState();
+        
+        // Si el carrito queda vacío, cerrar el modal
+        if (cart.length === 0) {
+            closeOrderModal();
+            showNotificationMessage('🛒 El carrito está vacío');
+        } else {
+            // Refrescar el modal de pedido
+            openOrderForm();
+        }
     }
 }
 
@@ -756,9 +777,16 @@ function openOrderForm() {
                     <div class="order-items slim-scroll">
                         ${cart.map(item => `
                             <div class="order-item-premium">
-                                <div class="item-qty-badge">${item.quantity}x</div>
-                                <span class="item-name">${item.name}</span>
-                                <span class="item-price">$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
+                                <div class="item-main-info">
+                                    <div class="item-qty-badge">${item.quantity}x</div>
+                                    <span class="item-name">${item.name}</span>
+                                </div>
+                                <div class="item-side-info">
+                                    <span class="item-price">$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
+                                    <button class="delete-item-btn" onclick="removeFromCartAndRefresh(${item.id})" title="Eliminar item">
+                                        ✕
+                                    </button>
+                                </div>
                             </div>
                         `).join('')}
                     </div>

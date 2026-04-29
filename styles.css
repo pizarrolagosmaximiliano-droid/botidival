@@ -4685,6 +4685,55 @@ html {
     }
 }
 
+/* ==================== ESTILOS ELIMINAR ITEM ==================== */
+.order-item-premium {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    gap: 15px;
+}
+
+.item-main-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.item-side-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.delete-item-btn {
+    background: #fee2e2;
+    color: #ef4444;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.delete-item-btn:hover {
+    background: #ef4444;
+    color: white;
+    transform: scale(1.1);
+}
+
+.delete-item-btn:active {
+    transform: scale(0.9);
+}
+
+
 
 
 
