@@ -2367,8 +2367,9 @@ function contactShipping() {
         { comuna: "Coltauco", sector: "Coltauco Centro", price: 2200 }
     ];
 
-    var maxP = Math.max(...zones.map(z => z.price));
-    var minP = Math.min(...zones.map(z => z.price));
+    var prices = zones.map(function(z) { return z.price; });
+    var maxP = Math.max.apply(null, prices);
+    var minP = Math.min.apply(null, prices);
     var avgP = Math.round(zones.reduce(function(s,z){ return s + z.price; }, 0) / zones.length);
     var coltN = zones.filter(function(z){ return z.comuna === "Coltauco"; }).length;
     var donN = zones.filter(function(z){ return z.comuna === "Doñihue"; }).length;
