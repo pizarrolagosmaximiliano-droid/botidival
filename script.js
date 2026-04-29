@@ -1355,8 +1355,16 @@ function calculateDelivery() {
 
 
 function getCurrentLocation(targetId = 'manualLocation') {
+    const btn = document.getElementById('btnGps');
+    const originalText = btn ? btn.innerHTML : '';
+    
     if (navigator.geolocation) {
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '⌛ Obteniendo ubicación...';
+        }
         showNotificationMessage('⌛ Obteniendo ubicación...');
+        
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const lat = position.coords.latitude;
@@ -1365,12 +1373,10 @@ function getCurrentLocation(targetId = 'manualLocation') {
                 
                 const target = document.getElementById(targetId);
                 if (target) {
-                    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-                        if (targetId === 'modalClientAddress') {
-                            target.value = (target.value ? target.value + ' ' : '') + `(Ubicación GPS: https://www.google.com/maps?q=${lat},${lng})`;
-                        } else {
-                            target.value = coords;
-                        }
+                    if (targetId === 'modalClientAddress') {
+                        target.value = (target.value ? target.value + ' ' : '') + `(📍 GPS: https://www.google.com/maps?q=${lat},${lng})`;
+                    } else {
+                        target.value = coords;
                     }
                 }
                 
@@ -1378,12 +1384,24 @@ function getCurrentLocation(targetId = 'manualLocation') {
                 if (coordInput) coordInput.value = coords;
 
                 showNotificationMessage('📍 Ubicación obtenida correctamente');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '✅ Ubicación Obtenida';
+                    setTimeout(() => { btn.innerHTML = originalText; }, 3000);
+                }
             },
             (error) => {
-                showNotificationMessage('⚠️ Error al obtener ubicación. Permiso denegado.');
-                console.error(error);
+                let msg = '⚠️ Error al obtener ubicación.';
+                if (error.code === 1) msg = '⚠️ Permiso de ubicación denegado.';
+                else if (error.code === 3) msg = '⚠️ Tiempo de espera agotado.';
+                
+                showNotificationMessage(msg);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
             },
-            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
     } else {
         showNotificationMessage('⚠️ Tu navegador no soporta geolocalización.');
