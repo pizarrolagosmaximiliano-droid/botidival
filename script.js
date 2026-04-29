@@ -835,14 +835,14 @@ function openOrderForm() {
                             <div class="premium-input-group">
                                 <label>Nombre Completo *</label>
                                 <div class="input-with-icon">
-                                    <span class="input-icon">👤</span>
+                                    <span class="input-icon"><i class="fas fa-user text-secondary"></i></span>
                                     <input type="text" id="modalClientName" placeholder="Juan Pérez" required>
                                 </div>
                             </div>
                             <div class="premium-input-group">
                                 <label>Teléfono *</label>
                                 <div class="input-with-icon">
-                                    <span class="input-icon">📞</span>
+                                    <span class="input-icon"><i class="fas fa-phone text-secondary"></i></span>
                                     <input type="tel" id="modalClientPhone" placeholder="+56 9 XXXX XXXX" required>
                                 </div>
                             </div>
@@ -869,7 +869,7 @@ function openOrderForm() {
                             <div class="premium-input-group location-box">
                                 <label>Dirección Exacta *</label>
                                 <div class="input-with-icon">
-                                    <span class="input-icon">🏠</span>
+                                    <span class="input-icon"><i class="fas fa-home text-secondary"></i></span>
                                     <input type="text" id="modalClientAddress" placeholder="Calle, Número, Depto/Casa..." required>
                                 </div>
                                 <div class="gps-options">

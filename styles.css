@@ -4034,7 +4034,7 @@ body {
     font-size: 0.85rem;
     font-weight: 600;
     color: #64748b;
-    text-transform: uppercase;
+    text-transform: none;
     letter-spacing: 0.5px;
 }
 
@@ -4084,7 +4084,7 @@ body {
 }
 .input-with-icon input {
     width: 100%;
-    padding: 12px 12px 12px 40px;
+    padding: 12px 12px 12px 42px !important;
     border: 1px solid #cbd5e1;
     border-radius: 10px;
     font-size: 0.95rem;
@@ -4831,18 +4831,15 @@ html {
         flex: 1;
         overflow-y: auto !important;
         padding: 20px !important;
-        padding-bottom: 120px !important; /* Espacio para el botn fijo */
+        padding-bottom: 20px !important; /* Espacio para el botn fijo */
     }
 
     .btn-whatsapp-confirm {
-        position: fixed !important;
-        bottom: 20px !important;
-        left: 20px !important;
-        right: 20px !important;
-        width: calc(100% - 40px) !important;
+        position: relative !important;
+        margin-top: 20px !important;
+        width: 100% !important;
         z-index: 100;
         box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
-        margin: 0 !important;
     }
 
     .order-summary-premium {
