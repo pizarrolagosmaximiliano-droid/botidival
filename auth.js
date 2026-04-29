@@ -24,7 +24,6 @@ const AUTH_CONFIG = {
 class AuthSystem {
     constructor() {
         this.currentUser = null;
-        this.loadSession();
     }
 
     /**
@@ -33,10 +32,20 @@ class AuthSystem {
      */
     async hashPassword(password) {
         const seed = 'boti-dival-secure-app-boti-dival-premium-v2-2025-system-salt';
-        const msgUint8 = new TextEncoder().encode(password + seed);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        const data = password + seed;
+        
+        try {
+            if (crypto && crypto.subtle) {
+                const msgUint8 = new TextEncoder().encode(data);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+        } catch (e) {
+            console.warn('⚠️ Web Crypto API no disponible, usando fallback JS');
+        }
+        
+        return SecurityUtils.sha256(data);
     }
 
     /**
