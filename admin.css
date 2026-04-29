@@ -344,3 +344,81 @@ body {
         gap: 1rem;
     }
 }
+
+/* ==================== OPTIMIZACION MVIL ADMIN ==================== */
+@media (max-width: 991.98px) {
+    .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        height: auto;
+        padding: 0;
+        border-top: 1px solid #dee2e6;
+        box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+    }
+
+    .sidebar .nav {
+        flex-direction: row !important;
+        justify-content: space-around;
+        padding: 5px 0;
+    }
+
+    .sidebar .nav-item {
+        flex: 1;
+        text-align: center;
+    }
+
+    .sidebar .nav-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 0.65rem;
+        padding: 8px 2px !important;
+        color: #6c757d;
+    }
+
+    .sidebar .nav-link i {
+        font-size: 1.2rem;
+        margin-bottom: 3px;
+        margin-right: 0 !important;
+    }
+
+    .sidebar .nav-link.active {
+        color: var(--bs-primary);
+        background: transparent;
+    }
+
+    main {
+        margin-bottom: 80px !important; /* Espacio para el menu inferior */
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    .metric-value {
+        font-size: 1.5rem !important;
+    }
+
+    /* Tablas adaptables */
+    .table-responsive {
+        border-radius: 10px;
+        border: 1px solid #eee;
+    }
+
+    /* Tarjetas de productos en admin mvil */
+    .product-admin-card {
+        margin-bottom: 15px;
+    }
+}
+
+/* Ajustes generales para inputs en admin mvil */
+@media (max-width: 576px) {
+    .h3 { font-size: 1.5rem; }
+    .btn { padding: 0.6rem 1rem; }
+    
+    input, select, textarea {
+        font-size: 16px !important; /* Previene zoom en iOS */
+    }
+}
+

@@ -468,8 +468,60 @@ function updateOrderStatus(id, status) {
 
 function renderOrders() {
     const tbody = document.getElementById('pedidosTableBody');
+    const isMobile = window.innerWidth < 992;
     let pedidos = readStorageArray(STORAGE_KEYS.pedidos);
     pedidos = pedidos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+    if (isMobile) {
+        // Vista de Tarjetas para Mvil
+        const container = tbody.parentElement.parentElement; // table-responsive
+        if (container) {
+            container.innerHTML = `<div id="pedidosMobileCards" class="row g-3 p-2"></div>`;
+            const cardContainer = document.getElementById('pedidosMobileCards');
+            cardContainer.innerHTML = pedidos.map((pedido) => `
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold text-primary">#${pedido.id}</span>
+                                <span class="badge ${getOrderStatusBadge(pedido.estado || 'nuevo')}">${pedido.estado || 'nuevo'}</span>
+                            </div>
+                            <div class="mb-3">
+                                <h6 class="mb-1 fw-bold">${pedido.cliente?.nombre || 'Sin nombre'}</h6>
+                                <p class="small text-muted mb-0"><i class="fas fa-clock me-1"></i> ${new Date(pedido.fecha).toLocaleString('es-CL')}</p>
+                                <p class="small text-muted mb-0"><i class="fas fa-map-marker-alt me-1"></i> ${pedido.cliente?.comuna || '-'} - ${pedido.cliente?.sector || '-'}</p>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge ${pedido.tipo === 'delivery' ? 'bg-info bg-opacity-10 text-info' : 'bg-secondary bg-opacity-10 text-secondary'}">
+                                    ${pedido.tipo === 'delivery' ? '🚚 Delivery' : '🏪 Retiro'}
+                                </span>
+                                <span class="fw-bold fs-5 text-success">$${(pedido.costos?.total || 0).toLocaleString('es-CL')}</span>
+                            </div>
+                            <div class="d-flex flex-column gap-2">
+                                <div class="d-flex gap-1 overflow-auto pb-1" style="scrollbar-width: none;">
+                                    ${ORDER_STATUS.map((status) => `
+                                        <button class="btn btn-sm ${pedido.estado === status ? 'btn-dark' : 'btn-outline-dark'} flex-shrink-0" 
+                                            onclick="updateOrderStatus(${pedido.id}, '${status}')" style="font-size: 0.7rem;">
+                                            ${status}
+                                        </button>
+                                    `).join('')}
+                                </div>
+                                <button class="btn btn-primary w-100 mt-1" onclick="verDetallePedido(${pedido.id})">
+                                    <i class="fas fa-eye me-2"></i> Ver Detalles Completos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            if (pedidos.length === 0) {
+                cardContainer.innerHTML = '<div class="col-12 text-center py-5 text-muted">No hay pedidos registrados.</div>';
+            }
+            return;
+        }
+    }
+
+    // Vista de Tabla para PC
     tbody.innerHTML = pedidos.map((pedido) => `
         <tr>
             <td>${pedido.id}</td>

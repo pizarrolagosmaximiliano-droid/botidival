@@ -578,9 +578,24 @@ function updateCartUI() {
     const cartCount = document.getElementById('cartCount');
     const mobileCartCount = document.getElementById('mobileCartCount');
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
     if (cartCount) cartCount.textContent = totalItems;
     if (mobileCartCount) mobileCartCount.textContent = totalItems;
+
+    // Actualizar Mini Resumen (Sticky bar en mvil)
+    const miniSummary = document.getElementById('miniSummary');
+    if (miniSummary) {
+        if (totalItems > 0) {
+            miniSummary.style.display = 'block';
+            const qtyEl = document.getElementById('miniSummaryQty');
+            const totalEl = document.getElementById('miniSummaryTotal');
+            if (qtyEl) qtyEl.textContent = `${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}`;
+            if (totalEl) totalEl.textContent = `$${totalPrice.toLocaleString('es-CL')}`;
+        } else {
+            miniSummary.style.display = 'none';
+        }
+    }
 }
 
 function removeItemFromCart(productId) {
@@ -1354,60 +1369,65 @@ function calculateDelivery() {
 }
 
 
-function getCurrentLocation(targetId = 'manualLocation') {
+async function getCurrentLocation(targetId = 'modalClientAddress') {
     const btn = document.getElementById('btnGps');
     const originalText = btn ? btn.innerHTML : '';
     
-    if (navigator.geolocation) {
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = '⌛ Obteniendo ubicación...';
-        }
-        showNotificationMessage('⌛ Obteniendo ubicación...');
-        
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                const coords = `${lat}, ${lng}`;
+    if (!navigator.geolocation) {
+        showNotificationMessage('⚠️ Tu navegador no soporta geolocalización.');
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Obteniendo ubicación...';
+    }
+    showNotificationMessage('⌛ Accediendo al GPS...');
+    
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const coords = `${lat}, ${lng}`;
+            
+            // Intentar Reverse Geocoding (Convertir coordenadas a dirección)
+            try {
+                showNotificationMessage('🔍 Identificando dirección...');
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+                    headers: { 'Accept-Language': 'es' }
+                });
+                const data = await response.json();
                 
-                const target = document.getElementById(targetId);
-                if (target) {
-                    if (targetId === 'modalClientAddress') {
-                        target.value = (target.value ? target.value + ' ' : '') + `(📍 GPS: https://www.google.com/maps?q=${lat},${lng})`;
-                    } else {
-                        target.value = coords;
+                if (data && data.display_name) {
+                    const addressField = document.getElementById('modalClientAddress');
+                    if (addressField) {
+                        // Limpiar dirección de partes innecesarias
+                        const cleanAddress = data.display_name.split(',').slice(0, 3).join(',').trim();
+                        addressField.value = cleanAddress;
+                        addressField.classList.add('gps-success');
                     }
                 }
-                
-                const coordInput = document.getElementById('modalCoordinates');
-                if (coordInput) coordInput.value = coords;
+            } catch (geoError) {
+                console.warn('No se pudo obtener la dirección exacta:', geoError);
+            }
 
-                showNotificationMessage('📍 Ubicación obtenida correctamente');
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '✅ Ubicación Obtenida';
-                    setTimeout(() => { btn.innerHTML = originalText; }, 3000);
-                }
-            },
-            (error) => {
-                let msg = '⚠️ Error al obtener ubicación.';
-                if (error.code === 1) msg = '⚠️ Permiso denegado. Activa el GPS y permite el acceso en tu navegador.';
-                else if (error.code === 3) msg = '⚠️ Tiempo agotado. Asegúrate de estar en un lugar con señal.';
-                
-                // Alertar con el error técnico para que el usuario pueda informarlo
-                const techDetail = `Error Code: ${error.code} | Message: ${error.message}`;
-                console.error('GPS Technical Detail:', techDetail);
-                showNotificationMessage(`${msg} (${techDetail})`);
-                
-                if (btn) {
-                    btn.disabled = false;
+            // Guardar coordenadas en campos ocultos
+            const target = document.getElementById(targetId);
+            const coordInput = document.getElementById('modalCoordinates');
+            if (coordInput) coordInput.value = coords;
+            
+            // Si el target no es el de dirección, poner las coordenadas
+            if (target && targetId !== 'modalClientAddress') {
+                target.value = coords;
+            }
+
+            showNotificationMessage('📍 Ubicación fijada con éxito');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.add('btn-gps-success');
+                btn.innerHTML = '✅ Ubicación Lista';
+                setTimeout(() => { 
                     btn.innerHTML = originalText;
-                }
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-        );
-    } else {
         showNotificationMessage('⚠️ Tu navegador no soporta geolocalización.');
     }
 }
