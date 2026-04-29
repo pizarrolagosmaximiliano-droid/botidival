@@ -35,7 +35,7 @@ class AuthSystem {
         const data = password + seed;
         
         try {
-            if (crypto && crypto.subtle) {
+            if (typeof crypto !== 'undefined' && crypto.subtle) {
                 const msgUint8 = new TextEncoder().encode(data);
                 const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
                 const hashArray = Array.from(new Uint8Array(hashBuffer));

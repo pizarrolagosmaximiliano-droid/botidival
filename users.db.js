@@ -48,7 +48,7 @@ class UsersDatabase {
         const data = password + seed;
 
         try {
-            if (crypto && crypto.subtle) {
+            if (typeof crypto !== 'undefined' && crypto.subtle) {
                 const msgUint8 = new TextEncoder().encode(data);
                 const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -101,7 +101,7 @@ class UsersDatabase {
     /**
      * Crear nuevo usuario (solo admin)
      */
-    createUser(userData) {
+    async createUser(userData) {
         // Validaciones
         if (!userData.email || !userData.password || !userData.name) {
             return { success: false, error: 'Datos incompletos' };
