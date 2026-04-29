@@ -11,19 +11,40 @@
             return '/';
         })();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container-fluid px-4">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="fas fa-shield-alt me-2"></i>Panel Admin
+                <i class="fas fa-shield-alt text-warning me-2 fs-4"></i>
+                <span class="fw-bold text-dark tracking-tight">Admin<span class="text-warning">Pro</span></span>
             </a>
-            <div class="d-flex gap-2">
-                <a class="btn btn-outline-light btn-sm" href="index.html">Ver web cliente</a>
-                <a class="btn btn-light btn-sm text-primary" href="#" id="logoutBtn">Cerrar sesion</a>
+            <div class="d-flex align-items-center gap-4">
+                <a class="btn btn-sm btn-outline-secondary d-none d-md-flex align-items-center gap-2" href="index.html" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> Ver Tienda
+                </a>
+                <div class="d-flex align-items-center gap-3 border-start ps-4">
+                    <button class="btn btn-link text-secondary p-0 position-relative">
+                        <i class="fas fa-bell fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-link text-dark text-decoration-none dropdown-toggle d-flex align-items-center gap-2 p-0" type="button" data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="Admin" class="rounded-circle" width="32" height="32">
+                            <span class="d-none d-md-block fw-medium">Administrador</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Ajustes</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -34,10 +55,13 @@
                 <div class="position-sticky px-2">
                     <ul class="nav flex-column py-2">
                         <li class="nav-item"><a class="nav-link active" href="#dashboard" data-section="dashboard"><i class="fas fa-chart-pie me-2"></i>Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#productos" data-section="productos"><i class="fas fa-box-open me-2"></i>Catálogo de Productos</a></li>
                         <li class="nav-item"><a class="nav-link" href="#promociones" data-section="promociones"><i class="fas fa-tags me-2"></i>Promociones</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#carousel" data-section="carousel"><i class="fas fa-images me-2"></i>Carrusel</a></li>
                         <li class="nav-item"><a class="nav-link" href="#control-pedidos" data-section="control-pedidos"><i class="fas fa-receipt me-2"></i>Control Pedidos</a></li>
                         <li class="nav-item"><a class="nav-link" href="#estado-delivery" data-section="estado-delivery"><i class="fas fa-truck me-2"></i>Estado Delivery</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#vueltas" data-section="vueltas"><i class="fas fa-motorcycle me-2"></i>Vueltas Delivery</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#instagram" data-section="instagram"><i class="fab fa-instagram me-2"></i>Videos Instagram</a></li>
+                        <li class="nav-item"><a class="nav-link text-warning" href="#seguridad" data-section="seguridad"><i class="fas fa-user-shield me-2"></i>Seguridad de Cuenta</a></li>
                     </ul>
                 </div>
             </aside>
@@ -48,17 +72,84 @@
                 </div>
 
                 <section id="dashboardSection">
-                    <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
-                        <h1 class="h3 mb-0">Dashboard en tiempo real</h1>
-                        <span class="badge bg-success">Actualizacion automatica</span>
+                    <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                        <div>
+                            <h1 class="h3 mb-0 text-dark fw-bold">Dashboard General</h1>
+                            <small class="text-muted" id="lastUpdateTime">Última actualización: Ahora</small>
+                        </div>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success"><i class="fas fa-sync-alt fa-spin me-1"></i> Tiempo Real</span>
                     </div>
-                    <div class="row g-3">
-                        <div class="col-sm-6 col-xl-4"><div class="card"><div class="card-body"><p class="text-muted mb-1">Pedidos totales</p><h3 id="metricPedidos">0</h3></div></div></div>
-                        <div class="col-sm-6 col-xl-4"><div class="card"><div class="card-body"><p class="text-muted mb-1">Pedidos de hoy</p><h3 id="metricPedidosHoy">0</h3></div></div></div>
-                        <div class="col-sm-6 col-xl-4"><div class="card"><div class="card-body"><p class="text-muted mb-1">Ventas de hoy</p><h3 id="metricVentasHoy">$0</h3></div></div></div>
-                        <div class="col-sm-6 col-xl-4"><div class="card"><div class="card-body"><p class="text-muted mb-1">Ventas de la semana</p><h3 id="metricVentasSemana">$0</h3></div></div></div>
-                        <div class="col-sm-6 col-xl-4"><div class="card"><div class="card-body"><p class="text-muted mb-1">Ventas del mes</p><h3 id="metricVentasMes">$0</h3></div></div></div>
-                        <div class="col-sm-6 col-xl-4"><div class="card"><div class="card-body"><p class="text-muted mb-1">Ingresos acumulados</p><h3 id="metricIngresos">$0</h3></div></div></div>
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-sm-6 col-xl-4"><div class="card h-100"><div class="card-body"><p class="metric-label">Pedidos totales</p><h3 id="metricPedidos" class="metric-value">0</h3></div></div></div>
+                        <div class="col-sm-6 col-xl-4"><div class="card h-100"><div class="card-body"><p class="metric-label">Pedidos de hoy</p><h3 id="metricPedidosHoy" class="metric-value text-primary">0</h3></div></div></div>
+                        <div class="col-sm-6 col-xl-4"><div class="card h-100"><div class="card-body"><p class="metric-label">Total productos activos</p><h3 id="metricProductos" class="metric-value">0</h3></div></div></div>
+                        <div class="col-sm-6 col-xl-4"><div class="card h-100"><div class="card-body"><p class="metric-label">Ventas de hoy</p><h3 id="metricVentasHoy" class="metric-value text-success">$0</h3></div></div></div>
+                        <div class="col-sm-6 col-xl-4"><div class="card h-100"><div class="card-body"><p class="metric-label">Ventas de la semana</p><h3 id="metricVentasSemana" class="metric-value">$0</h3></div></div></div>
+                        <div class="col-sm-6 col-xl-4"><div class="card h-100 bg-dark text-white"><div class="card-body"><p class="metric-label text-white-50">Producto Estrella</p><h3 id="metricTopProduct" class="metric-value text-warning fs-4 mt-3">-</h3></div></div></div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="card h-100">
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0 fw-bold">Ventas de los últimos 7 días</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="ventasChart" height="100"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0 fw-bold">Últimos Pedidos</h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <tbody id="latestOrdersTable">
+                                                <!-- Recent orders will be rendered here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="productosSection" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                        <h2 class="h4 mb-0">Catálogo de Productos</h2>
+                        <button class="btn btn-primary" onclick="resetProductoForm()" data-bs-toggle="modal" data-bs-target="#productoModal">
+                            <i class="fas fa-plus me-2"></i>Agregar Producto
+                        </button>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <input type="text" id="adminSearchProduct" class="form-control" placeholder="🔍 Buscar por nombre...">
+                                </div>
+                                <div class="col-md-6">
+                                    <select id="adminFilterCategory" class="form-select">
+                                        <option value="all">Todas las categorías</option>
+                                        <option value="cervezas">🍺 Cervezas</option>
+                                        <option value="destilados">🥃 Destilados</option>
+                                        <option value="vinos">🍷 Vinos</option>
+                                        <option value="hielo">🧊 Hielo</option>
+                                        <option value="snacks">🍟 Snacks</option>
+                                        <option value="bebidas">🥤 Bebidas</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="productosGrid">
+                        <!-- Productos renderizados aquí -->
                     </div>
                 </section>
 
@@ -91,7 +182,15 @@
                                     <label for="promoPreviousPrice" class="form-label">Precio anterior</label>
                                     <input type="number" class="form-control" id="promoPreviousPrice">
                                 </div>
-                                <div class="col-12">
+                                <div class="col-md-3">
+                                    <label for="promoStartDate" class="form-label">Fecha de Inicio</label>
+                                    <input type="date" class="form-control" id="promoStartDate" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="promoEndDate" class="form-label">Fecha de Término</label>
+                                    <input type="date" class="form-control" id="promoEndDate" required>
+                                </div>
+                                <div class="col-12 mt-4 text-end">
                                     <button id="promoSaveBtn" type="submit" class="btn btn-primary">Guardar promocion</button>
                                 </div>
                             </form>
@@ -100,31 +199,6 @@
                     <div class="row" id="promocionesGrid"></div>
                 </section>
 
-                <section id="carouselSection" style="display:none;">
-                    <h2 class="h4 mt-4 mb-3">Carrusel de imagenes</h2>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <form id="carouselCreateForm" class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="carouselImageFile" class="form-label">Subir imagen</label>
-                                    <input type="file" class="form-control" id="carouselImageFile" accept="image/*">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="carouselImageUrl" class="form-label">URL imagen (opcional)</label>
-                                    <input type="url" class="form-control" id="carouselImageUrl" placeholder="https://...">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="carouselImageTitle" class="form-label">Titulo</label>
-                                    <input type="text" class="form-control" id="carouselImageTitle" placeholder="Imagen promocional">
-                                </div>
-                                <div class="col-12">
-                                    <button id="carouselSaveBtn" type="submit" class="btn btn-primary">Guardar imagen</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="row" id="carouselGrid"></div>
-                </section>
 
                 <section id="control-pedidosSection" style="display:none;">
                     <h2 class="h4 mt-4 mb-3">Control de pedidos en tiempo real</h2>
@@ -163,6 +237,197 @@
                                 <p id="deliveryCurrentStatus" class="text-muted"></p>
                                 <button class="btn btn-success me-2" id="activateDeliveryBtn" onclick="setDeliveryStatus(true)">ACTIVO</button>
                                 <button class="btn btn-danger" id="deactivateDeliveryBtn" onclick="setDeliveryStatus(false)">INACTIVO</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NUEVO MÓDULO: VUELTAS DELIVERY -->
+                <section id="vueltasSection" style="display:none;">
+                    <h2 class="h4 mt-4 mb-3">Contador de Vueltas / Viajes Delivery</h2>
+                    
+                    <!-- Dashboard Vueltas -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-primary text-white h-100">
+                                <div class="card-body">
+                                    <h6 class="text-white-50">Vueltas Hoy</h6>
+                                    <h3 id="metricVueltasHoy">0</h3>
+                                    <small id="metricPedidosVueltaHoy">0 pedidos entregados</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-success text-white h-100">
+                                <div class="card-body">
+                                    <h6 class="text-white-50">Recaudación Hoy (Vueltas)</h6>
+                                    <h3 id="metricRecaudacionVueltaHoy">$0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-dark text-white h-100">
+                                <div class="card-body">
+                                    <h6 class="text-white-50">Sectores Frecuentes (Semana)</h6>
+                                    <h5 id="metricSectorFrecuente">-</h5>
+                                    <small id="metricTotalVueltasSemana">0 vueltas en la semana</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario Nueva Vuelta -->
+                    <div class="card mb-4 border-primary">
+                        <div class="card-header bg-primary text-white fw-bold">Registrar Nueva Vuelta</div>
+                        <div class="card-body">
+                            <form id="vueltaCreateForm" class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Cantidad Pedidos Entregados</label>
+                                    <input type="number" class="form-control" id="vueltaPedidos" required min="1">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Sector(es) Entregado(s)</label>
+                                    <input type="text" class="form-control" id="vueltaSector" required placeholder="Ej: Doñihue Centro, El Molino">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Total Vendido ($)</label>
+                                    <input type="number" class="form-control" id="vueltaTotal" required min="0">
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus me-2"></i>Registrar Vuelta</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Historial Vueltas -->
+                    <div class="card">
+                        <div class="card-header bg-white fw-bold">Historial de Viajes</div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Fecha/Hora</th>
+                                            <th>Sector</th>
+                                            <th>Pedidos</th>
+                                            <th>Total Vendido</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vueltasTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NUEVO MÓDULO: INSTAGRAM VIDEOS -->
+                <section id="instagramSection" style="display:none;">
+                    <h2 class="h4 mt-4 mb-3">Videos Promocionales (Instagram Reels)</h2>
+                    <div class="card mb-4 border-info">
+                        <div class="card-header bg-info text-white fw-bold"><i class="fab fa-instagram me-2"></i>Añadir Video Promocional</div>
+                        <div class="card-body">
+                            <form id="igCreateForm" class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Nombre del Video</label>
+                                    <input type="text" class="form-control" id="igName" required placeholder="Ej: Promo Dieciocho">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Link de Instagram Reel / Post</label>
+                                    <input type="url" class="form-control" id="igUrl" required placeholder="https://www.instagram.com/reel/xxxxx/">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-info text-white w-100" id="igSaveBtn"><i class="fas fa-save me-2"></i>Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row" id="instagramGrid"></div>
+                </section>
+                <section id="seguridadSection" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                        <h1 class="h3 mb-0 text-dark fw-bold"><i class="fas fa-shield-alt text-warning me-2"></i>Seguridad de la Cuenta</h1>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Cambio de Contraseña -->
+                        <div class="col-lg-5">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white py-3">
+                                    <h6 class="mb-0 fw-bold">Actualizar Contraseña</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="changePasswordForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Contraseña Actual</label>
+                                            <input type="password" class="form-control" id="currentPassword" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nueva Contraseña</label>
+                                            <input type="password" class="form-control" id="newPassword" required>
+                                            <small class="text-muted">Mínimo 8 caracteres, incluye números y símbolos.</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Confirmar Nueva Contraseña</label>
+                                            <input type="password" class="form-control" id="confirmNewPassword" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-warning w-100 fw-bold">
+                                            <i class="fas fa-key me-2"></i>Guardar Nueva Contraseña
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Logs de Auditoría -->
+                        <div class="col-lg-7">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                                    <h6 class="mb-0 fw-bold">Auditoría de Seguridad (Últimos Eventos)</h6>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="renderSecurityLogs()">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="bg-light sticky-top">
+                                                <tr>
+                                                    <th>Evento</th>
+                                                    <th>Fecha</th>
+                                                    <th>Detalles</th>
+                                                </tr>
+                                            </thead>
+                                            <ul id="securityLogList" class="list-group list-group-flush">
+                                                <!-- Logs inyectados aquí -->
+                                            </ul>
+                                        </table>
+                                        <div id="noLogsMsg" class="text-center py-5 d-none">
+                                            <i class="fas fa-history fs-1 text-light mb-3"></i>
+                                            <p class="text-muted">No hay eventos registrados aún.</p>
+                                        </div>
+                                        <div class="p-3" id="securityLogsContainer">
+                                            <!-- Listado de logs con estilo timeline -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recomendaciones de Seguridad -->
+                    <div class="card mt-4 border-0 bg-dark text-white shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="d-flex gap-4 align-items-center">
+                                <div class="fs-1 text-warning"><i class="fas fa-lightbulb"></i></div>
+                                <div>
+                                    <h5 class="fw-bold mb-2">Consejos Pro: Seguridad Premium</h5>
+                                    <p class="mb-0 text-white-50 small">
+                                        Para mantener tu panel 100% seguro: Nunca compartas tus credenciales, usa una contraseña que no uses en otros sitios y cierra sesión siempre que termines tu jornada.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -210,6 +475,69 @@
                         <div><strong>Delivery:</strong> $<span id="modalDelivery"></span></div>
                         <div><strong>Total:</strong> $<span id="modalTotal"></span></div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Productos -->
+    <div class="modal fade" id="productoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productoModalLabel">Gestión de Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productoForm" class="row g-3">
+                        <div class="col-md-6">
+                            <label for="prodImageFile" class="form-label">Subir imagen</label>
+                            <input type="file" class="form-control" id="prodImageFile" accept="image/*">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="prodImageUrl" class="form-label">URL imagen (opcional si subes archivo)</label>
+                            <input type="url" class="form-control" id="prodImageUrl" placeholder="https://...">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="prodName" class="form-label">Nombre del producto *</label>
+                            <input type="text" class="form-control" id="prodName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="prodCategory" class="form-label">Categoría *</label>
+                            <select id="prodCategory" class="form-select" required>
+                                <option value="cervezas">Cervezas</option>
+                                <option value="destilados">Destilados</option>
+                                <option value="vinos">Vinos</option>
+                                <option value="hielo">Hielo</option>
+                                <option value="snacks">Snacks</option>
+                                <option value="bebidas">Bebidas</option>
+                                <option value="promociones">Promociones</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="prodPrice" class="form-label">Precio ($) *</label>
+                            <input type="number" class="form-control" id="prodPrice" required>
+                        </div>
+                        <div class="col-md-6 d-flex flex-column justify-content-center gap-2 mt-4">
+                            <div class="form-check form-switch fs-6">
+                                <input class="form-check-input" type="checkbox" id="prodPopular">
+                                <label class="form-check-label ms-2" for="prodPopular">Etiqueta "Popular / 🔥"</label>
+                            </div>
+                            <div class="form-check form-switch fs-6">
+                                <input class="form-check-input" type="checkbox" id="prodActive" checked>
+                                <label class="form-check-label ms-2" for="prodActive">Disponible (En Stock)</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="prodDescription" class="form-label">Descripción breve</label>
+                            <input type="text" class="form-control" id="prodDescription" placeholder="Ej: 750ml - Frío y refrescante">
+                        </div>
+                        <div class="col-12 mt-4 text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" id="prodSaveBtn">Guardar Producto</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

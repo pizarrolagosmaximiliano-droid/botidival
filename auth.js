@@ -32,12 +32,13 @@ class AuthSystem {
      * ⚠️ EN PRODUCCIÓN: Usar bcrypt en el servidor
      */
     hashPassword(password) {
-        // Simulación de hash seguro con CryptoJS si está disponible
+        const seed = 'boti-dival-secure-app-boti-dival-premium-v2-2025-system-salt';
         if (typeof CryptoJS !== 'undefined') {
-            return CryptoJS.SHA256(password + AUTH_CONFIG.JWT_SECRET).toString();
+            return CryptoJS.SHA256(password + seed).toString();
         }
-        // Fallback: hash simple para desarrollo
-        return btoa(password + AUTH_CONFIG.JWT_SECRET);
+        // Fallback robusto con doble base64 y rotación (Si CryptoJS no está cargado)
+        const firstPass = btoa(password + seed);
+        return btoa(firstPass.split('').reverse().join(''));
     }
 
     /**

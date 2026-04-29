@@ -1,63 +1,88 @@
 /* ==================== PRODUCTOS ==================== */
 
-const PRODUCTS = [
-    // Cervezas
-    { id: 1, name: 'Cerveza Artesanal Golden', category: 'cervezas', price: 3500, image: 'https://www.ccu.cl/wp-content/uploads/2022/07/Cervezas_cero_CCU.jpeg', description: '750ml - Dorada y refrescante', popular: true },
-    { id: 2, name: 'Cerveza IPA Craft', category: 'cervezas', price: 4200, image: 'https://santaritaonline.com/wp-content/uploads/2025/08/Cervezas.png', description: '750ml - Amarga y aromática' },
-    { id: 3, name: 'Cerveza Stout Premium', category: 'cervezas', price: 4800, image: 'https://www.fassbiere.com/wp-content/uploads/Fassbiere-Importacion-de-Cervezas-Pils-Pilsen-Pilsner-Pilsener.jpg', description: '750ml - Oscura y cremosa' },
-    { id: 4, name: 'Six Pack Cerveza Lager', category: 'cervezas', price: 18900, image: 'https://unimarc.vtexassets.com/arquivos/ids/255961/000000000000566684-DIS-01.jpg?v=639059117791930000', description: 'Pack 6 botellas de 330ml', popular: true },
-    
+const DEFAULT_PRODUCTS = [
     // Destilados
-    { id: 5, name: 'Pisco Capel Añejo', category: 'destilados', price: 12900, image: 'https://lamarinamx.vtexassets.com/assets/vtex.file-manager-graphql/images/b80536ee-4533-4fba-a4aa-96cd870208db___ea73325bc4032ce4a28a3981c27af7a6.png', description: 'Botella 750ml - Premium', popular: true },
-    { id: 6, name: 'Ron Bacardi 37.5%', category: 'destilados', price: 14900, image: 'https://ewine.cl/5472-thickbox_default/pack-12-mix-asegurado.jpg', description: 'Botella 750ml - Clásico' },
-    { id: 7, name: 'Whisky Johnny Walker Red', category: 'destilados', price: 17900, image: 'https://ewine.cl/4580-medium_default/pack-12-cabernet-sauvignon-1865-vina-san-pedro.jpg', description: 'Botella 750ml - Suave', popular: true },
-    { id: 8, name: 'Vodka Smirnoff Premium', category: 'destilados', price: 13900, image: 'https://ewine.cl/5461-home_default/pack-12-cabernet-sauvignon-mascara-de-fuego-chateau-los-boldos.jpg', description: 'Botella 750ml - Premium' },
+    { id: 1, name: 'Pisco Alto del Carmen', category: 'destilados', price: 9500, image: 'images/alto.jpg.jpeg', description: '35° - Botella 750ml de tradición chilena', popular: true, active: true },
+    { id: 2, name: 'Whisky Chivas Regal 12', category: 'destilados', price: 28900, image: 'images/chivas.jpg.jpeg', description: '12 Años - Whisky Escocés Premium 750ml', active: true },
+    { id: 3, name: 'Jack Daniel\'s Old No. 7', category: 'destilados', price: 26500, image: 'images/jack1.jpg.jpeg', description: 'Tennessee Whisky - El clásico de siempre 750ml', popular: true, active: true },
+    { id: 4, name: 'Jack Daniel\'s Honey', category: 'destilados', price: 26500, image: 'images/jack2.jpg.jpeg', description: 'Tennessee Honey - Suave toque de miel 750ml', active: true },
+    { id: 5, name: 'Jack Daniel\'s Apple', category: 'destilados', price: 26500, image: 'images/jack3.jpg.jpeg', description: 'Tennessee Apple - Refrescante sabor manzana 750ml', active: true },
+    { id: 6, name: 'Johnnie Walker Red Label', category: 'destilados', price: 15900, image: 'images/redlabel1.jpg.jpeg', description: 'JW Red Label - Mezcla vibrante 750ml', active: true },
+    { id: 7, name: 'Johnnie Walker Black Label', category: 'destilados', price: 32900, image: 'images/rednegro.jpg.jpeg', description: 'JW Black Label - 12 Años de profundidad 750ml', popular: true, active: true },
+    { id: 8, name: 'Pisco Nobel Reservado', category: 'destilados', price: 12900, image: 'images/nobel.jpg.jpeg', description: 'Pisco Nobel - Calidad excepcional 750ml', active: true },
+    { id: 9, name: 'Pisco Nobel 40°', category: 'destilados', price: 14500, image: 'images/nobel2.jpg.jpeg', description: 'Pisco Nobel 40° - Edición especial 750ml', active: true },
+    { id: 10, name: 'Promo Mix Alcohol', category: 'destilados', price: 15990, image: 'images/alchol.png', description: 'Pack especial para tu previa', active: true },
+    
+    // Cervezas
+    { id: 11, name: 'Pack Cerveza Corona', category: 'cervezas', price: 14900, image: 'images/pack corona .jpeg', description: 'Balde/Pack 6 Botellas - 355ml c/u', popular: true, active: true },
     
     // Vinos
-    { id: 9, name: 'Vino Tinto Cabernet 2020', category: 'vinos', price: 8900, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7CzWuF9nqZ1znsIDQxAsdI32leqjgtdlzMQ&s', description: 'Botella 750ml - Tinto robusto' },
-    { id: 10, name: 'Vino Blanco Sauvignon', category: 'vinos', price: 9500, image: 'https://unimarc.vtexassets.com/arquivos/ids/203133/000000000000140169-UN-01.jpg?v=637388479600930000', description: 'Botella 750ml - Blanco fresco' },
-    { id: 11, name: 'Espumante Champaña', category: 'vinos', price: 15900, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrI11WU3OScFAIMunSVjPYuZELuV26laqKuQ&s', description: 'Botella 750ml - Burbujeante', popular: true },
-    { id: 12, name: 'Vino Rosado Pinot Grigio', category: 'vinos', price: 7900, image: 'https://santaisabel.vtexassets.com/arquivos/ids/409872/Vino-Santa-Emiliana-Sauvignon-Blanc-700-cc.jpg?v=638562256875500000', description: 'Botella 750ml - Rosado suave' },
-    
-    // Hielo
-    { id: 13, name: 'Hielo Bolsa Grande', category: 'hielo', price: 3500, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEpXPeiY2KFYwNXvIhfCv9n7sdVXedmny1GQ&s', description: '2kg - Cubos perfectos' },
-    { id: 14, name: 'Hielo Bolsa Premium', category: 'hielo', price: 4900, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYsiJC_11ip55s9KHy5cuhxGZ5ftqmee7DDg&s', description: '3kg - Cilindros premium' },
-    { id: 15, name: 'Hielo Picado 5kg', category: 'hielo', price: 6900, image: 'https://aguasmaquehua.cl/cdn/shop/files/Disenosintitulo_16.png?v=1757090433&width=1445', description: 'Perfecto para tragos' },
-    
-    // Snacks
-    { id: 16, name: 'Mix de Frutos Secos', category: 'snacks', price: 4900, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQffHR1NRlcwTbmZNaSsRgF0kQigCJNxlpc1Q&s', description: '200g - Premium variado' },
-    { id: 17, name: 'Papas Chips Premium', category: 'snacks', price: 3900, image: 'https://unimarc.vtexassets.com/arquivos/ids/248242/000000000000670480-UN-01.jpg.jpg?v=638808672705570000', description: '150g - Variadas y crujientes' },
-    { id: 18, name: 'Tostitos', category: 'snacks', price: 2900, image: 'https://distribuidorasantiago.cl/wp-content/uploads/2025/06/PRODUCTOS-WEB-5-83.png', description: '200g - Salado y delicioso' },
-    { id: 19, name: 'Snacks Mix', category: 'snacks', price: 8900, image: 'https://santaisabel.vtexassets.com/arquivos/ids/156208/Snack-Mix-original-320-g.jpg?v=637469292210100000', description: 'Variado premium nocturno', popular: true },
+    { id: 12, name: 'Vino Gato Negro Tinto', category: 'vinos', price: 3900, image: 'images/gato1.jpg.jpeg', description: 'Botella 1.5L - Varietal Cabernet Sauvignon', active: true },
+    { id: 13, name: 'Vino Gato Negro Blanco', category: 'vinos', price: 3900, image: 'images/gato2.jpg.jpeg', description: 'Botella 1.5L - Varietal Sauvignon Blanc', active: true },
     
     // Bebidas
-    { id: 20, name: 'Bebida Energética ', category: 'bebidas', price: 2500, image: 'https://i.bolder.run/r/czo0MDY0LGc6MTAwMHg/f5baa104/1008747-7798422620137.jpg', description: '350ml - Alta energía' },
-    { id: 21, name: 'Gaseosa Premium 3L', category: 'bebidas', price: 4900, image: 'https://media.istockphoto.com/id/477567550/es/foto/bebidas-helada.jpg?s=612x612&w=0&k=20&c=utvO5blVI8Ti37mn4vHsxxDo5ZvWlQO1RV6mh5e_Uvs=', description: 'Botella grande refrescante' },
-    { id: 22, name: 'Agua Mineral Purísima', category: 'bebidas', price: 1900, image: 'https://i5.walmartimages.cl/asr/aca7d9f7-b12f-4383-b0b0-ecb324541c76.83dc794b5d5658c529254ba6e956e449.jpeg', description: 'Botella 500ml - Pura' },
-    { id: 23, name: 'Jugo Natural Naranja 1L', category: 'bebidas', price: 3900, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4G_uhNlGkt2ZFszVfMzLGPC57SoyWuE_foA&s', description: 'Fresco y natural' },
+    { id: 14, name: 'Monster Energy', category: 'bebidas', price: 2500, image: 'images/monster.jpg.jpeg', description: 'Lata 473ml - Energía extrema', active: true },
+    { id: 15, name: 'Red Bull Energy Drink', category: 'bebidas', price: 2200, image: 'images/redbull .jpg.jpeg', description: 'Lata 250ml - Te da alas', active: true },
+    
+    // Snacks
+    { id: 16, name: 'Deli Snacks Mix', category: 'snacks', price: 4500, image: 'images/deli.png.png', description: 'Variedad de snacks premium para compartir', active: true },
 ];
+
+
+// Inicialización robusta con versionado para forzar actualización
+function loadProducts() {
+    const CATALOG_VERSION = 'v2.0'; // Incrementa esto para forzar reset
+    try {
+        const storedVersion = localStorage.getItem('catalog_version');
+        const raw = localStorage.getItem('productos');
+        
+        if (storedVersion !== CATALOG_VERSION || !raw) {
+            throw new Error('reset');
+        }
+        
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed) || parsed.length === 0) throw new Error('inválido');
+        return parsed;
+    } catch (e) {
+        localStorage.setItem('productos', JSON.stringify(DEFAULT_PRODUCTS));
+        localStorage.setItem('catalog_version', CATALOG_VERSION);
+        return DEFAULT_PRODUCTS;
+    }
+}
+
+let PRODUCTS = loadProducts();
 
 // Configuración de delivery
 const DELIVERY_ZONES = {
     'doñihue': {
         name: 'Doñihue',
-        sectors: {
-            'centro': { name: 'Centro', cost: 6600 },
-            'cerrillos': { name: 'Cerrillos', cost: 6000 }
-        }
+        sectors: [
+            { id: 'centro', name: 'Doñihue Centro', cost: 6600 },
+            { id: 'cerrillos', name: 'Cerrillos', cost: 6000 }
+        ]
     },
     'coltauco': {
         name: 'Coltauco',
-        sectors: {
-            'quimávida': { name: 'Quimávida', cost: 6000 },
-            'lo_de_cuevas': { name: 'Lo de Cuevas', cost: 5800 },
-            'hijuela_del_medio': { name: 'Hijuela del Medio', cost: 5800 },
-            'rinconada_de_parral': { name: 'Rinconada de Parral', cost: 4700 },
-            'cuesta_de_idahue': { name: 'Cuesta de Idahue', cost: 4600 },
-            'el_molino': { name: 'El Molino', cost: 4300 },
-            'montegrande': { name: 'Montegrande', cost: 4200 },
-            'el_loreto': { name: 'El Loreto', cost: 4000 }
-        }
+        sectors: [
+            { id: 'quimávida', name: 'Quimávida', cost: 6000 },
+            { id: 'lo_de_cuevas', name: 'Lo de Cuevas', cost: 5800 },
+            { id: 'hijuela_del_medio', name: 'Hijuela del Medio', cost: 5800 },
+            { id: 'rinconada_de_parral', name: 'Rinconada de Parral', cost: 4700 },
+            { id: 'cuesta_de_idahue', name: 'Cuesta de Idahue', cost: 4600 },
+            { id: 'el_molino', name: 'El Molino', cost: 4300 },
+            { id: 'montegrande', name: 'Montegrande', cost: 4200 },
+            { id: 'el_loreto', name: 'El Loreto', cost: 4000 },
+            { id: 'pampa_de_idahue', name: 'Pampa de Idahue', cost: 3900 },
+            { id: 'puren', name: 'Puren', cost: 3700 },
+            { id: 'idahue', name: 'Idahue', cost: 3500 },
+            { id: 'el_parral', name: 'El Parral', cost: 3000 },
+            { id: 'almendro', name: 'Almendro', cost: 2700 },
+            { id: 'lo_droguett', name: 'Lo Droguett', cost: 2600 },
+            { id: 'idahuillo', name: 'Idahuillo', cost: 2500 },
+            { id: 'san_luis', name: 'San Luis', cost: 2400 },
+            { id: 'lo_ulloa', name: 'Lo Ulloa', cost: 2400 },
+            { id: 'centro_coltauco', name: 'Coltauco Centro', cost: 2200 }
+        ]
     }
 };
 
@@ -71,6 +96,16 @@ function saveCartState() {
     localStorage.setItem('cart', JSON.stringify(cart));
 }
 
+const STORAGE_KEYS = {
+    productos: 'productos',
+    pedidos: 'pedidosHistorial',
+    promociones: 'promociones',
+    carousel: 'carouselImages',
+    delivery: 'deliveryStatus',
+    deliveryTrips: 'deliveryTripsHistory',
+    instagram: 'instagramVideos'
+};
+
 function loadCartState() {
     const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
     if (Array.isArray(storedCart)) {
@@ -79,46 +114,11 @@ function loadCartState() {
 }
 
 // Variables para promociones y videos
-let promociones = JSON.parse(localStorage.getItem('promociones')) || [
-    {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
-        title: 'Happy Hour - 2x1 en Cervezas',
-        description: 'Todas las tardes de 18:00 a 20:00, lleva 2 cervezas y paga solo 1. ¡Perfecto para el after office!',
-        price: 3500,
-        active: true,
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: 2,
-        image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=300&fit=crop',
-        title: 'Pack Familiar - Pisco + Bebidas',
-        description: 'Botella de pisco Capel + 6 gaseosas premium. Ideal para reuniones familiares.',
-        price: 15900,
-        active: true,
-        createdAt: new Date().toISOString()
-    }
-];
-let videos = JSON.parse(localStorage.getItem('videos')) || [
-    {
-        id: 1,
-        videoId: 'dQw4w9WgXcQ',
-        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        title: 'Conoce Nuestra Carta Premium',
-        description: 'Descubre nuestra selección de bebidas premium y productos exclusivos.',
-        active: true,
-        createdAt: new Date().toISOString()
-    }
-];
-let carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || [
-    {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200&h=800&fit=crop',
-        title: 'Promociones destacadas',
-        active: true
-    }
-];
-let deliveryStatus = JSON.parse(localStorage.getItem('deliveryStatus')) !== null ? JSON.parse(localStorage.getItem('deliveryStatus')) : true;
+let promociones = JSON.parse(localStorage.getItem(STORAGE_KEYS.promociones)) || [];
+let instagramVideos = JSON.parse(localStorage.getItem(STORAGE_KEYS.instagram)) || [];
+let carouselImages = JSON.parse(localStorage.getItem(STORAGE_KEYS.carousel)) || [];
+let deliveryStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery)) !== null ? JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery)) : true;
+let deliveryTrips = JSON.parse(localStorage.getItem(STORAGE_KEYS.deliveryTrips)) || [];
 
 // Variables para control de pedidos
 let pedidosHistorial = JSON.parse(localStorage.getItem('pedidosHistorial')) || [];
@@ -308,12 +308,94 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initializeApp() {
-    renderProducts(PRODUCTS);
+    loadCartState();
+    
+    // Renderizar componentes si existen los contenedores
+    if (document.getElementById('productsGrid')) {
+        renderProducts(PRODUCTS.filter(p => p.active !== false));
+    }
+    
+    if (document.getElementById('promoExclusiveTrack')) {
+        updateWebPromociones();
+    }
+    
+    if (document.getElementById('instagramVideosGrid')) {
+        updateWebInstagram();
+    }
+
+    if (document.getElementById('imagesCarouselSection')) {
+        updateWebCarousel();
+    }
+
+    updateDynamicMarketing();
+    
     setupEventListeners();
     updateStatus();
     updateCartUI();
     initializeCarousel();
-    setInterval(updateStatus, 60000); // Actualizar estado cada minuto
+    initScrollAnimations();
+    addTouchFeedback();
+    enhanceSearch();
+    addKeyboardShortcuts();
+    checkDarkMode();
+    setupLazyLoad();
+    
+    // Inicializar estado delivery (Dashboard/Header)
+    if (document.getElementById('deliveryStatusDot')) {
+        updateDeliveryStatusUI();
+    }
+
+    // Inicializar control de pedidos (solo en dashboard)
+    if (document.getElementById('control-pedidosSection')) {
+        renderPedidosDashboard();
+        renderPedidosHistorial();
+    }
+    
+    // Event listeners para formularios de Admin
+    const promoForm = document.getElementById('promoCreateForm');
+    if (promoForm) promoForm.addEventListener('submit', savePromocion);
+
+    const videoForm = document.getElementById('videoCreateForm');
+    if (videoForm) videoForm.addEventListener('submit', saveVideo);
+    
+    setInterval(updateStatus, 60000); 
+    setInterval(checkDarkMode, 600000); // Check cada 10 minutos
+
+    // Sincronización en tiempo real
+    window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_KEYS.productos) {
+            PRODUCTS = loadProducts();
+            const filtered = currentFilter === 'all'
+                ? PRODUCTS.filter(p => p.active !== false)
+                : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
+            renderProducts(filtered);
+        }
+        
+        if (e.key === STORAGE_KEYS.promociones) {
+            promociones = JSON.parse(localStorage.getItem(STORAGE_KEYS.promociones)) || [];
+            updateWebPromociones();
+        }
+
+        if (e.key === STORAGE_KEYS.instagram) {
+            instagramVideos = JSON.parse(localStorage.getItem(STORAGE_KEYS.instagram)) || [];
+            updateWebInstagram();
+        }
+
+        if (e.key === STORAGE_KEYS.carousel) {
+            carouselImages = JSON.parse(localStorage.getItem(STORAGE_KEYS.carousel)) || [];
+            updateWebCarousel();
+        }
+
+        if (e.key === STORAGE_KEYS.delivery) {
+            deliveryStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
+            updateDeliveryDisplay(deliveryStatus);
+        }
+
+        if (e.key === STORAGE_KEYS.deliveryTrips) {
+            deliveryTrips = JSON.parse(localStorage.getItem(STORAGE_KEYS.deliveryTrips)) || [];
+            updateDynamicMarketing();
+        }
+    });
 }
 
 /* ==================== EVENT LISTENERS ==================== */
@@ -325,9 +407,9 @@ function setupEventListeners() {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentFilter = btn.dataset.category;
-            const filtered = currentFilter === 'all' 
-                ? PRODUCTS 
-                : PRODUCTS.filter(p => p.category === currentFilter);
+            const filtered = currentFilter === 'all'
+                ? PRODUCTS.filter(p => p.active !== false)
+                : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
             renderProducts(filtered);
         });
     });
@@ -371,17 +453,23 @@ function setupEventListeners() {
 
 function renderProducts(products) {
     const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+    
     grid.innerHTML = products.map(product => `
-        <div class="product-card" data-id="${product.id}">
+        <div class="product-card" data-id="${product.id}" style="${product.active === false ? 'opacity:0.6; pointer-events:none;' : ''}">
             ${product.popular ? '<div class="popular-badge">🔥 Popular</div>' : ''}
+            ${product.active === false ? '<div class="popular-badge" style="background:#dc3545; right:auto; left:10px;">Agotado</div>' : ''}
             <div class="product-image">
-                <img src="${product.image}" alt="${product.name}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/400?text=Sin+imagen'; this.onerror=null;">
+                <img src="${product.image}" alt="${product.name}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; filter: ${product.active === false ? 'grayscale(100%)' : 'none'};" onerror="this.src='https://via.placeholder.com/400?text=Sin+imagen'; this.onerror=null;">
             </div>
             <div class="product-info">
                 <div class="product-category">${getCategoryLabel(product.category)}</div>
                 <h3 class="product-name">${product.name}</h3>
                 <p class="product-description">${product.description}</p>
-                <div class="product-price">$${product.price.toLocaleString('es-CL')}</div>
+                <div class="product-price">
+                    ${product.previousPrice ? `<span style="text-decoration:line-through; color:#999; font-size:0.85em; margin-right:8px;">$${product.previousPrice.toLocaleString('es-CL')}</span>` : ''}
+                    $${product.price.toLocaleString('es-CL')}
+                </div>
                 <div class="product-actions">
                     <div class="quantity-control">
                         <button class="qty-btn" onclick="addToCart(${product.id}, -1)">−</button>
@@ -414,7 +502,7 @@ function getCategoryLabel(category) {
 
 /* ==================== CARRITO ==================== */
 
-function addToCart(productId, quantity = 1, showNotification = false) {
+function addToCart(productId, quantity = 1, showNotification = true) {
     const product = PRODUCTS.find(p => p.id === productId);
     if (!product) return;
 
@@ -454,118 +542,22 @@ function updateProductQuantityDisplay() {
 
 function updateCartUI() {
     const cartCount = document.getElementById('cartCount');
-    const miniSummary = document.getElementById('miniSummary');
-    const fullSections = document.getElementById('fullSections');
-    const cartItems = document.getElementById('cartItems');
-    const cartForm = document.getElementById('cartForm');
-    const cartSummary = document.getElementById('cartSummary');
-    const checkoutBtn = document.getElementById('checkoutBtn');
-    const summaryItems = document.getElementById('summaryItems');
-    const summaryTotal = document.getElementById('summaryTotal');
-    const emptyCart = document.querySelector('.empty-cart');
-
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
     if (cartCount) cartCount.textContent = totalItems;
-    if (summaryItems) summaryItems.textContent = totalItems;
-    if (summaryTotal) summaryTotal.textContent = `$${(subtotal + deliveryCost).toLocaleString('es-CL')}`;
+}
 
-    if (cart.length === 0) {
-        if (emptyCart) emptyCart.style.display = 'block';
-        if (cartItems) cartItems.innerHTML = '';
-        if (miniSummary) miniSummary.style.display = 'none';
-        if (fullSections) fullSections.style.display = 'none';
-    } else {
-        if (emptyCart) emptyCart.style.display = 'none';
-        if (miniSummary) miniSummary.style.display = 'block';
-
-        // Generar vista previa de productos en el resumen compacto
-        const cartPreview = document.getElementById('cartPreview');
-        if (cartPreview) {
-            cartPreview.innerHTML = cart.slice(0, 4).map(item => `
-            <div class="cart-preview-item">
-                <span class="cart-preview-name">${item.name}</span>
-                <span class="cart-preview-qty">x${item.quantity}</span>
-                <span class="cart-preview-price">$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
-            </div>
-        `).join('');
-        }
-
-        if (cart.length > 4) {
-            if (cartPreview) {
-                cartPreview.innerHTML += `<div class="cart-preview-item" style="justify-content: center; font-size: 0.8rem; color: var(--text-secondary);">... y ${cart.length - 4} producto(s) más</div>`;
-            }
-        }
-
-        // Render items only when expanded
-        if (fullSections.style.display !== 'none') {
-            if (cartItems) {
-                cartItems.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">$${item.price.toLocaleString('es-CL')} x ${item.quantity}</div>
-                    </div>
-                    <div class="cart-item-controls">
-                        <div class="cart-item-qty">
-                            <button onclick="addToCart(${item.id}, -1)">−</button>
-                            <span>${item.quantity}</span>
-                            <button onclick="addToCart(${item.id}, 1)">+</button>
-                        </div>
-                        <button class="remove-btn" onclick="addToCart(${item.id}, -${item.quantity})">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-            }
-
-            const subtotalEl = document.getElementById('subtotal');
-            const totalPriceEl = document.getElementById('totalPrice');
-            if (subtotalEl) subtotalEl.textContent = `$${subtotal.toLocaleString('es-CL')}`;
-            if (totalPriceEl) totalPriceEl.textContent = `$${(subtotal + deliveryCost).toLocaleString('es-CL')}`;
-            
-            if (cartForm) cartForm.style.display = 'block';
-            if (cartSummary) cartSummary.style.display = 'block';
-            if (checkoutBtn) checkoutBtn.style.display = 'block';
-        }
+function removeItemFromCart(productId) {
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+        cart = cart.filter(i => i.id !== productId);
+        updateCartUI();
+        updateProductQuantityDisplay();
+        saveCartState();
+        showNotificationMessage(`🗑️ ${item.name} eliminado del carrito`);
     }
 }
 
-// New compact cart functions
-let cartExpanded = false;
-
-function openCart() {
-    if (cart.length === 0) {
-        showNotificationMessage('🛒 Tu carrito está vacío. Agrega productos primero.');
-        return;
-    }
-    
-    // Abrir panel lateral directamente con flujo de pago
-    document.getElementById('cartPanel').classList.add('active');
-    document.getElementById('cartOverlay').classList.add('active');
-    document.getElementById('fullSections').style.display = 'block';
-    document.getElementById('miniSummary').style.display = 'none';
-    updateStepIndicator(1);
-    updateCartUI();
-    initializeDeliveryOptions();
-}
-
-function openOrderMenu() {
-    if (cart.length === 0) {
-        showNotificationMessage('🛒 Tu carrito está vacío. Agrega productos para continuar.');
-        scrollToSection('catalogo');
-        return;
-    }
-
-    openOrderForm();
-}
-
-function closeCart() {
-    document.getElementById('cartPanel').classList.remove('active');
-    document.getElementById('cartOverlay').classList.remove('active');
-    document.getElementById('miniMenu').style.display = 'none';
-    cartExpanded = false;
-}
+// Legacy openOrderForm removed. See active definition below.
 
 function openCartSummaryModal() {
     const modal = document.createElement('div');
@@ -702,93 +694,143 @@ function updateStepIndicator(step) {
 
 function openOrderForm() {
     closeCartSummaryModal();
-    // Crear modal de pedido profesional
+    if (cart.length === 0) {
+        showNotificationMessage('🛒 Tu carrito está vacío.');
+        return;
+    }
+
     const modal = document.createElement('div');
     modal.id = 'orderModal';
     modal.className = 'order-modal-overlay';
+    
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
     modal.innerHTML = `
-        <div class="order-modal">
+        <div class="order-modal order-modal-premium">
             <div class="order-modal-header">
-                <h3>📋 Confirmar Pedido</h3>
+                <h3>📋 Finalizar Compra</h3>
                 <button class="modal-close" onclick="closeOrderModal()">✕</button>
             </div>
 
             <div class="order-modal-content">
-                <div class="order-summary">
-                    <h4>Tu Pedido:</h4>
-                    <div class="order-items">
+                <div class="order-summary-premium">
+                    <div class="summary-header">
+                        <h4>Resumen de tu Pedido</h4>
+                        <span class="badge">${cart.reduce((s, i) => s + i.quantity, 0)} items</span>
+                    </div>
+                    <div class="order-items slim-scroll">
                         ${cart.map(item => `
-                            <div class="order-item">
-                                <div class="order-item-info">
-                                    <span class="order-item-name">${item.name}</span>
-                                    <span class="order-item-qty">x${item.quantity}</span>
-                                </div>
-                                <span class="order-item-price">$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
+                            <div class="order-item-premium">
+                                <div class="item-qty-badge">${item.quantity}x</div>
+                                <span class="item-name">${item.name}</span>
+                                <span class="item-price">$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
                             </div>
                         `).join('')}
                     </div>
-                    <div class="order-total">
-                        <strong>Total: $${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('es-CL')}</strong>
-                    </div>
                 </div>
 
-                <form class="order-form" onsubmit="submitOrder(event)">
+                <form class="order-form-premium" onsubmit="submitOrder(event)">
                     <div class="form-section">
-                        <h4>📍 Datos de Entrega</h4>
-                        <div class="form-group">
-                            <label>Tipo de venta *</label>
-                            <select id="modalOrderType" onchange="toggleOrderTypeFields()" required>
-                                <option value="delivery">Delivery</option>
-                                <option value="presencial">Retiro presencial</option>
-                            </select>
+                        <h4>📍 Detalles de Entrega</h4>
+                        
+                        <div class="premium-input-group">
+                            <label>Tipo de entrega *</label>
+                            <div class="radio-group">
+                                <label class="radio-card">
+                                    <input type="radio" name="orderType" value="delivery" checked onchange="toggleOrderTypeFields()">
+                                    <div class="card-content">
+                                        <span class="icon">🚚</span>
+                                        <span class="text">Delivery</span>
+                                    </div>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="orderType" value="presencial" onchange="toggleOrderTypeFields()">
+                                    <div class="card-content">
+                                        <span class="icon">🏪</span>
+                                        <span class="text">Retiro Local</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
+
                         <div class="form-row">
-                            <div class="form-group">
-                                <label>Nombre completo *</label>
-                                <input type="text" id="modalClientName" placeholder="Tu nombre completo" required>
+                            <div class="premium-input-group">
+                                <label>Nombre Completo *</label>
+                                <div class="input-with-icon">
+                                    <span class="input-icon">👤</span>
+                                    <input type="text" id="modalClientName" placeholder="Juan Pérez" required>
+                                </div>
                             </div>
-                            <div class="form-group">
+                            <div class="premium-input-group">
                                 <label>Teléfono *</label>
-                                <input type="tel" id="modalClientPhone" placeholder="+56 9 XXXX XXXX" required>
+                                <div class="input-with-icon">
+                                    <span class="input-icon">📞</span>
+                                    <input type="tel" id="modalClientPhone" placeholder="+56 9 XXXX XXXX" required>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-row order-delivery-field">
-                            <div class="form-group">
-                                <label>Comuna *</label>
-                                <select id="modalClientComuna" onchange="updateSectores()" required>
-                                    <option value="">Seleccionar comuna</option>
-                                    <option value="doñihue">Doñihue</option>
-                                    <option value="coltauco">Coltauco</option>
-                                </select>
+
+                        <div class="order-delivery-field">
+                            <div class="form-row">
+                                <div class="premium-input-group">
+                                    <label>Comuna *</label>
+                                    <select id="modalClientComuna" class="premium-select" onchange="updateSectores()" required>
+                                        <option value="">Seleccionar comuna...</option>
+                                        <option value="doñihue">Doñihue</option>
+                                        <option value="coltauco">Coltauco</option>
+                                    </select>
+                                </div>
+                                <div class="premium-input-group">
+                                    <label>Sector *</label>
+                                    <select id="modalClientSector" class="premium-select" disabled required onchange="updateDeliveryCost()">
+                                        <option value="">Seleccionar sector...</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Sector *</label>
-                                <select id="modalClientSector" disabled required>
-                                    <option value="">Seleccionar sector</option>
-                                </select>
+
+                            <div class="premium-input-group location-box">
+                                <label>Dirección Exacta *</label>
+                                <div class="input-with-icon">
+                                    <span class="input-icon">🏠</span>
+                                    <input type="text" id="modalClientAddress" placeholder="Calle, Número, Depto/Casa..." required>
+                                </div>
+                                <div class="gps-options">
+                                    <button type="button" class="btn-gps" onclick="getCurrentLocation('modalClientAddress')" id="btnGps">
+                                        📍 Usar mi ubicación actual
+                                    </button>
+                                    <div class="manual-gps">
+                                        <label>📌 Pegar enlace de Google Maps (Opcional):</label>
+                                        <input type="url" id="modalClientGpsLink" placeholder="https://maps.google.com/?q=..." class="premium-input">
+                                    </div>
+                                    <input type="hidden" id="modalCoordinates">
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group order-delivery-field">
-                            <label>Dirección completa *</label>
-                            <input type="text" id="modalClientAddress" placeholder="Dirección con referencias" required>
-                        </div>
-                        <div class="form-group order-delivery-field">
-                            <label id="deliveryCostLabel">Costo de Delivery: --</label>
-                        </div>
-                        <div class="form-group">
-                            <label>Comentarios</label>
-                            <textarea id="modalClientComments" placeholder="Ej: Sin hielo, llamar al llegar..." rows="2"></textarea>
+
+                        <div class="premium-input-group">
+                            <label>Comentarios adicionales</label>
+                            <textarea id="modalClientComments" placeholder="Ej: Llamar al llegar, el timbre no funciona..." rows="2" class="premium-textarea"></textarea>
                         </div>
                     </div>
 
-                    <div class="order-notice">
-                        <p>💰 <strong>Costo de envío calculado automáticamente</strong> según tu comuna y sector.</p>
+                    <div class="checkout-totals-card">
+                        <div class="totals-row">
+                            <span>Subtotal Productos</span>
+                            <span id="modalSubtotal">$${subtotal.toLocaleString('es-CL')}</span>
+                        </div>
+                        <div class="totals-row order-delivery-field" id="deliveryRow">
+                            <span>Costo Delivery</span>
+                            <span id="modalDeliveryCost" class="highlight-cost">--</span>
+                        </div>
+                        <div class="totals-row grand-total">
+                            <span>Total Final</span>
+                            <span id="modalGrandTotal">$${subtotal.toLocaleString('es-CL')}</span>
+                        </div>
                     </div>
 
-                    <div class="order-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeOrderModal()">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Enviar Pedido por WhatsApp 📲</button>
-                    </div>
+                    <button type="submit" class="btn-whatsapp-confirm">
+                        Confirmar y Enviar a WhatsApp <span class="wa-icon">📲</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -796,16 +838,12 @@ function openOrderForm() {
 
     document.body.appendChild(modal);
 
-    // Event listeners para cerrar modal
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeOrderModal();
-        }
+        if (e.target === modal) closeOrderModal();
     });
 
     document.addEventListener('keydown', handleEscapeKey);
 
-    // Animar entrada
     setTimeout(() => {
         modal.classList.add('active');
         toggleOrderTypeFields();
@@ -813,9 +851,7 @@ function openOrderForm() {
 }
 
 function handleEscapeKey(event) {
-    if (event.key === 'Escape') {
-        closeOrderModal();
-    }
+    if (event.key === 'Escape') closeOrderModal();
 }
 
 function updateSectores() {
@@ -823,16 +859,14 @@ function updateSectores() {
     const sectorSelect = document.getElementById('modalClientSector');
     const comuna = comunaSelect.value;
     
-    // Limpiar opciones anteriores
-    sectorSelect.innerHTML = '<option value="">Seleccionar sector</option>';
+    sectorSelect.innerHTML = '<option value="">Seleccionar sector...</option>';
     sectorSelect.disabled = true;
     
     if (comuna && DELIVERY_ZONES[comuna]) {
-        const sectores = DELIVERY_ZONES[comuna].sectors;
-        Object.keys(sectores).forEach(sectorKey => {
+        DELIVERY_ZONES[comuna].sectors.forEach(sector => {
             const option = document.createElement('option');
-            option.value = sectorKey;
-            option.textContent = sectores[sectorKey].name;
+            option.value = sector.id;
+            option.textContent = sector.name;
             sectorSelect.appendChild(option);
         });
         sectorSelect.disabled = false;
@@ -844,36 +878,40 @@ function updateSectores() {
 function updateDeliveryCost() {
     const comunaSelect = document.getElementById('modalClientComuna');
     const sectorSelect = document.getElementById('modalClientSector');
-    const costLabel = document.getElementById('deliveryCostLabel');
-    const orderTypeSelect = document.getElementById('modalOrderType');
+    const costLabel = document.getElementById('modalDeliveryCost');
+    const deliveryRow = document.getElementById('deliveryRow');
+    const modalGrandTotal = document.getElementById('modalGrandTotal');
+    const orderType = document.querySelector('input[name="orderType"]:checked')?.value;
 
-    if (orderTypeSelect && orderTypeSelect.value === 'presencial') {
-        costLabel.textContent = 'Costo de Delivery: $0 (Retiro presencial)';
-        costLabel.style.color = '#059669';
-        costLabel.style.fontWeight = 'bold';
-        return;
-    }
-    
-    const comuna = comunaSelect.value;
-    const sector = sectorSelect.value;
-    
-    if (comuna && sector && DELIVERY_ZONES[comuna] && DELIVERY_ZONES[comuna].sectors[sector]) {
-        const cost = DELIVERY_ZONES[comuna].sectors[sector].cost;
-        costLabel.textContent = `Costo de Delivery: $${cost.toLocaleString('es-CL')}`;
-        costLabel.style.color = '#1e40af';
-        costLabel.style.fontWeight = 'bold';
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    let dCost = 0;
+
+    if (orderType === 'presencial') {
+        if(costLabel) costLabel.textContent = '$0';
+        if(deliveryRow) deliveryRow.style.display = 'none';
     } else {
-        costLabel.textContent = 'Costo de Delivery: --';
-        costLabel.style.color = '#6b7280';
-        costLabel.style.fontWeight = 'normal';
+        if(deliveryRow) deliveryRow.style.display = 'flex';
+        const comuna = comunaSelect.value;
+        const sectorId = sectorSelect.value;
+        const sectorData = (comuna && sectorId) ? DELIVERY_ZONES[comuna].sectors.find(s => s.id === sectorId) : null;
+        
+        if (sectorData) {
+            dCost = sectorData.cost;
+            costLabel.textContent = `$${dCost.toLocaleString('es-CL')}`;
+            costLabel.style.color = '#2563eb';
+        } else {
+            costLabel.textContent = '--';
+            costLabel.style.color = '#64748b';
+        }
     }
     
-    // Agregar event listener para actualizar costo cuando cambie el sector
-    sectorSelect.addEventListener('change', updateDeliveryCost);
+    if (modalGrandTotal) {
+        modalGrandTotal.textContent = `$${(subtotal + dCost).toLocaleString('es-CL')}`;
+    }
 }
 
 function toggleOrderTypeFields() {
-    const orderType = document.getElementById('modalOrderType')?.value || 'delivery';
+    const orderType = document.querySelector('input[name="orderType"]:checked')?.value || 'delivery';
     const deliveryFields = document.querySelectorAll('.order-delivery-field');
     const comunaSelect = document.getElementById('modalClientComuna');
     const sectorSelect = document.getElementById('modalClientSector');
@@ -891,6 +929,8 @@ function toggleOrderTypeFields() {
         addressInput.required = isDelivery;
         if (!isDelivery) {
             addressInput.value = 'Retiro en local';
+        } else if (addressInput.value === 'Retiro en local') {
+            addressInput.value = '';
         }
     }
 
@@ -899,10 +939,8 @@ function toggleOrderTypeFields() {
 
 function calculateDeliveryCost(comuna, sector) {
     if (!comuna || !sector) return 0;
-    
     const zone = DELIVERY_ZONES[comuna];
     if (!zone || !zone.sectors[sector]) return 0;
-    
     return zone.sectors[sector].cost;
 }
 
@@ -911,110 +949,87 @@ function closeOrderModal() {
     if (modal) {
         modal.classList.remove('active');
         document.removeEventListener('keydown', handleEscapeKey);
-        setTimeout(() => {
-            modal.remove();
-        }, 300);
+        setTimeout(() => modal.remove(), 300);
     }
 }
 
 function submitOrder(event) {
     event.preventDefault();
 
-    const orderType = document.getElementById('modalOrderType').value;
+    const orderType = document.querySelector('input[name="orderType"]:checked').value;
     const name = document.getElementById('modalClientName').value.trim();
     const phone = document.getElementById('modalClientPhone').value.trim();
     const comuna = document.getElementById('modalClientComuna').value;
     const sector = document.getElementById('modalClientSector').value;
     const address = document.getElementById('modalClientAddress').value.trim();
     const comments = document.getElementById('modalClientComments').value.trim();
+    const manualGps = document.getElementById('modalClientGpsLink')?.value.trim();
+    const autoGps = document.getElementById('modalCoordinates')?.value.trim();
 
-    // Validaciones
-    if (!name) {
-        alert('Por favor ingresa tu nombre completo');
-        document.getElementById('modalClientName').focus();
-        return;
-    }
-
-    if (!phone) {
-        alert('Por favor ingresa tu número de teléfono');
-        document.getElementById('modalClientPhone').focus();
-        return;
-    }
+    if (!name) return alert('Por favor ingresa tu nombre completo');
+    if (!phone) return alert('Por favor ingresa tu número de teléfono');
 
     const phoneRegex = /^(\+56\s?9|\+569|9)\s?\d{4}\s?\d{4}$/;
     if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-        alert('Formato de teléfono inválido. Usa +56 9 XXXX XXXX');
-        document.getElementById('modalClientPhone').focus();
-        return;
+        return alert('Formato de teléfono inválido. Usa +56 9 XXXX XXXX');
     }
 
-    if (orderType === 'delivery' && !comuna) {
-        alert('Por favor selecciona tu comuna');
-        document.getElementById('modalClientComuna').focus();
-        return;
+    if (orderType === 'delivery') {
+        if (!comuna) return alert('Por favor selecciona tu comuna');
+        if (!sector) return alert('Por favor selecciona tu sector');
+        if (!address) return alert('Por favor ingresa tu dirección completa');
     }
 
-    if (orderType === 'delivery' && !sector) {
-        alert('Por favor selecciona tu sector');
-        document.getElementById('modalClientSector').focus();
-        return;
-    }
+    if (cart.length === 0) return alert('Tu carrito está vacío');
 
-    if (orderType === 'delivery' && !address) {
-        alert('Por favor ingresa tu dirección completa');
-        document.getElementById('modalClientAddress').focus();
-        return;
-    }
-
-    if (cart.length === 0) {
-        alert('Tu carrito está vacío');
-        return;
-    }
-
-    // Calcular costos
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliveryCost = orderType === 'delivery' ? calculateDeliveryCost(comuna, sector) : 0;
+    
+    // Obtenemos costo buscando sector id directamente en array
+    let deliveryCost = 0;
+    if(orderType === 'delivery') {
+       const sectorObj = DELIVERY_ZONES[comuna]?.sectors.find(s => s.id === sector);
+       deliveryCost = sectorObj ? sectorObj.cost : 0;
+    }
     const total = subtotal + deliveryCost;
 
-    const ubicacionTexto = orderType === 'delivery'
-        ? `${DELIVERY_ZONES[comuna].name} - ${DELIVERY_ZONES[comuna].sectors[sector].name}`
-        : 'Retiro presencial en local';
-    const direccionTexto = orderType === 'delivery' ? address : 'Retiro en local';
+    const sectorName = orderType === 'delivery' ? (DELIVERY_ZONES[comuna]?.sectors.find(s => s.id === sector)?.name || '') : '';
+    const comunaName = orderType === 'delivery' ? DELIVERY_ZONES[comuna]?.name : '';
 
-    // Confirmación final
-    const confirmMessage = `¿Confirmar pedido?\n\nTipo: ${orderType === 'delivery' ? 'Delivery' : 'Retiro presencial'}\nProductos: ${cart.length}\nSubtotal: $${subtotal.toLocaleString('es-CL')}\nDelivery: $${deliveryCost.toLocaleString('es-CL')}\nTOTAL: $${total.toLocaleString('es-CL')}\n\nUbicación: ${ubicacionTexto}\n\nSe abrirá WhatsApp para enviar el pedido.`;
-
-    if (!confirm(confirmMessage)) {
-        return;
-    }
-
-    // Crear mensaje para WhatsApp
-    let message = `🛒 *NUEVO PEDIDO - Boti Dival*\n\n`;
-    message += `🧾 *Tipo de venta:* ${orderType === 'delivery' ? 'Delivery' : 'Retiro presencial'}\n`;
-    message += `👤 *Cliente:* ${name}\n`;
-    message += `📞 *Teléfono:* ${phone}\n`;
-    message += `📍 *Ubicación:* ${ubicacionTexto}\n`;
-    message += `🏠 *Dirección:* ${direccionTexto}\n\n`;
-
-    message += `🛍️ *PRODUCTOS:*\n`;
+    let message = `🛒 *NUEVO PEDIDO – BOTILLERÍA DIVAL*\n\n`;
+    message += `👤 Cliente: ${name}\n`;
+    message += `📞 Teléfono: ${phone}\n\n`;
+    
+    message += `🛍 Productos:\n`;
     cart.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        message += `• ${item.name} x${item.quantity} = $${itemTotal.toLocaleString('es-CL')}\n`;
+        message += `• ${item.name} x${item.quantity}\n`;
     });
 
-    message += `\n💰 *RESUMEN DE COSTOS:*\n`;
-    message += `• Subtotal productos: $${subtotal.toLocaleString('es-CL')}\n`;
-    message += `• Costo de delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
-    message += `• *TOTAL: $${total.toLocaleString('es-CL')}*\n\n`;
+    message += `\n💰 Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
+    if(orderType === 'delivery') {
+        message += `🚚 Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
+    } else {
+        message += `🏪 Delivery: $0 (Retiro Local)\n`;
+    }
+    message += `💵 Total Final: $${total.toLocaleString('es-CL')}\n\n`;
 
-    if (comments) {
-        message += `📝 *Comentarios:* ${comments}\n\n`;
+    if (orderType === 'delivery') {
+        message += `📍 Comuna: ${comunaName}\n`;
+        message += `📌 Sector: ${sectorName}\n`;
+        message += `🏠 Dirección: ${address}\n\n`;
+
+        if (autoGps) {
+            message += `📍 Ubicación:\nhttps://www.google.com/maps?q=${autoGps.replace(/\s/g, '')}\n\n`;
+        } else if (manualGps) {
+            message += `📍 Ubicación manual:\n${manualGps}\n\n`;
+        }
+    } else {
+         message += `📍 Retiro Presencial en Local\n\n`;
     }
 
-    message += `========================================\n`;
-    message += `✅ Pedido listo para confirmar y procesar.`;
+    if (comments) {
+        message += `📝 Observaciones:\n${comments}\n`;
+    }
 
-    // Registrar pedido en historial
     const nuevoPedido = {
         id: Date.now(),
         fecha: new Date().toISOString(),
@@ -1022,10 +1037,10 @@ function submitOrder(event) {
         cliente: {
             nombre: name,
             telefono: phone,
-            comuna: orderType === 'delivery' ? DELIVERY_ZONES[comuna].name : 'Local',
-            sector: orderType === 'delivery' ? DELIVERY_ZONES[comuna].sectors[sector].name : 'Retiro',
-            direccion: direccionTexto,
-            coordenadas: ''
+            comuna: comunaName || 'Local',
+            sector: sectorName || 'Retiro',
+            direccion: orderType === 'delivery' ? address : 'Retiro en local',
+            coordenadas: autoGps || manualGps || ''
         },
         productos: cart.map(item => ({
             id: item.id,
@@ -1034,28 +1049,21 @@ function submitOrder(event) {
             precioUnitario: item.price,
             subtotal: item.price * item.quantity
         })),
-        costos: {
-            subtotal: subtotal,
-            delivery: deliveryCost,
-            total: total
-        },
+        costos: { subtotal, delivery: deliveryCost, total },
         comentarios: comments || ''
     };
 
     pedidosHistorial.push(nuevoPedido);
     localStorage.setItem('pedidosHistorial', JSON.stringify(pedidosHistorial));
 
-    // Abrir WhatsApp
     const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
 
-    // Limpiar carrito y cerrar modal
     setTimeout(() => {
         cart = [];
         updateCartUI();
         closeOrderModal();
-        closeCart();
-        alert('✅ ¡Pedido enviado exitosamente!\n\nTe contactaremos pronto por WhatsApp para confirmar los detalles.');
+        if(typeof closeCart === 'function') closeCart();
     }, 1000);
 }
 
@@ -1175,7 +1183,7 @@ function handleSearchResultClick(productId) {
     addToCart(productId, 1, true);
     document.getElementById('searchInput').value = '';
     document.getElementById('searchResults').classList.remove('active');
-    openCart();
+    openOrderForm();
 }
 
 /* ==================== HORARIOS Y ESTADO ==================== */
@@ -1218,38 +1226,6 @@ function updateStatus() {
     }
 }
 
-// Mini menu functions
-function showMiniMenu() {
-    const menu = document.getElementById('miniMenu');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-}
-
-function quickQuote() {
-    showMiniMenu();
-    if (cart.length === 0) {
-        showNotificationMessage('🛒 Carrito vacío');
-        return;
-    }
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const message = `Hola Boti Dival! Cotización rápida:\n\n` +
-        `${cart.reduce((sum, item) => sum + item.quantity, 0)} items\n` +
-        `Subtotal: $${subtotal.toLocaleString('es-CL')}\n\n` +
-        `Necesito cotizar envío.`;
-    const url = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
-    showNotificationMessage('💰 Cotización enviada por WhatsApp');
-}
-
-function clearCart() {
-    if (confirm('¿Vaciar carrito?')) {
-        cart = [];
-        updateCartUI();
-        updateProductQuantityDisplay();
-        saveCartState();
-        showNotificationMessage('🗑️ Carrito vaciado');
-        showMiniMenu();
-    }
-}
 
 /* ==================== FUNCIONES DE DELIVERY Y PAGO ==================== */
 
@@ -1279,6 +1255,8 @@ function updateSectorOptions() {
     
     if (!selectedComunaValue) {
         sectorSelect.innerHTML = '<option value="">Primero selecciona comuna</option>';
+        deliveryCost = 0;
+        updateTotalPrice();
         return;
     }
     
@@ -1286,54 +1264,93 @@ function updateSectorOptions() {
     const sectors = DELIVERY_ZONES[selectedComuna].sectors;
     
     sectorSelect.innerHTML = '<option value="">Selecciona tu sector</option>';
-    Object.keys(sectors).forEach(sector => {
+    sectors.forEach(sector => {
         const option = document.createElement('option');
-        option.value = sector;
-        option.textContent = `${sectors[sector].name} (+$${sectors[sector].cost})`;
+        option.value = sector.id;
+        option.textContent = `${sector.name} (+$${sector.cost.toLocaleString('es-CL')})`;
         sectorSelect.appendChild(option);
     });
     
+    deliveryCost = 0;
     calculateDelivery();
 }
 
 function calculateDelivery() {
     const sectorSelect = document.getElementById('clientSector');
-    const selectedSectorValue = sectorSelect.value;
+    const selectedSectorId = sectorSelect?.value;
     
-    if (!selectedSectorValue || !selectedComuna) {
+    if (!selectedSectorId || !selectedComuna) {
         deliveryCost = 0;
     } else {
-        selectedSector = selectedSectorValue;
-        deliveryCost = DELIVERY_ZONES[selectedComuna].sectors[selectedSector].cost;
+        selectedSector = selectedSectorId;
+        const sectorData = DELIVERY_ZONES[selectedComuna].sectors.find(s => s.id === selectedSectorId);
+        deliveryCost = sectorData ? sectorData.cost : 0;
     }
     
-    document.getElementById('deliveryCost').textContent = `$${deliveryCost.toLocaleString('es-CL')}`;
-    updateTotalPrice();
+    updateCartUI();
 }
 
-function updateTotalPrice() {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const total = subtotal + deliveryCost;
-    
-    document.getElementById('subtotal').textContent = `$${subtotal.toLocaleString('es-CL')}`;
-    document.getElementById('totalPrice').textContent = `$${total.toLocaleString('es-CL')}`;
-}
 
-function getCurrentLocation() {
+function getCurrentLocation(targetId = 'manualLocation') {
     if (navigator.geolocation) {
+        showNotificationMessage('⌛ Obteniendo ubicación...');
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
-                document.getElementById('manualLocation').value = `${lat}, ${lng}`;
+                const coords = `${lat}, ${lng}`;
+                
+                const target = document.getElementById(targetId);
+                if (target) {
+                    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                        if (targetId === 'modalClientAddress') {
+                            target.value = (target.value ? target.value + ' ' : '') + `(Ubicación GPS: https://www.google.com/maps?q=${lat},${lng})`;
+                        } else {
+                            target.value = coords;
+                        }
+                    }
+                }
+                
+                const coordInput = document.getElementById('modalCoordinates');
+                if (coordInput) coordInput.value = coords;
+
                 showNotificationMessage('📍 Ubicación obtenida correctamente');
             },
             (error) => {
-                showNotificationMessage('⚠️ No se pudo obtener tu ubicación. Ingresa manualmente.');
-            }
+                showNotificationMessage('⚠️ Error al obtener ubicación. Permiso denegado.');
+                console.error(error);
+            },
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
         );
     } else {
         showNotificationMessage('⚠️ Tu navegador no soporta geolocalización.');
+    }
+}
+
+function removeItemFromModal(productId) {
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+        cart = cart.filter(i => i.id !== productId);
+        updateCartUI();
+        updateProductQuantityDisplay();
+        saveCartState();
+        
+        if (cart.length === 0) {
+            closeOrderModal();
+            showNotificationMessage('🛒 Carrito vacío');
+            return;
+        }
+
+        // Actualizar la lista en el modal sin cerrarlo
+        const itemElement = document.getElementById(`modal-item-${productId}`);
+        if (itemElement) itemElement.remove();
+
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const modalSubtotal = document.getElementById('modalSubtotal');
+        if (modalSubtotal) modalSubtotal.textContent = `Subtotal: $${subtotal.toLocaleString('es-CL')}`;
+
+        updateDeliveryCost();
+        showNotificationMessage(`🗑️ ${item.name} eliminado`);
     }
 }
 
@@ -1347,14 +1364,14 @@ function showOrderSummary() {
     const manualLocation = document.getElementById('manualLocation').value.trim();
 
     // Validaciones
-    if (!clientName) {
+    if (!clientName || clientName.length < 3) {
         showNotificationMessage('⚠️ Por favor ingresa tu nombre completo');
         document.getElementById('clientName').focus();
         return;
     }
 
-    if (!clientPhone) {
-        showNotificationMessage('⚠️ Por favor ingresa tu número de teléfono');
+    if (!clientPhone || clientPhone.length < 8) {
+        showNotificationMessage('⚠️ Por favor ingresa un número de teléfono válido');
         document.getElementById('clientPhone').focus();
         return;
     }
@@ -1366,13 +1383,13 @@ function showOrderSummary() {
     }
 
     if (!clientSector) {
-        showNotificationMessage('⚠️ Por favor selecciona tu sector');
+        showNotificationMessage('⚠️ Por favor selecciona tu sector de entrega');
         document.getElementById('clientSector').focus();
         return;
     }
 
-    if (!clientAddress) {
-        showNotificationMessage('⚠️ Por favor ingresa tu dirección específica');
+    if (!clientAddress || clientAddress.length < 5) {
+        showNotificationMessage('⚠️ Por favor ingresa una dirección de entrega válida');
         document.getElementById('clientAddress').focus();
         return;
     }
@@ -1381,13 +1398,10 @@ function showOrderSummary() {
         showNotificationMessage('🛒 Tu carrito está vacío');
         return;
     }
-
-    // Crear modal de resumen
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const total = subtotal + deliveryCost;
     
     const comunaName = DELIVERY_ZONES[clientComuna].name;
-    const sectorName = DELIVERY_ZONES[clientComuna].sectors[clientSector].name;
+    const sectorData = DELIVERY_ZONES[clientComuna].sectors.find(s => s.id === clientSector);
+    const sectorName = sectorData ? sectorData.name : clientSector;
     
     let summaryHTML = `
         <div class="order-modal-overlay" id="orderSummaryModal">
@@ -1418,13 +1432,13 @@ function showOrderSummary() {
                     </div>
                     
                     <div class="summary-section">
-                        <h4>💰 Total</h4>
+                        <h4>💰 Resumen</h4>
                         <div class="summary-item">
                             <span>Subtotal productos:</span>
                             <span>$${subtotal.toLocaleString('es-CL')}</span>
                         </div>
                         <div class="summary-item">
-                            <span>Delivery (${comunaName} - ${sectorName}):</span>
+                            <span>Delivery:</span>
                             <span>$${deliveryCost.toLocaleString('es-CL')}</span>
                         </div>
                         <div class="summary-item total">
@@ -1467,13 +1481,14 @@ function sendOrderToWhatsApp() {
     const total = subtotal + deliveryCost;
     
     const comunaName = DELIVERY_ZONES[clientComuna].name;
-    const sectorName = DELIVERY_ZONES[clientComuna].sectors[clientSector].name;
+    const sectorData = DELIVERY_ZONES[clientComuna].sectors.find(s => s.id === clientSector);
+    const sectorName = sectorData ? sectorData.name : clientSector;
     
     // Registrar pedido en historial
     const nuevoPedido = {
         id: Date.now(),
         fecha: new Date().toISOString(),
-        tipo: deliveryCost > 0 ? 'delivery' : 'presencial',
+        tipo: 'delivery',
         cliente: {
             nombre: clientName,
             telefono: clientPhone,
@@ -1500,24 +1515,25 @@ function sendOrderToWhatsApp() {
     pedidosHistorial.push(nuevoPedido);
     localStorage.setItem('pedidosHistorial', JSON.stringify(pedidosHistorial));
     
-    let message = `🍺 *PEDIDO Boti Dival*\n\n`;
+    let message = `🛒 *NUEVO PEDIDO - Boti Dival*\n\n`;
     message += `👤 *Cliente:* ${clientName}\n`;
     message += `📞 *Teléfono:* ${clientPhone}\n`;
-    message += `📍 *Ubicación:* ${comunaName} - ${sectorName}\n`;
+    message += `📍 *Sector:* ${sectorName}\n`;
     message += `🏠 *Dirección:* ${clientAddress}\n`;
-    if (manualLocation) message += `📌 *Coordenadas:* ${manualLocation}\n`;
-    if (clientComments) message += `💬 *Comentarios:* ${clientComments}\n\n`;
+    if (manualLocation) message += `📌 *Ubicación:* ${manualLocation}\n`;
+    if (clientComments) message += `📝 *Comentarios:* ${clientComments}\n\n`;
     
-    message += `🛒 *PRODUCTOS:*\n`;
+    message += `🛍️ *PRODUCTOS:*\n`;
     cart.forEach(item => {
-        message += `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
+        message += `• ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
     });
     
-    message += `\n💰 *SUBTOTAL:* $${subtotal.toLocaleString('es-CL')}\n`;
-    message += `🚚 *DELIVERY:* $${deliveryCost.toLocaleString('es-CL')}\n`;
-    message += `💵 *TOTAL:* $${total.toLocaleString('es-CL')}\n\n`;
+    message += `\n💰 *RESUMEN:*\n`;
+    message += `• Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
+    message += `• Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
+    message += `• *TOTAL: $${total.toLocaleString('es-CL')}*\n\n`;
     
-    message += `✅ *Pedido listo para confirmar*`;
+    message += `✅ *Pedido listo para procesar*`;
     
     const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -1531,7 +1547,7 @@ function sendOrderToWhatsApp() {
     updateCartUI();
     updateProductQuantityDisplay();
     saveCartState();
-    showNotificationMessage('✅ Pedido enviado por WhatsApp y registrado en el historial.');
+    showNotificationMessage('✅ Pedido enviado exitosamente');
 }
 
 /* ==================== FUNCIONES DE PROMOCIONES ==================== */
@@ -1756,35 +1772,6 @@ function updateWebDeliveryStatus() {
     }
 }
 
-/* ==================== INICIALIZACIÓN ==================== */
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar promociones
-    renderPromociones();
-    
-    // Inicializar videos
-    renderVideos();
-    
-    // Inicializar estado delivery
-    updateDeliveryStatusUI();
-    
-    // Inicializar control de pedidos (solo en dashboard)
-    if (document.getElementById('control-pedidosSection')) {
-        renderPedidosDashboard();
-        renderPedidosHistorial();
-    }
-    
-    // Event listeners para formularios (solo si existen en la vista actual)
-    const promoForm = document.getElementById('promoCreateForm');
-    if (promoForm) {
-        promoForm.addEventListener('submit', savePromocion);
-    }
-
-    const videoForm = document.getElementById('videoCreateForm');
-    if (videoForm) {
-        videoForm.addEventListener('submit', saveVideo);
-    }
-});
 
 /* ==================== FUNCIONES DE CONTROL DE PEDIDOS ==================== */
 
@@ -1996,37 +1983,118 @@ function limpiarFiltros() {
 }
 
 function updateWebPromociones() {
+    const section = document.getElementById('promo-section');
     const exclusiveTrack = document.getElementById('promoExclusiveTrack');
-    
-    const activePromos = promociones.filter(p => p.active);
+    if (!section || !exclusiveTrack) return;
 
-    if (exclusiveTrack) {
-        exclusiveTrack.innerHTML = activePromos.map((promo) => `
-            <div class="promo-card">
-                <div class="promo-image">
-                    <img src="${promo.image}" alt="${promo.title}">
-                    <div class="promo-badge">🔥 ACTIVA</div>
-                </div>
-                <div class="promo-content">
-                    <h3>${promo.title}</h3>
-                    <p class="promo-description">${promo.description}</p>
-                    <div class="promo-pricing">
-                        ${promo.previousPrice ? `<span class="original-price">$${Number(promo.previousPrice).toLocaleString('es-CL')}</span>` : ''}
-                        ${promo.price ? `<span class="current-price">$${Number(promo.price).toLocaleString('es-CL')}</span>` : ''}
-                    </div>
-                    <button class="btn btn-primary" onclick="addPromoToCart(${promo.id})">Agregar al Carrito</button>
-                </div>
+    // Filter active and not expired
+    const today = new Date().setHours(0,0,0,0);
+    const activePromos = promociones.filter(p => {
+        if (!p.active) return false;
+        if (p.endDate) {
+            const end = new Date(p.endDate).setHours(23,59,59,999);
+            if (today > end) return false;
+        }
+        return true;
+    });
+
+    if (activePromos.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    exclusiveTrack.innerHTML = activePromos.map((promo) => `
+        <div class="promo-card">
+            <div class="promo-image">
+                <img src="${promo.image}" alt="${promo.title}" onerror="this.src='https://via.placeholder.com/400x300?text=Promo';">
+                <div class="promo-badge">OFERTA</div>
             </div>
-        `).join('');
+            <div class="promo-content">
+                <h3>${promo.title}</h3>
+                <p class="promo-description">${promo.description}</p>
+                <div class="promo-pricing">
+                    ${promo.previousPrice ? `<span class="original-price">$${Number(promo.previousPrice).toLocaleString('es-CL')}</span>` : ''}
+                    <span class="current-price">$${Number(promo.price).toLocaleString('es-CL')}</span>
+                </div>
+                <button class="btn btn-primary w-100 mt-3" onclick="addPromoToCart(${promo.id})">
+                    <i class="fas fa-cart-plus me-2"></i>Aprovechar Oferta
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateWebInstagram() {
+    const section = document.getElementById('instagramVideosSection');
+    const grid = document.getElementById('instagramVideosGrid');
+    if (!section || !grid) return;
+
+    const activeVideos = instagramVideos.filter(v => v.active);
+
+    if (activeVideos.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    grid.innerHTML = activeVideos.map(v => `
+        <div class="col-lg-4 col-md-6">
+            <div class="instagram-video-card h-100">
+                <div class="ratio-reels">
+                    <iframe 
+                        src="https://www.instagram.com/p/${v.videoCode}/embed" 
+                        frameborder="0" 
+                        scrolling="no" 
+                        allowtransparency="true"
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                    ></iframe>
+                </div>
+                <div class="card-info text-center">
+                    <h5 class="fw-bold">${v.name}</h5>
+                    <a href="${v.url}" target="_blank" class="btn-ig">
+                        <i class="fab fa-instagram"></i> Ver en Instagram
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateDynamicMarketing() {
+    const banner = document.getElementById('deliveryStatusBanner');
+    if (!banner) return;
+
+    // Si el delivery está activo, mostramos un mensaje positivo basado en deliveryTrips
+    if (deliveryStatus) {
+        const now = new Date();
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - 7);
+        
+        const weekTrips = deliveryTrips.filter(t => new Date(t.fecha) >= weekStart);
+        const totalEntregas = weekTrips.reduce((sum, t) => sum + t.pedidos, 0);
+
+        if (totalEntregas > 5) {
+            banner.style.display = 'block';
+            banner.className = 'delivery-status-banner success';
+            banner.innerHTML = `<i class="fas fa-shipping-fast me-2"></i> ¡Ya llevamos <strong>${totalEntregas}</strong> entregas exitosas esta semana! Confía en nosotros.`;
+        } else {
+            banner.style.display = 'none';
+        }
+    } else {
+        // Si está desactivado, mostramos el mensaje de fuera de servicio
+        banner.style.display = 'block';
+        banner.className = 'delivery-status-banner warning';
+        banner.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> Servicio de Delivery Fuera de Servicio - Solo Ventas Presenciales`;
     }
 }
 
-function updateWebVideos() {
+function updateWebCarousel() {
     const section = document.getElementById('imagesCarouselSection');
     const track = document.getElementById('imagesCarouselTrack');
     if (!section || !track) return;
 
-    carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || [];
     const activeImages = carouselImages.filter((img) => img.active !== false);
 
     if (activeImages.length === 0) {
@@ -2048,34 +2116,30 @@ function updateWebVideos() {
 }
 
 function updateDeliveryDisplay(status) {
-    const banner = document.getElementById('deliveryStatusBanner');
     const statusBar = document.getElementById('statusBar');
+    if (!statusBar) return;
+
     const statusDot = statusBar.querySelector('.status-dot');
     const statusText = statusBar.querySelector('.status-text');
     
+    deliveryStatus = status;
+
     if (!status) {
-        // Mostrar banner de "solo ventas presenciales"
-        banner.style.display = 'block';
-        
         // Actualizar barra de estado
-        statusDot.classList.remove('active');
-        statusDot.classList.add('inactive');
-        statusText.textContent = '⏰ Delivery No Disponible';
+        if(statusDot) {
+            statusDot.classList.remove('active');
+            statusDot.classList.add('inactive');
+        }
+        if(statusText) statusText.textContent = '⏰ Delivery No Disponible';
         
-        // Ocultar features de delivery
+        // Ocultar features de delivery en el status bar
         const features = statusBar.querySelectorAll('.feature-badge');
         features.forEach(feature => {
-            if (feature.textContent.includes('Delivery')) {
+            if (feature.textContent.includes('Delivery') || feature.textContent.includes('Minutos')) {
                 feature.style.display = 'none';
             }
         });
     } else {
-        // Ocultar banner
-        banner.style.display = 'none';
-        
-        // Restaurar barra de estado
-        statusDot.classList.remove('inactive');
-        statusDot.classList.add('active');
         statusText.textContent = '⏰ Delivery Disponible';
         
         // Mostrar features de delivery
@@ -2114,79 +2178,7 @@ window.addEventListener('storage', (event) => {
     }
 });
 
-function finalizeOrder() {
-    const clientName = document.getElementById('clientName').value.trim();
-    const clientAddress = document.getElementById('clientAddress').value.trim();
-    const clientPhone = document.getElementById('clientPhone').value.trim();
-    const clientComments = document.getElementById('clientComments').value.trim();
 
-    // Validación mejorada
-    if (!clientName) {
-        showNotificationMessage('⚠️ Por favor ingresa tu nombre completo');
-        document.getElementById('clientName').focus();
-        return;
-    }
-
-    if (!clientAddress) {
-        showNotificationMessage('⚠️ Por favor ingresa tu dirección completa');
-        document.getElementById('clientAddress').focus();
-        return;
-    }
-
-    if (!clientPhone) {
-        showNotificationMessage('⚠️ Por favor ingresa tu número de teléfono');
-        document.getElementById('clientPhone').focus();
-        return;
-    }
-
-    // Validar formato de teléfono chileno
-    const phoneRegex = /^(\+56\s?9|\+569|9)\s?\d{4}\s?\d{4}$/;
-    if (!phoneRegex.test(clientPhone.replace(/\s/g, ''))) {
-        showNotificationMessage('⚠️ Formato de teléfono inválido. Usa +56 9 XXXX XXXX');
-        document.getElementById('clientPhone').focus();
-        return;
-    }
-
-    if (cart.length === 0) {
-        showNotificationMessage('🛒 Tu carrito está vacío');
-        return;
-    }
-
-    // Mostrar confirmación antes de enviar
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    
-    updateStepIndicator(3); // Paso de confirmación
-    
-    const confirmMessage = `¿Confirmar pedido?\n\n📦 ${totalItems} productos\n💰 Subtotal: $${subtotal.toLocaleString('es-CL')}\n📍 Entrega: ${clientAddress}\n\nSe abrirá WhatsApp para confirmar.`;
-    
-    if (!confirm(confirmMessage)) {
-        updateStepIndicator(2); // Volver al formulario
-        return;
-    }
-
-    // Generar mensaje
-    const message = generateWhatsAppMessage(clientName, clientAddress, clientPhone, clientComments);
-    
-    // Abrir WhatsApp
-    const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-
-    // Limpiar formulario y carrito
-    setTimeout(() => {
-        cart = [];
-        saveCartState();
-        updateCartUI();
-        updateProductQuantityDisplay();
-        document.getElementById('clientName').value = '';
-        document.getElementById('clientAddress').value = '';
-        document.getElementById('clientPhone').value = '';
-        document.getElementById('clientComments').value = '';
-        setCompactMode(true);
-        showNotificationMessage('✅ ¡Pedido enviado! Te contactaremos pronto.');
-        closeCart();
-    }, 1000);
-}
 
 function generateWhatsAppMessage(name, address, phone, comments) {
     const timestamp = new Date().toLocaleString('es-CL');
@@ -2221,9 +2213,171 @@ function generateWhatsAppMessage(name, address, phone, comments) {
 /* ==================== CONTACTO Y CONSULTAS ==================== */
 
 function contactShipping() {
-    const message = `Hola Boti Dival, me gustaría consultar sobre el costo de envío a mi zona. Mi dirección es: [Mi dirección]`;
-    const whatsappUrl = `https://wa.me/56985062378?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    // Remover modal anterior si existe
+    var oldModal = document.getElementById('shippingModal');
+    if (oldModal) oldModal.remove();
+
+    // Datos de zonas de envío
+    var zones = [
+        { comuna: "Doñihue", sector: "Doñihue Centro", price: 6600 },
+        { comuna: "Coltauco", sector: "Quimávida", price: 6000 },
+        { comuna: "Doñihue", sector: "Cerrillos", price: 6000 },
+        { comuna: "Coltauco", sector: "Lo de Cuevas", price: 5800 },
+        { comuna: "Coltauco", sector: "Hijuela del Medio", price: 5800 },
+        { comuna: "Coltauco", sector: "Rinconada de Parral", price: 4700 },
+        { comuna: "Coltauco", sector: "Cuesta de Idahue", price: 4600 },
+        { comuna: "Coltauco", sector: "El Molino", price: 4300 },
+        { comuna: "Coltauco", sector: "Montegrande", price: 4200 },
+        { comuna: "Coltauco", sector: "El Loreto", price: 4000 }
+    ];
+
+    var maxP = 6600, minP = 4000;
+    var avgP = Math.round(zones.reduce(function(s,z){ return s + z.price; }, 0) / zones.length);
+    var coltN = zones.filter(function(z){ return z.comuna === "Coltauco"; }).length;
+    var donN = zones.filter(function(z){ return z.comuna === "Doñihue"; }).length;
+
+    function distLevel(price) {
+        var r = (price - minP) / (maxP - minP);
+        if (r > 0.7) return { label: "Distancia Alta", color: "#ef4444", ring: "rgba(239,68,68,0.15)", dot: "🔴" };
+        if (r > 0.35) return { label: "Distancia Media", color: "#f59e0b", ring: "rgba(245,158,11,0.15)", dot: "🟡" };
+        return { label: "Cercano", color: "#10b981", ring: "rgba(16,185,129,0.15)", dot: "🟢" };
+    }
+
+    function fmt(n) { return "$" + n.toLocaleString("es-CL"); }
+
+    function buildCards(filter, search, sortMode) {
+        var list = zones.slice();
+        if (filter && filter !== "all") list = list.filter(function(z){ return z.comuna === filter; });
+        if (search) {
+            var q = search.toLowerCase();
+            list = list.filter(function(z){ return z.sector.toLowerCase().indexOf(q) >= 0 || z.comuna.toLowerCase().indexOf(q) >= 0; });
+        }
+        if (sortMode === "price-asc") list.sort(function(a,b){ return a.price - b.price; });
+        else if (sortMode === "name") list.sort(function(a,b){ return a.sector.localeCompare(b.sector); });
+        else list.sort(function(a,b){ return b.price - a.price; });
+
+        if (list.length === 0) {
+            return '<div class="shp-empty"><div class="shp-empty-ring"></div><span class="shp-empty-icon">📍</span><h4>Sin resultados</h4><p>No encontramos sectores con ese criterio</p></div>';
+        }
+
+        var html = "";
+        for (var i = 0; i < list.length; i++) {
+            var z = list[i];
+            var d = distLevel(z.price);
+            var pct = Math.max(((z.price - minP) / (maxP - minP)) * 100, 12);
+            var cls = z.comuna === "Doñihue" ? "shp-donihue" : "shp-coltauco";
+            var waText = encodeURIComponent("Hola Boti Dival, quiero consultar el delivery a " + z.sector + ", " + z.comuna);
+            html += '<div class="shp-card" style="--delay:' + (i * 0.05) + 's" onclick="this.classList.toggle(\'expanded\')">' +
+                '<div class="shp-card-left"><div class="shp-distance-ring" style="--ring-color:' + d.ring + '"><div class="shp-distance-dot" style="background:' + d.color + '"></div></div></div>' +
+                '<div class="shp-card-body">' +
+                    '<div class="shp-card-top">' +
+                        '<div class="shp-card-meta"><span class="shp-badge-comuna ' + cls + '">' + z.comuna + '</span><span class="shp-badge-dist" style="color:' + d.color + '">' + d.dot + ' ' + d.label + '</span></div>' +
+                        '<div class="shp-card-price">' + fmt(z.price) + '</div>' +
+                    '</div>' +
+                    '<h4 class="shp-card-sector">' + z.sector + '</h4>' +
+                    '<div class="shp-bar-track"><div class="shp-bar-fill" style="--bar-width:' + pct + '%;--bar-color:' + d.color + '"></div></div>' +
+                    '<div class="shp-card-expand">' +
+                        '<p>📌 Región: Libertador Gral. Bernardo O\'Higgins</p>' +
+                        '<a href="https://wa.me/56985062378?text=' + waText + '" target="_blank" class="shp-card-wa">💬 Consultar este sector</a>' +
+                    '</div>' +
+                '</div></div>';
+        }
+        return html;
+    }
+
+    var waFooter = encodeURIComponent("Hola Boti Dival, me gustaría consultar sobre el costo de envío a mi zona.");
+
+    var m = '<div class="shp-overlay" id="shippingModal">' +
+        '<div class="shp-modal">' +
+            '<div class="shp-header"><div class="shp-header-bg"></div>' +
+                '<div class="shp-header-content">' +
+                    '<div class="shp-header-left">' +
+                        '<div class="shp-header-icon-wrap"><span class="shp-header-icon">🚚</span><span class="shp-header-pulse"></span></div>' +
+                        '<div><h2 class="shp-title">Tarifas de Delivery</h2><p class="shp-subtitle">Región de O\'Higgins · Precios actualizados</p></div>' +
+                    '</div>' +
+                    '<button class="shp-close" onclick="closeShippingModal()" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1 1l16 16M17 1L1 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="shp-stats">' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">📍</span><div class="shp-stat-data"><span class="shp-stat-value">' + zones.length + '</span><span class="shp-stat-label">Zonas</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">💚</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(minP) + '</span><span class="shp-stat-label">Desde</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">📊</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(avgP) + '</span><span class="shp-stat-label">Promedio</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">📌</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(maxP) + '</span><span class="shp-stat-label">Máximo</span></div></div>' +
+            '</div>' +
+            '<div class="shp-controls">' +
+                '<div class="shp-search-wrap">' +
+                    '<svg class="shp-search-svg" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#94a3b8" stroke-width="2"/><path d="M20 20l-4-4" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/></svg>' +
+                    '<input type="text" id="shippingSearchInput" class="shp-search" placeholder="Buscar sector o comuna..." oninput="filterShippingZones()">' +
+                '</div>' +
+                '<div class="shp-controls-row">' +
+                    '<div class="shp-filters">' +
+                        '<button class="shp-filter active" onclick="setShippingFilter(this,\'all\')">Todos <span class="shp-filter-count">' + zones.length + '</span></button>' +
+                        '<button class="shp-filter" onclick="setShippingFilter(this,\'Coltauco\')">🏘️ Coltauco <span class="shp-filter-count">' + coltN + '</span></button>' +
+                        '<button class="shp-filter" onclick="setShippingFilter(this,\'Doñihue\')">🏡 Doñihue <span class="shp-filter-count">' + donN + '</span></button>' +
+                    '</div>' +
+                    '<div class="shp-sort">' +
+                        '<button class="shp-sort-btn active" onclick="setShippingSort(this,\'price-desc\')" title="Mayor precio">↓$</button>' +
+                        '<button class="shp-sort-btn" onclick="setShippingSort(this,\'price-asc\')" title="Menor precio">↑$</button>' +
+                        '<button class="shp-sort-btn" onclick="setShippingSort(this,\'name\')" title="A-Z">A-Z</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="shp-list" id="shippingZonesList">' + buildCards("all", "", "price-desc") + '</div>' +
+            '<div class="shp-footer">' +
+                '<div class="shp-footer-info"><span class="shp-footer-dot"></span><p>Los precios son referenciales y pueden variar según condiciones del pedido</p></div>' +
+                '<div class="shp-footer-actions">' +
+                    '<button class="shp-btn-ghost" onclick="closeShippingModal()">Cerrar</button>' +
+                    '<a href="https://wa.me/56985062378?text=' + waFooter + '" target="_blank" class="shp-btn-wa">' +
+                        '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>' +
+                        ' Consultar por WhatsApp</a>' +
+                '</div>' +
+            '</div>' +
+        '</div></div>';
+
+    document.body.insertAdjacentHTML('beforeend', m);
+    requestAnimationFrame(function() {
+        var el = document.getElementById('shippingModal');
+        if (el) el.classList.add('active');
+    });
+
+    window._shp = { buildCards: buildCards, filter: "all", sort: "price-desc" };
+}
+
+function setShippingFilter(btn, filter) {
+    window._shp.filter = filter;
+    document.querySelectorAll('.shp-filter').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    filterShippingZones();
+}
+
+function setShippingSort(btn, sort) {
+    window._shp.sort = sort;
+    document.querySelectorAll('.shp-sort-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    filterShippingZones();
+}
+
+function filterShippingZones() {
+    var inp = document.getElementById('shippingSearchInput');
+    var search = inp ? inp.value : "";
+    var list = document.getElementById('shippingZonesList');
+    if (list && window._shp) {
+        list.innerHTML = window._shp.buildCards(window._shp.filter, search, window._shp.sort);
+    }
+}
+
+function closeShippingModal() {
+    var modal = document.getElementById('shippingModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.classList.add('closing');
+        setTimeout(function(){ modal.remove(); }, 400);
+    }
+}
+
+function contactShippingWhatsApp() {
+    var message = "Hola Boti Dival, me gustaría consultar sobre el costo de envío a mi zona. Mi dirección es: [Mi dirección]";
+    window.open("https://wa.me/56985062378?text=" + encodeURIComponent(message), "_blank");
 }
 
 /* ==================== UTILIDADES ==================== */
@@ -2336,42 +2490,14 @@ function addKeyboardShortcuts() {
     });
 }
 
-/* ==================== INICIALIZACIÓN MEJORADA ==================== */
-
-function initializeApp() {
-    loadCartState();
-    renderProducts(PRODUCTS);
-    setupEventListeners();
-    updateStatus();
-    updateCartUI();
-    initializeCarousel();
-    initScrollAnimations();
-    addTouchFeedback();
-    enhanceSearch();
-    addKeyboardShortcuts();
-    setInterval(updateStatus, 60000); // Actualizar estado cada minuto
-    setupLazyLoad();
-}
 
 /* ==================== OPTIMIZACIÓN DE RENDIMIENTO ==================== */
 
 function setupLazyLoad() {
-    const lazyObserverOptions = {
-        threshold: 0.1
-    };
-
-    const lazyObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                lazyObserver.unobserve(entry.target);
-            }
-        });
-    }, lazyObserverOptions);
-
-    document.querySelectorAll('.product-card').forEach(card => {
-        card.style.opacity = '0';
-        lazyObserver.observe(card);
+    // Aplicar animación de entrada suave a las tarjetas (sin ocultarlas)
+    document.querySelectorAll('.product-card').forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.05}s`;
+        card.classList.add('fade-in-card');
     });
 }
 

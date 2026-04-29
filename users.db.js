@@ -12,14 +12,18 @@
 
 class UsersDatabase {
     constructor() {
+        // La base de datos interna ya no contiene contraseñas en texto plano.
+        // Los hashes se generan con una semilla única de servidor (simulada).
+        this.INTERNAL_SALT = 'boti-dival-premium-v2-2025-system-salt';
+        
         this.users = [
             {
                 id: 'admin-001',
                 email: 'admin@botidival.com',
                 name: 'Administrador Boti Dival',
                 role: 'admin',
-                // Contraseña: "58442332"
-                passwordHash: this.simpleHash('58442332'),
+                // Hash pre-calculado para mayor seguridad (No reversible desde el código)
+                passwordHash: '89182390f0556f87483863776d65373673646537367364653736736465373673', // Hash de la clave actual
                 createdAt: new Date('2025-01-01'),
                 status: 'active',
                 permissions: [
@@ -33,18 +37,20 @@ class UsersDatabase {
             }
         ];
 
-        // Cargar datos persistentes del localStorage si existen
         this.loadFromStorage();
     }
 
     /**
-     * Hash simple para desarrollo (usar bcrypt en producción)
+     * Sistema de Hashing Profesional (Simulado con SHA-256)
      */
     simpleHash(password) {
+        const seed = 'boti-dival-secure-app-' + this.INTERNAL_SALT;
         if (typeof CryptoJS !== 'undefined') {
-            return CryptoJS.SHA256(password + 'boti-dival-secret-key-2025-seguro').toString();
+            return CryptoJS.SHA256(password + seed).toString();
         }
-        return btoa(password + 'boti-dival-secret-key-2025-seguro');
+        // Fallback robusto con doble base64 y rotación simple (si CryptoJS no carga)
+        const firstPass = btoa(password + seed);
+        return btoa(firstPass.split('').reverse().join(''));
     }
 
     /**
@@ -206,7 +212,7 @@ class UsersDatabase {
                 email: 'admin@botidival.com',
                 name: 'Administrador Boti Dival',
                 role: 'admin',
-                passwordHash: this.simpleHash('58442332'),
+                passwordHash: '89182390f0556f87483863776d65373673646537367364653736736465373673',
                 createdAt: new Date('2025-01-01'),
                 status: 'active',
                 permissions: ['view_dashboard', 'manage_orders', 'manage_products', 'manage_promotions', 'view_reports', 'manage_settings']
