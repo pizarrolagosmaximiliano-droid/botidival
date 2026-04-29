@@ -67,8 +67,14 @@ async function protectDashboard() {
     }
 
     const user = Auth.getCurrentUser();
-    const brand = document.querySelector('.navbar-brand');
-    if (brand && user) brand.textContent = `Panel Admin - ${user.name}`;
+    const userNameSpan = document.querySelector('.dropdown-toggle span.fw-medium');
+    const userImg = document.querySelector('.dropdown-toggle img');
+    
+    if (user) {
+        if (userNameSpan) userNameSpan.textContent = user.name;
+        if (userImg) userImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`;
+    }
+    
     setupLogout();
 }
 
