@@ -1428,8 +1428,29 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
                 btn.innerHTML = '✅ Ubicación Lista';
                 setTimeout(() => { 
                     btn.innerHTML = originalText;
-        showNotificationMessage('⚠️ Tu navegador no soporta geolocalización.');
-    }
+                    btn.classList.remove('btn-gps-success');
+                }, 4000);
+            }
+        },
+        (error) => {
+            let msg = '⚠️ Error al obtener ubicación.';
+            if (error.code === 1) msg = '⚠️ Permiso denegado. Activa el GPS y permite el acceso.';
+            else if (error.code === 3) msg = '⚠️ Tiempo agotado. Intenta de nuevo.';
+            
+            showNotificationMessage(msg);
+            console.error('GPS Error:', error);
+            
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        },
+        { 
+            enableHighAccuracy: true, 
+            timeout: 10000, 
+            maximumAge: 0 
+        }
+    );
 }
 
 function removeItemFromModal(productId) {
