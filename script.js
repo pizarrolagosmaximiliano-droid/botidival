@@ -2355,10 +2355,20 @@ function contactShipping() {
         { comuna: "Coltauco", sector: "El Molino", price: 4300 },
         { comuna: "Coltauco", sector: "Montegrande", price: 4200 },
         { comuna: "Coltauco", sector: "El Loreto", price: 4000 },
-        { comuna: "Coltauco", sector: "Almendro", price: 2700 }
+        { comuna: "Coltauco", sector: "Pampa de Idahue", price: 3900 },
+        { comuna: "Coltauco", sector: "Puren", price: 3700 },
+        { comuna: "Coltauco", sector: "Idahue", price: 3500 },
+        { comuna: "Coltauco", sector: "El Parral", price: 3000 },
+        { comuna: "Coltauco", sector: "Almendro", price: 2700 },
+        { comuna: "Coltauco", sector: "Lo Droguett", price: 2600 },
+        { comuna: "Coltauco", sector: "Idahuillo", price: 2500 },
+        { comuna: "Coltauco", sector: "San Luis", price: 2400 },
+        { comuna: "Coltauco", sector: "Lo Ulloa", price: 2400 },
+        { comuna: "Coltauco", sector: "Coltauco Centro", price: 2200 }
     ];
 
-    var maxP = 6600, minP = 4000;
+    var maxP = Math.max(...zones.map(z => z.price));
+    var minP = Math.min(...zones.map(z => z.price));
     var avgP = Math.round(zones.reduce(function(s,z){ return s + z.price; }, 0) / zones.length);
     var coltN = zones.filter(function(z){ return z.comuna === "Coltauco"; }).length;
     var donN = zones.filter(function(z){ return z.comuna === "Doñihue"; }).length;
