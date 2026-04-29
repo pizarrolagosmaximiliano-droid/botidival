@@ -838,7 +838,43 @@ function renderVueltas() {
     const trips = readStorageArray(STORAGE_KEYS.deliveryTrips);
     const tbody = document.getElementById('vueltasTableBody');
     if (!tbody) return;
-    
+
+    const isMobile = window.innerWidth < 992;
+
+    if (isMobile) {
+        const container = tbody.parentElement.parentElement; // table-responsive
+        if (container) {
+            container.innerHTML = `<div id="vueltasMobileCards" class="row g-3 p-2"></div>`;
+            const cardContainer = document.getElementById('vueltasMobileCards');
+            cardContainer.innerHTML = trips.map(t => `
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold text-primary">Viaje #${String(t.id).slice(-4)}</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary">${new Date(t.fecha).toLocaleString('es-CL', {dateStyle: 'short', timeStyle: 'short'})}</span>
+                            </div>
+                            <div class="mb-2">
+                                <p class="mb-1"><i class="fas fa-map-marker-alt text-danger me-1"></i> <strong>Sector:</strong> ${t.sector}</p>
+                                <p class="mb-1"><i class="fas fa-box text-info me-1"></i> <strong>Pedidos:</strong> ${t.pedidos}</p>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                <span class="fw-bold fs-5 text-success">$${t.total.toLocaleString('es-CL')}</span>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteVuelta(${t.id})">
+                                    <i class="fas fa-trash me-1"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            if (trips.length === 0) {
+                cardContainer.innerHTML = '<div class="col-12 text-center py-4 text-muted">No hay viajes registrados.</div>';
+            }
+            return;
+        }
+    }
+
     tbody.innerHTML = trips.map(t => `
         <tr>
             <td>#${String(t.id).slice(-4)}</td>
