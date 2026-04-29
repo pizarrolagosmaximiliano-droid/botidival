@@ -4,6 +4,33 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // CORRECCIÓN CRÍTICA: Asegurar que el hash del admin en localStorage sea el correcto
+    const fixAdminHash = () => {
+        const STORAGE_KEY = 'boti_dival_users_v2';
+        const correctHash = '9675b032f0e8bbb61eb49aeb86c21042ea813bde6e7489963789c628cc0e2398';
+        const stored = localStorage.getItem(STORAGE_KEY);
+        
+        if (stored) {
+            try {
+                let db = JSON.parse(stored);
+                let changed = false;
+                db.forEach(u => {
+                    if (u.email === 'admin@botidival.com' && u.passwordHash !== correctHash) {
+                        u.passwordHash = correctHash;
+                        changed = true;
+                    }
+                });
+                if (changed) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+                    console.log('✅ Hash de administrador actualizado correctamente.');
+                }
+            } catch (e) {
+                console.error('Error al corregir hash:', e);
+            }
+        }
+    };
+    fixAdminHash();
+
     // Verificar que Auth y USERS_DATABASE estén cargados
     if (typeof Auth === 'undefined' || typeof USERS_DATABASE === 'undefined') {
         console.error('❌ Error: Auth o USERS_DATABASE no están cargados');
