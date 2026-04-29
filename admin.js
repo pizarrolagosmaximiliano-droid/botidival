@@ -85,6 +85,27 @@ function setupLogout() {
 function setupNavigation() {
     const navLinks = document.querySelectorAll('.nav-link[data-section]');
     const sections = document.querySelectorAll('[id$="Section"]');
+    
+    // Mobile Offcanvas Menu Logic
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggleBtn = document.getElementById('mobileMenuToggle');
+    const closeBtn = document.getElementById('mobileMenuClose');
+
+    function closeMobileMenu() {
+        if (sidebar) sidebar.classList.remove('show');
+        if (overlay) overlay.classList.remove('show');
+    }
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            if(sidebar) sidebar.classList.add('show');
+            if(overlay) overlay.classList.add('show');
+        });
+    }
+    if (closeBtn) closeBtn.addEventListener('click', closeMobileMenu);
+    if (overlay) overlay.addEventListener('click', closeMobileMenu);
+
     navLinks.forEach((link) => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -96,6 +117,11 @@ function setupNavigation() {
             if (target) target.style.display = 'block';
             navLinks.forEach((nav) => nav.classList.remove('active'));
             link.classList.add('active');
+            
+            // Auto close mobile menu when a section is clicked
+            if (window.innerWidth < 992) {
+                closeMobileMenu();
+            }
         });
     });
 }
