@@ -509,7 +509,7 @@
                                 Recordar sesión
                             </label>
                         </div>
-                        <a href="#" class="forgot-link" onclick="if(confirm('¿Deseas restablecer las credenciales de fábrica? Se cerrarán todas las sesiones.')){localStorage.removeItem('boti_dival_users_v2'); location.reload();} return false;">Restablecer acceso</a>
+                        <a href="#" class="forgot-link" onclick="if(confirm('¿Deseas restablecer las credenciales de fábrica y desbloquear la cuenta?')){localStorage.clear(); location.reload();} return false;">Restablecer acceso</a>
                     </div>
 
                     <button type="submit" class="btn-primary" id="loginBtn">

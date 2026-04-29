@@ -1392,9 +1392,10 @@ function getCurrentLocation(targetId = 'manualLocation') {
             },
             (error) => {
                 let msg = '⚠️ Error al obtener ubicación.';
-                if (error.code === 1) msg = '⚠️ Permiso de ubicación denegado.';
-                else if (error.code === 3) msg = '⚠️ Tiempo de espera agotado.';
+                if (error.code === 1) msg = '⚠️ Permiso denegado. Activa el GPS y permite el acceso en tu navegador.';
+                else if (error.code === 3) msg = '⚠️ Tiempo agotado. Asegúrate de estar en un lugar con señal.';
                 
+                console.error('GPS Error:', error);
                 showNotificationMessage(msg);
                 if (btn) {
                     btn.disabled = false;
