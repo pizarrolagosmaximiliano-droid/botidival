@@ -401,25 +401,89 @@ function initializeApp() {
 /* ==================== EVENT LISTENERS ==================== */
 
 function setupEventListeners() {
-    // Filtros
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.dataset.category;
+    // Filtros (Tarjetas de Categoría)
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const category = card.dataset.category;
+            currentFilter = category;
             
             // Actualizar título del catálogo
             const catalogTitle = document.getElementById('catalogTitle');
             if (catalogTitle) {
-                catalogTitle.textContent = btn.querySelector('span:last-child').textContent;
+                catalogTitle.textContent = card.querySelector('h3').textContent;
             }
 
+            // Filtrar y renderizar productos
             const filtered = currentFilter === 'all'
                 ? PRODUCTS.filter(p => p.active !== false)
                 : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
             renderProducts(filtered);
+
+            // Animar transición a vista de productos
+            const categoriesView = document.getElementById('categoriesView');
+            const productsView = document.getElementById('productsView');
+            
+            if (categoriesView && productsView) {
+                categoriesView.classList.add('fade-out');
+                setTimeout(() => {
+                    categoriesView.classList.remove('active-view');
+                    categoriesView.classList.add('hidden-view');
+                    categoriesView.classList.remove('fade-out');
+                    
+                    productsView.classList.remove('hidden-view');
+                    productsView.classList.add('active-view');
+                    
+                    // Limpiar buscador si existe
+                    const searchInput = document.getElementById('categorySearchInput');
+                    if(searchInput) searchInput.value = '';
+                    
+                    // Scroll suave hacia arriba de la sección
+                    document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });
+                }, 300); // Esperar animación
+            }
         });
     });
+
+    // Botón Volver
+    const btnBack = document.getElementById('btnBackToCategories');
+    if (btnBack) {
+        btnBack.addEventListener('click', () => {
+            const categoriesView = document.getElementById('categoriesView');
+            const productsView = document.getElementById('productsView');
+            
+            if (categoriesView && productsView) {
+                productsView.classList.add('fade-out');
+                setTimeout(() => {
+                    productsView.classList.remove('active-view');
+                    productsView.classList.add('hidden-view');
+                    productsView.classList.remove('fade-out');
+                    
+                    categoriesView.classList.remove('hidden-view');
+                    categoriesView.classList.add('active-view');
+                    
+                    document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            }
+        });
+    }
+
+    // Buscador local de categoría
+    const categorySearchInput = document.getElementById('categorySearchInput');
+    if (categorySearchInput) {
+        categorySearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const baseProducts = currentFilter === 'all'
+                ? PRODUCTS.filter(p => p.active !== false)
+                : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
+                
+            const filtered = baseProducts.filter(p => 
+                p.name.toLowerCase().includes(searchTerm) || 
+                p.description.toLowerCase().includes(searchTerm)
+            );
+            
+            renderProducts(filtered);
+        });
+    }
 
     // Búsqueda
     const searchInput = document.getElementById('searchInput');

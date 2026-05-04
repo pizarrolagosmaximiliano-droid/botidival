@@ -213,44 +213,81 @@
 
     <!-- Catálogo de Productos -->
     <section id="catalogo" class="catalog-section">
-        <div class="container">
-            <h2 class="section-title">✨ <span class="highlight" id="catalogTitle">Nuestro Catálogo</span></h2>
-
-            <!-- Filtros por categoría -->
-            <div class="category-filters">
-                <button class="filter-btn active" data-category="all">
-                    <span class="cat-icon">⭐</span>
-                    <span>Todos</span>
-                </button>
-                <button class="filter-btn" data-category="cervezas">
-                    <span class="cat-icon">🍺</span>
-                    <span>Cervezas</span>
-                </button>
-                <button class="filter-btn" data-category="destilados">
-                    <span class="cat-icon">🥃</span>
-                    <span>Destilados</span>
-                </button>
-                <button class="filter-btn" data-category="vinos">
-                    <span class="cat-icon">🍷</span>
-                    <span>Vinos</span>
-                </button>
-                <button class="filter-btn" data-category="hielo">
-                    <span class="cat-icon">🧊</span>
-                    <span>Hielo</span>
-                </button>
-                <button class="filter-btn" data-category="snacks">
-                    <span class="cat-icon">🍟</span>
-                    <span>Snacks</span>
-                </button>
-                <button class="filter-btn" data-category="bebidas">
-                    <span class="cat-icon">🥤</span>
-                    <span>Bebidas</span>
-                </button>
+        <div class="container catalog-container">
+            <!-- Vista de Categorías -->
+            <div id="categoriesView" class="catalog-view active-view">
+                <h2 class="section-title">✨ <span class="highlight">Nuestro Catálogo</span></h2>
+                <div class="categories-grid">
+                    <div class="category-card" data-category="all">
+                        <div class="category-icon">⭐</div>
+                        <div class="category-info">
+                            <h3>Todos los Productos</h3>
+                            <p>Ver catálogo completo</p>
+                        </div>
+                    </div>
+                    <div class="category-card" data-category="cervezas">
+                        <div class="category-icon">🍺</div>
+                        <div class="category-info">
+                            <h3>Cervezas</h3>
+                            <p>Nacionales e importadas</p>
+                        </div>
+                    </div>
+                    <div class="category-card" data-category="destilados">
+                        <div class="category-icon">🥃</div>
+                        <div class="category-info">
+                            <h3>Destilados</h3>
+                            <p>Pisco, ron, whisky y más</p>
+                        </div>
+                    </div>
+                    <div class="category-card" data-category="vinos">
+                        <div class="category-icon">🍷</div>
+                        <div class="category-info">
+                            <h3>Vinos</h3>
+                            <p>Tinto, blanco y más</p>
+                        </div>
+                    </div>
+                    <div class="category-card" data-category="bebidas">
+                        <div class="category-icon">🥤</div>
+                        <div class="category-info">
+                            <h3>Bebidas</h3>
+                            <p>Gaseosas y energéticas</p>
+                        </div>
+                    </div>
+                    <div class="category-card" data-category="snacks">
+                        <div class="category-icon">🍟</div>
+                        <div class="category-info">
+                            <h3>Snacks</h3>
+                            <p>Para compartir</p>
+                        </div>
+                    </div>
+                    <div class="category-card" data-category="hielo">
+                        <div class="category-icon">🧊</div>
+                        <div class="category-info">
+                            <h3>Hielo</h3>
+                            <p>Bolsas de hielo</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Grid de productos -->
-            <div id="productsGrid" class="products-grid">
-                <!-- Se llena con JavaScript -->
+            <!-- Vista de Productos (Oculta por defecto) -->
+            <div id="productsView" class="catalog-view hidden-view">
+                <div class="products-view-header">
+                    <button id="btnBackToCategories" class="btn-back">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        Volver
+                    </button>
+                    <h2 class="category-view-title" id="catalogTitle">Cervezas</h2>
+                </div>
+                
+                <div class="category-search-box">
+                    <input type="text" id="categorySearchInput" class="category-search-input" placeholder="🔍 Buscar en esta categoría...">
+                </div>
+
+                <!-- Grid de productos -->
+                <div id="productsGrid" class="products-grid">
+                    <!-- Se llena con JavaScript -->
+                </div>
             </div>
         </div>
     </section>
