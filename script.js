@@ -1344,11 +1344,11 @@ function updateStatus() {
     }
 
     if (isOpen) {
-        statusText.textContent = '🟢 Abierto ' + closeTime;
-        statusText.classList.remove('closed');
+        statusText.textContent = 'Abierto ' + closeTime;
+        statusBar.classList.remove('closed');
     } else {
-        statusText.textContent = '⭕ Cerrado en estos momentos';
-        statusText.classList.add('closed');
+        statusText.textContent = 'Cerrado en estos momentos';
+        statusBar.classList.add('closed');
     }
 }
 
