@@ -1,4 +1,4 @@
-﻿/* ==================== PRODUCTOS ==================== */
+/* ==================== PRODUCTOS ==================== */
 
 const DEFAULT_PRODUCTS = [
     // Destilados
@@ -561,7 +561,6 @@ function renderProducts(products) {
                 <div class="product-actions">
                     <div class="quantity-control">
                         <button class="qty-btn" onclick="addToCart(${product.id}, -1)">−</button>
-                        <button class="qty-btn" onclick="addToCart(${product.id}, -1)">−</button>
                         <span class="qty-display" id="qty-${product.id}">0</span>
                         <button class="qty-btn" onclick="addToCart(${product.id}, 1)">+</button>
                     </div>
@@ -586,8 +585,6 @@ function getCategoryLabel(category) {
         'snacks': '🥨 Snacks',
         'bebidas': '🥤 Bebidas'
     };
-    return labels[category] || category;
-};
     return labels[category] || category;
 }
 
@@ -1336,22 +1333,6 @@ function updateStatus() {
 
     if (isOpen) {
         statusText.textContent = '🟢 Abierto ' + closeTime;
-        statusText.classList.remove('closed');
-    } else {
-        statusText.textContent = '⭕ Cerrado en estos momentos';
-        statusText.classList.add('closed');
-    }
-} else {
-            closeTime = 'hasta las 00:30';
-        }
-    } else if (day === 5 || day === 6) {
-        // Viernes y sábado abierto hasta 02:30
-        isOpen = true;
-        closeTime = 'hasta las 02:30';
-    }
-
-    if (isOpen) {
-        statusText.textContent = `🟢 Abierto ${closeTime}`;
         statusText.classList.remove('closed');
     } else {
         statusText.textContent = '⭕ Cerrado en estos momentos';
@@ -2845,6 +2826,25 @@ document.addEventListener('click', (e) => {
     }
 });
 
+
+// Global click listener for product cards (Event Delegation)
+document.addEventListener('click', (e) => {
+    const card = e.target.closest('.product-card');
+    if (card) {
+        // Ignorar clics en los botones de acción del carrito dentro de la tarjeta
+        if (e.target.closest('.product-actions')) return;
+        
+        const productId = parseInt(card.dataset.id);
+        if (!isNaN(productId)) {
+            openProductModal(productId);
+        }
+    }
+    
+    // Cerrar modal al hacer clic en el overlay oscuro
+    if (e.target.classList.contains('product-modal-overlay')) {
+        closeProductModal();
+    }
+});
 
 /* ==================== MOBILE DRAWER LOGIC ==================== */
 
