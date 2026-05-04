@@ -2854,3 +2854,70 @@ document.addEventListener('click', (e) => {
     }
 });
 
+
+/* ==================== MOBILE DRAWER LOGIC ==================== */
+
+function openMobileMenu() {
+    const btn = document.getElementById('menuToggle');
+    const drawer = document.getElementById('mobileDrawer');
+    const overlay = document.getElementById('drawerOverlay');
+    
+    btn.classList.add('open');
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    overlay.classList.add('active');
+    document.body.classList.add('drawer-open');
+}
+
+function closeMobileMenu() {
+    const btn = document.getElementById('menuToggle');
+    const drawer = document.getElementById('mobileDrawer');
+    const overlay = document.getElementById('drawerOverlay');
+    
+    btn.classList.remove('open');
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    overlay.classList.remove('active');
+    document.body.classList.remove('drawer-open');
+}
+
+// Wire up hamburger button
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menuToggle');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+            if (this.classList.contains('open')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        });
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeMobileMenu();
+    });
+});
+
+// Keep drawer cart count in sync
+const _origUpdateCartUI = typeof updateCartUI !== 'undefined' ? updateCartUI : null;
+function syncDrawerCart() {
+    const cartTotal = cart ? cart.reduce((sum, i) => sum + i.quantity, 0) : 0;
+    const drawerBadge = document.getElementById('drawerCartCount');
+    if (drawerBadge) {
+        drawerBadge.textContent = cartTotal;
+        drawerBadge.style.display = cartTotal > 0 ? 'flex' : 'none';
+    }
+}
+
+// Patch addToCart to also sync drawer
+const _origAddToCart = window.addToCart;
+if (typeof _origAddToCart === 'function') {
+    window.addToCart = function() {
+        _origAddToCart.apply(this, arguments);
+        syncDrawerCart();
+    };
+}
+
+document.addEventListener('DOMContentLoaded', syncDrawerCart);
