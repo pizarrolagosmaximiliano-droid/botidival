@@ -6307,3 +6307,72 @@ html {
 #miniSummary .mini-summary-btn:hover {
     background: #1d4ed8 !important;
 }
+
+/* ==================== MOBILE BOTTOM NAV - CART BUTTON FIX ==================== */
+
+/* Remove the permanent blue highlight from cart button */
+.mobile-cart-btn {
+    background: transparent !important;
+    color: var(--text-muted) !important;
+    border-radius: 12px !important;
+    padding: 8px 12px !important;
+}
+
+.mobile-cart-btn .nav-label {
+    color: var(--text-muted) !important;
+    font-size: 0.7rem !important;
+}
+
+/* All nav items: same clean style */
+.mobile-nav-item {
+    background: transparent !important;
+    color: var(--text-muted) !important;
+    text-decoration: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 8px 12px !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+    flex: 1 !important;
+}
+
+.mobile-nav-item .nav-label {
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    color: #94a3b8 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.mobile-nav-item .nav-icon {
+    font-size: 1.5rem !important;
+    line-height: 1 !important;
+}
+
+/* Cart badge stays red circle */
+.mobile-cart-icon-wrapper {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#mobileCartCount {
+    position: absolute !important;
+    top: -6px !important;
+    right: -8px !important;
+    background: #ef4444 !important;
+    color: #fff !important;
+    font-size: 0.65rem !important;
+    font-weight: 800 !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    border-radius: 9px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 2px solid #ffffff !important;
+    padding: 0 2px !important;
+}
