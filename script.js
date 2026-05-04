@@ -32,6 +32,18 @@ const DEFAULT_PRODUCTS = [
     { id: 18, name: 'Deli Snacks Mix', category: 'snacks', price: 4500, image: 'images/snacks.jpg.jpeg', description: 'Variedad de snacks premium para compartir', active: true }
 ];
 
+// Corregir automáticamente datos corruptos en localStorage si existen
+(function fixStorageCorruption() {
+    try {
+        const stored = localStorage.getItem('botidival_products');
+        if (stored && (stored.includes('Ã') || stored.includes('ǟ'))) {
+            console.warn('Detectada corrupción de caracteres en LocalStorage. Reiniciando catálogo...');
+            localStorage.removeItem('botidival_products');
+            window.location.reload();
+        }
+    } catch (e) {}
+})();
+
 
 // InicializaciÃƒÂ³n robusta con versionado para forzar actualizaciÃƒÂ³n
 function loadProducts() {
