@@ -190,10 +190,8 @@ body {
 .logo h1 {
     margin: 0;
     font-size: 1.5rem;
-    background: var(--gradient-gold);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #2563eb; /* Blue color */
+    font-weight: 800;
 }
 
 .tagline {
@@ -6471,7 +6469,7 @@ html {
     background: rgba(15, 23, 42, 0.6);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    z-index: 1099;
+    z-index: 2999; /* Higher than status bar (2000) */
     opacity: 0;
     visibility: hidden;
     transition: all 0.35s ease;
@@ -6490,7 +6488,7 @@ html {
     width: min(320px, 88vw);
     height: 100dvh;
     background: #ffffff;
-    z-index: 1100;
+    z-index: 3000; /* Higher than status bar (2000) */
     transform: translateX(100%);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
