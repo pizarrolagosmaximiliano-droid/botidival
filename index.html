@@ -495,6 +495,40 @@
         </div>
     </footer>
 
+    <!-- Product Detail Modal (Bottom Sheet on Mobile) -->
+    <div id="productDetailModal" class="product-modal-overlay">
+        <div class="product-modal-content">
+            <button class="close-modal-btn" onclick="closeProductModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <div class="product-modal-image-container">
+                <div class="modal-image-emoji" id="modalProductImageEmoji"></div>
+                <img id="modalProductImage" src="" alt="Producto" style="display:none;">
+                <div id="modalProductBadge" class="modal-popular-badge" style="display:none;"></div>
+            </div>
+            <div class="product-modal-details">
+                <span id="modalProductCategory" class="modal-product-category"></span>
+                <h2 id="modalProductName" class="modal-product-name"></h2>
+                <div class="modal-price-container">
+                    <span id="modalProductPrevPrice" class="modal-prev-price"></span>
+                    <span id="modalProductPrice" class="modal-product-price"></span>
+                </div>
+                <div class="modal-divider"></div>
+                <p id="modalProductDescription" class="modal-product-description"></p>
+            </div>
+            <div class="product-modal-footer">
+                <div class="modal-quantity-control">
+                    <button class="modal-qty-btn" onclick="updateModalQuantity(-1)">−</button>
+                    <span id="modalCurrentQty" class="modal-qty-display">1</span>
+                    <button class="modal-qty-btn" onclick="updateModalQuantity(1)">+</button>
+                </div>
+                <button id="modalAddToCartBtn" class="modal-add-to-cart-btn" onclick="confirmModalAdd()">
+                    Agregar • <span id="modalAddTotal"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Mini Resumen Carrito (Sticky Mobile) -->
     <div id="miniSummary" class="mini-cart-summary" style="display: none;">
         <div class="mini-summary-content">

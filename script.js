@@ -2745,3 +2745,112 @@ window.addEventListener('online', () => {
 window.addEventListener('offline', () => {
     showNotificationMessage('âš ï¸ Sin conexiÃ³n a internet');
 });
+
+/* ==================== PRODUCT DETAIL MODAL ==================== */
+
+let currentModalProductId = null;
+let currentModalQty = 1;
+
+function openProductModal(id) {
+    const product = PRODUCTS.find(p => p.id === id);
+    if (!product || product.active === false) return;
+
+    currentModalProductId = product.id;
+    currentModalQty = 1;
+
+    // Populate modal
+    document.getElementById('modalProductCategory').textContent = getCategoryLabel(product.category);
+    document.getElementById('modalProductName').textContent = product.name;
+    document.getElementById('modalProductDescription').textContent = product.description || 'Sin descripción detallada.';
+    
+    document.getElementById('modalProductPrice').textContent = '$' + product.price.toLocaleString('es-CL');
+    if (product.previousPrice) {
+        document.getElementById('modalProductPrevPrice').textContent = '$' + product.previousPrice.toLocaleString('es-CL');
+        document.getElementById('modalProductPrevPrice').style.display = 'inline';
+    } else {
+        document.getElementById('modalProductPrevPrice').style.display = 'none';
+    }
+
+    const imgEl = document.getElementById('modalProductImage');
+    const emojiEl = document.getElementById('modalProductImageEmoji');
+    
+    // Si la imagen es un emoji (empieza con un emoji) o una URL
+    if (product.image && product.image.startsWith('http')) {
+        imgEl.src = product.image;
+        imgEl.style.display = 'block';
+        emojiEl.style.display = 'none';
+    } else {
+        imgEl.style.display = 'none';
+        emojiEl.textContent = product.image || '??';
+        emojiEl.style.display = 'block';
+    }
+
+    const badge = document.getElementById('modalProductBadge');
+    if (product.popular) {
+        badge.textContent = '? Popular';
+        badge.style.display = 'block';
+        badge.style.background = 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)';
+    } else {
+        badge.style.display = 'none';
+    }
+
+    updateModalDisplays();
+
+    // Show modal
+    const modal = document.getElementById('productDetailModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeProductModal() {
+    const modal = document.getElementById('productDetailModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function updateModalQuantity(change) {
+    currentModalQty += change;
+    if (currentModalQty < 1) currentModalQty = 1;
+    updateModalDisplays();
+}
+
+function updateModalDisplays() {
+    document.getElementById('modalCurrentQty').textContent = currentModalQty;
+    const product = PRODUCTS.find(p => p.id === currentModalProductId);
+    if (product) {
+        const total = product.price * currentModalQty;
+        document.getElementById('modalAddTotal').textContent = '$' + total.toLocaleString('es-CL');
+    }
+}
+
+function confirmModalAdd() {
+    if (!currentModalProductId) return;
+    
+    // Usamos addToCart existente
+    addToCart(currentModalProductId, currentModalQty, true);
+    
+    // Cerrar el modal
+    closeProductModal();
+    
+    // Opcional: mostrar un feedback visual temporal en el botón
+}
+
+// Global click listener for product cards (Event Delegation)
+document.addEventListener('click', (e) => {
+    const card = e.target.closest('.product-card');
+    if (card) {
+        // Ignorar clics en los botones de acción del carrito dentro de la tarjeta
+        if (e.target.closest('.product-actions')) return;
+        
+        const productId = parseInt(card.dataset.id);
+        if (!isNaN(productId)) {
+            openProductModal(productId);
+        }
+    }
+    
+    // Cerrar modal al hacer clic en el overlay oscuro
+    if (e.target.classList.contains('product-modal-overlay')) {
+        closeProductModal();
+    }
+});
+
