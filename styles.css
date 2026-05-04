@@ -6231,3 +6231,79 @@ html {
         margin: 0 0 6px 0 !important;
     }
 }
+
+/* ==================== MINI CART SUMMARY - LÓGICA FIX ==================== */
+
+/* Asegurar que el mini resumen esté oculto por defecto */
+#miniSummary {
+    display: none !important;
+}
+
+/* Solo mostrarlo cuando JS le ponga display:block directamente */
+#miniSummary[style*="display: block"],
+#miniSummary[style*="display:block"] {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 70px !important;
+    left: 12px !important;
+    right: 12px !important;
+    background: #0f172a !important;
+    color: #fff !important;
+    border-radius: 18px !important;
+    padding: 14px 20px !important;
+    z-index: 998 !important;
+    box-shadow: 0 8px 32px rgba(15,23,42,0.25) !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    animation: miniCartSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+@keyframes miniCartSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* Estilos internos del mini resumen */
+#miniSummary .mini-summary-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 16px !important;
+}
+
+#miniSummary .mini-summary-info {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+#miniSummary .mini-qty {
+    font-size: 0.8rem !important;
+    color: rgba(255,255,255,0.6) !important;
+    font-weight: 500 !important;
+}
+
+#miniSummary .mini-total {
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+}
+
+#miniSummary .mini-summary-btn {
+    background: #2563eb !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 12px 22px !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    transition: background 0.2s ease !important;
+    flex-shrink: 0 !important;
+}
+
+#miniSummary .mini-summary-btn:hover {
+    background: #1d4ed8 !important;
+}
