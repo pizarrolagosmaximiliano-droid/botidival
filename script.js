@@ -2,15 +2,15 @@
 
 const DEFAULT_PRODUCTS = [
     // Destilados
-    { id: 1, name: 'Pisco Alto del Carmen', category: 'destilados', price: 9500, image: 'images/alto.jpg.jpeg', description: '35Â° - Botella 750ml de tradiciÃ³n chilena', popular: true, active: true },
-    { id: 2, name: 'Whisky Chivas Regal 12', category: 'destilados', price: 28900, image: 'images/chivas.jpg.jpeg', description: '12 AÃ±os - Whisky EscocÃ©s Premium 750ml', active: true },
-    { id: 3, name: 'Jack Daniel\'s Old No. 7', category: 'destilados', price: 26500, image: 'images/jack1.jpg.jpeg', description: 'Tennessee Whisky - El clÃ¡sico de siempre 750ml', popular: true, active: true },
+    { id: 1, name: 'Pisco Alto del Carmen', category: 'destilados', price: 9500, image: 'images/alto.jpg.jpeg', description: '35Ã‚Â° - Botella 750ml de tradiciÃƒÂ³n chilena', popular: true, active: true },
+    { id: 2, name: 'Whisky Chivas Regal 12', category: 'destilados', price: 28900, image: 'images/chivas.jpg.jpeg', description: '12 AÃƒÂ±os - Whisky EscocÃƒÂ©s Premium 750ml', active: true },
+    { id: 3, name: 'Jack Daniel\'s Old No. 7', category: 'destilados', price: 26500, image: 'images/jack1.jpg.jpeg', description: 'Tennessee Whisky - El clÃƒÂ¡sico de siempre 750ml', popular: true, active: true },
     { id: 4, name: 'Jack Daniel\'s Honey', category: 'destilados', price: 26500, image: 'images/jack2.jpg.jpeg', description: 'Tennessee Honey - Suave toque de miel 750ml', active: true },
     { id: 5, name: 'Jack Daniel\'s Apple', category: 'destilados', price: 26500, image: 'images/jack3.jpg.jpeg', description: 'Tennessee Apple - Refrescante sabor manzana 750ml', active: true },
     { id: 6, name: 'Johnnie Walker Red Label', category: 'destilados', price: 15900, image: 'images/redlabel1.jpg.jpeg', description: 'JW Red Label - Mezcla vibrante 750ml', active: true },
-    { id: 7, name: 'Johnnie Walker Black Label', category: 'destilados', price: 32900, image: 'images/rednegro.jpg.jpeg', description: 'JW Black Label - 12 AÃ±os de profundidad 750ml', popular: true, active: true },
+    { id: 7, name: 'Johnnie Walker Black Label', category: 'destilados', price: 32900, image: 'images/rednegro.jpg.jpeg', description: 'JW Black Label - 12 AÃƒÂ±os de profundidad 750ml', popular: true, active: true },
     { id: 8, name: 'Pisco Nobel Reservado', category: 'destilados', price: 12900, image: 'images/nobel.jpg.jpeg', description: 'Pisco Nobel - Calidad excepcional 750ml', active: true },
-    { id: 9, name: 'Pisco Nobel 40Â°', category: 'destilados', price: 14500, image: 'images/nobel2.jpg.jpeg', description: 'Pisco Nobel 40Â° - EdiciÃ³n especial 750ml', active: true },
+    { id: 9, name: 'Pisco Nobel 40Ã‚Â°', category: 'destilados', price: 14500, image: 'images/nobel2.jpg.jpeg', description: 'Pisco Nobel 40Ã‚Â° - EdiciÃƒÂ³n especial 750ml', active: true },
     { id: 10, name: 'Promo Mix Alcohol', category: 'destilados', price: 15990, image: 'images/alchol.png', description: 'Pack especial para tu previa', active: true },
     
     // Cervezas
@@ -21,7 +21,7 @@ const DEFAULT_PRODUCTS = [
     { id: 13, name: 'Vino Gato Negro Blanco', category: 'vinos', price: 3900, image: 'images/gato2.jpg.jpeg', description: 'Botella 1.5L - Varietal Sauvignon Blanc', active: true },
     
     // Bebidas
-    { id: 14, name: 'Monster Energy', category: 'bebidas', price: 2500, image: 'images/monster.jpg.jpeg', description: 'Lata 473ml - EnergÃ­a extrema', active: true },
+    { id: 14, name: 'Monster Energy', category: 'bebidas', price: 2500, image: 'images/monster.jpg.jpeg', description: 'Lata 473ml - EnergÃƒÂ­a extrema', active: true },
     { id: 15, name: 'Red Bull Energy Drink', category: 'bebidas', price: 2200, image: 'images/redbull .jpg.jpeg', description: 'Lata 250ml - Te da alas', active: true },
     
     // Snacks
@@ -29,7 +29,7 @@ const DEFAULT_PRODUCTS = [
 ];
 
 
-// InicializaciÃ³n robusta con versionado para forzar actualizaciÃ³n
+// InicializaciÃƒÂ³n robusta con versionado para forzar actualizaciÃƒÂ³n
 function loadProducts() {
     const CATALOG_VERSION = 'v2.0'; // Incrementa esto para forzar reset
     try {
@@ -41,7 +41,7 @@ function loadProducts() {
         }
         
         const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed) || parsed.length === 0) throw new Error('invÃ¡lido');
+        if (!Array.isArray(parsed) || parsed.length === 0) throw new Error('invÃƒÂ¡lido');
         return parsed;
     } catch (e) {
         localStorage.setItem('productos', JSON.stringify(DEFAULT_PRODUCTS));
@@ -52,19 +52,19 @@ function loadProducts() {
 
 let PRODUCTS = loadProducts();
 
-// ConfiguraciÃ³n de delivery
+// ConfiguraciÃƒÂ³n de delivery
 const DELIVERY_ZONES = {
-    'doÃ±ihue': {
-        name: 'DoÃ±ihue',
+    'doÃƒÂ±ihue': {
+        name: 'DoÃƒÂ±ihue',
         sectors: [
-            { id: 'centro', name: 'DoÃ±ihue Centro', cost: 6600 },
+            { id: 'centro', name: 'DoÃƒÂ±ihue Centro', cost: 6600 },
             { id: 'cerrillos', name: 'Cerrillos', cost: 6000 }
         ]
     },
     'coltauco': {
         name: 'Coltauco',
         sectors: [
-            { id: 'quimÃ¡vida', name: 'QuimÃ¡vida', cost: 6000 },
+            { id: 'quimÃƒÂ¡vida', name: 'QuimÃƒÂ¡vida', cost: 6000 },
             { id: 'lo_de_cuevas', name: 'Lo de Cuevas', cost: 5800 },
             { id: 'hijuela_del_medio', name: 'Hijuela del Medio', cost: 5800 },
             { id: 'rinconada_de_parral', name: 'Rinconada de Parral', cost: 4700 },
@@ -135,7 +135,7 @@ if (pedidosHistorial.length === 0) {
             fecha: fechaHoy.toISOString(),
             tipo: 'delivery',
             cliente: {
-                nombre: 'Juan PÃ©rez',
+                nombre: 'Juan PÃƒÂ©rez',
                 telefono: '+56912345678',
                 comuna: 'Coltauco',
                 sector: 'Centro',
@@ -144,23 +144,23 @@ if (pedidosHistorial.length === 0) {
             },
             productos: [
                 { id: 1, nombre: 'Cerveza Artesanal Golden', cantidad: 2, precioUnitario: 3500, subtotal: 7000 },
-                { id: 5, nombre: 'Pisco Capel AÃ±ejo', cantidad: 1, precioUnitario: 12900, subtotal: 12900 }
+                { id: 5, nombre: 'Pisco Capel AÃƒÂ±ejo', cantidad: 1, precioUnitario: 12900, subtotal: 12900 }
             ],
             costos: {
                 subtotal: 19900,
                 delivery: 0,
                 total: 19900
             },
-            comentarios: 'Entregar despuÃ©s de las 20:00'
+            comentarios: 'Entregar despuÃƒÂ©s de las 20:00'
         },
         {
             id: 1002,
             fecha: fechaAyer.toISOString(),
             tipo: 'delivery',
             cliente: {
-                nombre: 'MarÃ­a GonzÃ¡lez',
+                nombre: 'MarÃƒÂ­a GonzÃƒÂ¡lez',
                 telefono: '+56987654321',
-                comuna: 'DoÃ±ihue',
+                comuna: 'DoÃƒÂ±ihue',
                 sector: 'Centro',
                 direccion: 'Avenida Central 456',
                 coordenadas: ''
@@ -180,7 +180,7 @@ if (pedidosHistorial.length === 0) {
             fecha: fechaHoy.toISOString(),
             tipo: 'presencial',
             cliente: {
-                nombre: 'Carlos RodrÃ­guez',
+                nombre: 'Carlos RodrÃƒÂ­guez',
                 telefono: '+56955556666',
                 comuna: 'Coltauco',
                 sector: 'Centro',
@@ -208,7 +208,7 @@ if (!localStorage.getItem('promociones')) {
             id: 1,
             image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
             title: 'Happy Hour - 2x1 en Cervezas',
-            description: 'Todas las tardes de 18:00 a 20:00, lleva 2 cervezas y paga solo 1. Â¡Perfecto para el after office!',
+            description: 'Todas las tardes de 18:00 a 20:00, lleva 2 cervezas y paga solo 1. Ã‚Â¡Perfecto para el after office!',
             price: 3500,
             active: true,
             createdAt: new Date().toISOString()
@@ -232,14 +232,14 @@ if (!localStorage.getItem('videos')) {
             videoId: 'dQw4w9WgXcQ',
             url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             title: 'Conoce Nuestra Carta Premium',
-            description: 'Descubre nuestra selecciÃ³n de bebidas premium y productos exclusivos.',
+            description: 'Descubre nuestra selecciÃƒÂ³n de bebidas premium y productos exclusivos.',
             active: true,
             createdAt: new Date().toISOString()
         }
     ]));
 }
 
-// Recargar variables despuÃ©s de inicializaciÃ³n
+// Recargar variables despuÃƒÂ©s de inicializaciÃƒÂ³n
 promociones = JSON.parse(localStorage.getItem('promociones')) || [];
 videos = JSON.parse(localStorage.getItem('videos')) || [];
 carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || carouselImages;
@@ -301,7 +301,7 @@ function resetSlideShow() {
     startSlideShow();
 }
 
-/* ==================== INICIALIZACIÃ“N ==================== */
+/* ==================== INICIALIZACIÃƒâ€œN ==================== */
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
@@ -361,7 +361,7 @@ function initializeApp() {
     setInterval(updateStatus, 60000); 
     setInterval(checkDarkMode, 600000); // Check cada 10 minutos
 
-    // SincronizaciÃ³n en tiempo real
+    // SincronizaciÃƒÂ³n en tiempo real
     window.addEventListener('storage', (e) => {
         if (e.key === STORAGE_KEYS.productos) {
             PRODUCTS = loadProducts();
@@ -401,13 +401,13 @@ function initializeApp() {
 /* ==================== EVENT LISTENERS ==================== */
 
 function setupEventListeners() {
-    // Filtros (Tarjetas de CategorÃ­a)
+    // Filtros (Tarjetas de CategorÃƒÂ­a)
     document.querySelectorAll('.category-card').forEach(card => {
         card.addEventListener('click', () => {
             const category = card.dataset.category;
             currentFilter = category;
             
-            // Actualizar tÃ­tulo del catÃ¡logo
+            // Actualizar tÃƒÂ­tulo del catÃƒÂ¡logo
             const catalogTitle = document.getElementById('catalogTitle');
             if (catalogTitle) {
                 catalogTitle.textContent = card.querySelector('h3').textContent;
@@ -419,7 +419,7 @@ function setupEventListeners() {
                 : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
             renderProducts(filtered);
 
-            // Animar transiciÃ³n a vista de productos
+            // Animar transiciÃƒÂ³n a vista de productos
             const categoriesView = document.getElementById('categoriesView');
             const productsView = document.getElementById('productsView');
             
@@ -437,14 +437,14 @@ function setupEventListeners() {
                     const searchInput = document.getElementById('categorySearchInput');
                     if(searchInput) searchInput.value = '';
                     
-                    // Scroll suave hacia arriba de la secciÃ³n
+                    // Scroll suave hacia arriba de la secciÃƒÂ³n
                     document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });
-                }, 300); // Esperar animaciÃ³n
+                }, 300); // Esperar animaciÃƒÂ³n
             }
         });
     });
 
-    // BotÃ³n Volver
+    // BotÃƒÂ³n Volver
     const btnBack = document.getElementById('btnBackToCategories');
     if (btnBack) {
         btnBack.addEventListener('click', () => {
@@ -467,7 +467,7 @@ function setupEventListeners() {
         });
     }
 
-    // Buscador local de categorÃ­a
+    // Buscador local de categorÃƒÂ­a
     const categorySearchInput = document.getElementById('categorySearchInput');
     if (categorySearchInput) {
         categorySearchInput.addEventListener('input', (e) => {
@@ -485,7 +485,7 @@ function setupEventListeners() {
         });
     }
 
-    // BÃºsqueda
+    // BÃƒÂºsqueda
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', handleSearch);
     searchInput.addEventListener('focus', () => {
@@ -504,22 +504,10 @@ function setupEventListeners() {
         openOrderForm();
     });
     
-    // Menu mÃ³vil
+    // Menu mÃƒÂ³vil
     const menuToggle = document.getElementById('menuToggle');
-    menuToggle.addEventListener('click', () => {
-        menuToggle.classList.toggle('active');
-        document.querySelector('.nav-links').classList.toggle('active');
-    });
+    // El menú ahora se maneja con la lógica del drawer al final del archivo
 
-    // Cerrar menu al hacer clic en un link
-    document.querySelectorAll('.nav-link, .mobile-nav-item').forEach(link => {
-        link.addEventListener('click', () => {
-            const menuToggle = document.getElementById('menuToggle');
-            const navLinks = document.querySelector('.nav-links');
-            if (menuToggle) menuToggle.classList.remove('active');
-            if (navLinks) navLinks.classList.remove('active');
-        });
-    });
 
     // Actualizar nav activa al hacer scroll
     window.addEventListener('scroll', () => {
@@ -553,7 +541,7 @@ function renderProducts(products) {
     
     grid.innerHTML = products.map(product => `
         <div class="product-card" data-id="${product.id}" style="${product.active === false ? 'opacity:0.6; pointer-events:none;' : ''}">
-            ${product.popular ? '<div class="popular-badge">ðŸ”¥ Popular</div>' : ''}
+            ${product.popular ? '<div class="popular-badge">Ã°Å¸â€Â¥ Popular</div>' : ''}
             ${product.active === false ? '<div class="popular-badge" style="background:#dc3545; right:auto; left:10px;">Agotado</div>' : ''}
             <div class="product-image">
                 <img src="${product.image}" alt="${product.name}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; filter: ${product.active === false ? 'grayscale(100%)' : 'none'};" onerror="this.src='https://via.placeholder.com/400?text=Sin+imagen'; this.onerror=null;">
@@ -568,7 +556,7 @@ function renderProducts(products) {
                 </div>
                 <div class="product-actions">
                     <div class="quantity-control">
-                        <button class="qty-btn" onclick="addToCart(${product.id}, -1)">âˆ’</button>
+                        <button class="qty-btn" onclick="addToCart(${product.id}, -1)">Ã¢Ë†â€™</button>
                         <span class="qty-display" id="qty-${product.id}">0</span>
                         <button class="qty-btn" onclick="addToCart(${product.id}, 1)">+</button>
                     </div>
@@ -586,12 +574,12 @@ function renderProducts(products) {
 
 function getCategoryLabel(category) {
     const labels = {
-        'cervezas': 'ðŸº Cervezas',
-        'destilados': 'ðŸ¥ƒ Destilados',
-        'vinos': 'ðŸ· Vinos',
-        'hielo': 'ðŸ§Š Hielo',
-        'snacks': 'ðŸŸ Snacks',
-        'bebidas': 'ðŸ¥¤ Bebidas'
+        'cervezas': 'Ã°Å¸ÂÂº Cervezas',
+        'destilados': 'Ã°Å¸Â¥Æ’ Destilados',
+        'vinos': 'Ã°Å¸ÂÂ· Vinos',
+        'hielo': 'Ã°Å¸Â§Å  Hielo',
+        'snacks': 'Ã°Å¸ÂÅ¸ Snacks',
+        'bebidas': 'Ã°Å¸Â¥Â¤ Bebidas'
     };
     return labels[category] || category;
 }
@@ -621,8 +609,8 @@ function addToCart(productId, quantity = 1, showNotification = true) {
     saveCartState();
 
     if (showNotification) {
-        showNotificationMessage(`âœ“ ${product.name} agregado al carrito`);
-        // Abrir automÃ¡ticamente el formulario de pedido al agregar
+        showNotificationMessage(`Ã¢Å“â€œ ${product.name} agregado al carrito`);
+        // Abrir automÃƒÂ¡ticamente el formulario de pedido al agregar
         setTimeout(openOrderForm, 500);
     }
 }
@@ -654,7 +642,7 @@ function updateCartUI() {
         }
     });
 
-    // Actualizar Mini Resumen (Sticky bar en móvil)
+    // Actualizar Mini Resumen (Sticky bar en mÃ³vil)
     const miniSummary = document.getElementById('miniSummary');
     if (miniSummary) {
         if (totalItems > 0) {
@@ -676,7 +664,7 @@ function removeItemFromCart(productId) {
         updateCartUI();
         updateProductQuantityDisplay();
         saveCartState();
-        showNotificationMessage(`ðŸ—‘ï¸ ${item.name} eliminado del carrito`);
+        showNotificationMessage(`Ã°Å¸â€”â€˜Ã¯Â¸Â ${item.name} eliminado del carrito`);
     }
 }
 
@@ -688,10 +676,10 @@ function removeFromCartAndRefresh(productId) {
         updateProductQuantityDisplay();
         saveCartState();
         
-        // Si el carrito queda vacÃ­o, cerrar el modal
+        // Si el carrito queda vacÃƒÂ­o, cerrar el modal
         if (cart.length === 0) {
             closeOrderModal();
-            showNotificationMessage('ðŸ›’ El carrito estÃ¡ vacÃ­o');
+            showNotificationMessage('Ã°Å¸â€ºâ€™ El carrito estÃƒÂ¡ vacÃƒÂ­o');
         } else {
             // Refrescar el modal de pedido
             openOrderForm();
@@ -710,11 +698,11 @@ function openCartSummaryModal() {
         modal.innerHTML = `
             <div class="order-modal order-modal--small">
                 <div class="order-modal-header">
-                    <h3>ðŸ›’ Carrito vacÃ­o</h3>
-                    <button class="modal-close" onclick="closeCartSummaryModal()">âœ•</button>
+                    <h3>Ã°Å¸â€ºâ€™ Carrito vacÃƒÂ­o</h3>
+                    <button class="modal-close" onclick="closeCartSummaryModal()">Ã¢Å“â€¢</button>
                 </div>
                 <div class="order-modal-content">
-                    <p>TodavÃ­a no has agregado productos.</p>
+                    <p>TodavÃƒÂ­a no has agregado productos.</p>
                     <div class="order-actions" style="justify-content: center; margin-top: 16px;">
                         <button type="button" class="btn btn-primary" onclick="closeCartSummaryModal()">Cerrar</button>
                     </div>
@@ -736,7 +724,7 @@ function openCartSummaryModal() {
         const moreCount = cart.length - displayedItems.length;
         const moreHtml = moreCount > 0 ? `
             <div class="order-item order-item-more">
-                <span class="order-item-name">... y ${moreCount} producto(s) mÃ¡s</span>
+                <span class="order-item-name">... y ${moreCount} producto(s) mÃƒÂ¡s</span>
             </div>
         ` : '';
 
@@ -745,8 +733,8 @@ function openCartSummaryModal() {
         modal.innerHTML = `
             <div class="order-modal order-modal--small">
                 <div class="order-modal-header">
-                    <h3>ðŸ›’ Tu Pedido</h3>
-                    <button class="modal-close" onclick="closeCartSummaryModal()">âœ•</button>
+                    <h3>Ã°Å¸â€ºâ€™ Tu Pedido</h3>
+                    <button class="modal-close" onclick="closeCartSummaryModal()">Ã¢Å“â€¢</button>
                 </div>
                 <div class="order-modal-content">
                     <div class="order-summary">
@@ -807,7 +795,7 @@ function setCompactMode(compact = true) {
         cartExpanded = true;
         // Auto-expand cart items and form when opening full view
         updateCartUI();
-        // Mostrar formulario automÃ¡ticamente en modo expandido
+        // Mostrar formulario automÃƒÂ¡ticamente en modo expandido
         document.getElementById('cartForm').style.display = 'block';
         document.getElementById('cartSummary').style.display = 'block';
         document.getElementById('checkoutBtn').style.display = 'block';
@@ -836,7 +824,7 @@ function updateStepIndicator(step) {
 
 function openOrderForm() {
     if (cart.length === 0) {
-        showNotificationMessage('❌ Tu carrito está vacío.');
+        showNotificationMessage('âŒ Tu carrito estÃ¡ vacÃ­o.');
         return;
     }
 
@@ -850,8 +838,8 @@ function openOrderForm() {
     modal.innerHTML = `
         <div class="order-modal-premium">
             <div class="order-modal-header">
-                <h3>🛒 Finalizar Compra</h3>
-                <button class="modal-close" onclick="closeOrderModal()">×</button>
+                <h3>ðŸ›’ Finalizar Compra</h3>
+                <button class="modal-close" onclick="closeOrderModal()">Ã—</button>
             </div>
 
             <div class="order-modal-content slim-scroll">
@@ -884,7 +872,7 @@ function openOrderForm() {
                             <span class="total-val">$${subtotal.toLocaleString('es-CL')}</span>
                         </div>
                         <div id="deliveryRow" class="total-row" style="display: none;">
-                            <span class="total-label">Envío</span>
+                            <span class="total-label">EnvÃ­o</span>
                             <span id="modalDeliveryCost" class="total-val">$0</span>
                         </div>
                         <div class="total-row grand-total">
@@ -897,18 +885,18 @@ function openOrderForm() {
                 <!-- Formulario -->
                 <form class="order-form-premium" onsubmit="submitOrder(event)">
                     <div class="form-section">
-                        <h4>📍 Datos de Entrega</h4>
+                        <h4>ðŸ“ Datos de Entrega</h4>
                         
                         <div class="premium-input-group">
-                            <label>Método de Entrega</label>
+                            <label>MÃ©todo de Entrega</label>
                             <div class="radio-group">
                                 <div class="radio-option">
                                     <input type="radio" id="typeDelivery" name="orderType" value="delivery" checked onchange="toggleOrderTypeFields()">
-                                    <label for="typeDelivery">🛵 Delivery</label>
+                                    <label for="typeDelivery">ðŸ›µ Delivery</label>
                                 </div>
                                 <div class="radio-option">
                                     <input type="radio" id="typeRetiro" name="orderType" value="retiro" onchange="toggleOrderTypeFields()">
-                                    <label for="typeRetiro">🏪 Retiro</label>
+                                    <label for="typeRetiro">ðŸª Retiro</label>
                                 </div>
                             </div>
                         </div>
@@ -940,11 +928,11 @@ function openOrderForm() {
                             </div>
 
                             <div class="premium-input-group">
-                                <label>Dirección Exacta *</label>
+                                <label>DirecciÃ³n Exacta *</label>
                                 <div style="display:flex; gap:8px;">
-                                    <input type="text" id="modalClientAddress" class="premium-input" placeholder="Calle, N°, Block..." required>
+                                    <input type="text" id="modalClientAddress" class="premium-input" placeholder="Calle, NÂ°, Block..." required>
                                     <button type="button" class="gps-btn" onclick="getCurrentLocation('modalClientAddress')" id="btnGps">
-                                        📍 <span class="desktop-only">GPS</span>
+                                        ðŸ“ <span class="desktop-only">GPS</span>
                                     </button>
                                 </div>
                             </div>
@@ -1096,20 +1084,20 @@ function submitOrder(event) {
     const autoGps = document.getElementById('modalCoordinates')?.value.trim();
 
     if (!name) return alert('Por favor ingresa tu nombre completo');
-    if (!phone) return alert('Por favor ingresa tu nÃºmero de telÃ©fono');
+    if (!phone) return alert('Por favor ingresa tu nÃƒÂºmero de telÃƒÂ©fono');
 
     const phoneRegex = /^(\+56\s?9|\+569|9)\s?\d{4}\s?\d{4}$/;
     if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-        return alert('Formato de telÃ©fono invÃ¡lido. Usa +56 9 XXXX XXXX');
+        return alert('Formato de telÃƒÂ©fono invÃƒÂ¡lido. Usa +56 9 XXXX XXXX');
     }
 
     if (orderType === 'delivery') {
         if (!comuna) return alert('Por favor selecciona tu comuna');
         if (!sector) return alert('Por favor selecciona tu sector');
-        if (!address) return alert('Por favor ingresa tu direcciÃ³n completa');
+        if (!address) return alert('Por favor ingresa tu direcciÃƒÂ³n completa');
     }
 
-    if (cart.length === 0) return alert('Tu carrito estÃ¡ vacÃ­o');
+    if (cart.length === 0) return alert('Tu carrito estÃƒÂ¡ vacÃƒÂ­o');
 
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
@@ -1124,39 +1112,39 @@ function submitOrder(event) {
     const sectorName = orderType === 'delivery' ? (DELIVERY_ZONES[comuna]?.sectors.find(s => s.id === sector)?.name || '') : '';
     const comunaName = orderType === 'delivery' ? DELIVERY_ZONES[comuna]?.name : '';
 
-    let message = `ðŸ›’ *NUEVO PEDIDO â€“ BOTILLERÃA DIVAL*\n\n`;
-    message += `ðŸ‘¤ Cliente: ${name}\n`;
-    message += `ðŸ“ž TelÃ©fono: ${phone}\n\n`;
+    let message = `Ã°Å¸â€ºâ€™ *NUEVO PEDIDO Ã¢â‚¬â€œ BOTILLERÃƒÂA DIVAL*\n\n`;
+    message += `Ã°Å¸â€˜Â¤ Cliente: ${name}\n`;
+    message += `Ã°Å¸â€œÅ¾ TelÃƒÂ©fono: ${phone}\n\n`;
     
-    message += `ðŸ› Productos:\n`;
+    message += `Ã°Å¸â€ºÂ Productos:\n`;
     cart.forEach(item => {
-        message += `â€¢ ${item.name} x${item.quantity}\n`;
+        message += `Ã¢â‚¬Â¢ ${item.name} x${item.quantity}\n`;
     });
 
-    message += `\nðŸ’° Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
+    message += `\nÃ°Å¸â€™Â° Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
     if(orderType === 'delivery') {
-        message += `ðŸšš Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
+        message += `Ã°Å¸Å¡Å¡ Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
     } else {
-        message += `ðŸª Delivery: $0 (Retiro Local)\n`;
+        message += `Ã°Å¸ÂÂª Delivery: $0 (Retiro Local)\n`;
     }
-    message += `ðŸ’µ Total Final: $${total.toLocaleString('es-CL')}\n\n`;
+    message += `Ã°Å¸â€™Âµ Total Final: $${total.toLocaleString('es-CL')}\n\n`;
 
     if (orderType === 'delivery') {
-        message += `ðŸ“ Comuna: ${comunaName}\n`;
-        message += `ðŸ“Œ Sector: ${sectorName}\n`;
-        message += `ðŸ  DirecciÃ³n: ${address}\n\n`;
+        message += `Ã°Å¸â€œÂ Comuna: ${comunaName}\n`;
+        message += `Ã°Å¸â€œÅ’ Sector: ${sectorName}\n`;
+        message += `Ã°Å¸ÂÂ  DirecciÃƒÂ³n: ${address}\n\n`;
 
         if (autoGps) {
-            message += `ðŸ“ UbicaciÃ³n:\nhttps://www.google.com/maps?q=${autoGps.replace(/\s/g, '')}\n\n`;
+            message += `Ã°Å¸â€œÂ UbicaciÃƒÂ³n:\nhttps://www.google.com/maps?q=${autoGps.replace(/\s/g, '')}\n\n`;
         } else if (manualGps) {
-            message += `ðŸ“ UbicaciÃ³n manual:\n${manualGps}\n\n`;
+            message += `Ã°Å¸â€œÂ UbicaciÃƒÂ³n manual:\n${manualGps}\n\n`;
         }
     } else {
-         message += `ðŸ“ Retiro Presencial en Local\n\n`;
+         message += `Ã°Å¸â€œÂ Retiro Presencial en Local\n\n`;
     }
 
     if (comments) {
-        message += `ðŸ“ Observaciones:\n${comments}\n`;
+        message += `Ã°Å¸â€œÂ Observaciones:\n${comments}\n`;
     }
 
     const nuevoPedido = {
@@ -1204,7 +1192,7 @@ const PROMOS = [
         name: 'Pack Pisco Party',
         price: 19900,
         image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
-        description: 'Pisco Capel AÃ±ejo + Bebida 3L + Hielo premium + Copas'
+        description: 'Pisco Capel AÃƒÂ±ejo + Bebida 3L + Hielo premium + Copas'
     },
     {
         id: 1002,
@@ -1225,7 +1213,7 @@ const PROMOS = [
         name: 'Combo Familiar',
         price: 27900,
         image: 'https://images.unsplash.com/photo-1608270861620-7c80b6ff7435?w=400&h=300&fit=crop',
-        description: 'Vino + Cervezas + Snacks + Bebidas no alcohÃ³licas'
+        description: 'Vino + Cervezas + Snacks + Bebidas no alcohÃƒÂ³licas'
     }
 ];
 
@@ -1255,7 +1243,7 @@ function addPromoToCart(promoId) {
     }
 
     updateCartUI();
-    showNotificationMessage(`âœ“ ${promo.name} agregado al carrito`);
+    showNotificationMessage(`Ã¢Å“â€œ ${promo.name} agregado al carrito`);
 }
 
 function scrollPromo(direction) {
@@ -1269,7 +1257,7 @@ function scrollPromo(direction) {
     });
 }
 
-/* ==================== BÃšSQUEDA ==================== */
+/* ==================== BÃƒÅ¡SQUEDA ==================== */
 
 function handleSearch(e) {
     const query = e.target.value.toLowerCase();
@@ -1329,28 +1317,28 @@ function updateStatus() {
     let isOpen = false;
     let closeTime = '';
 
-    // Domingo (0) a Jueves (4): abierto hasta 00:30 (30 minutos del dÃ­a siguiente)
-    // Viernes (5) y SÃ¡bado (6): abierto hasta 02:30 (150 minutos del dÃ­a siguiente)
+    // Domingo (0) a Jueves (4): abierto hasta 00:30 (30 minutos del dÃƒÂ­a siguiente)
+    // Viernes (5) y SÃƒÂ¡bado (6): abierto hasta 02:30 (150 minutos del dÃƒÂ­a siguiente)
 
     if (day >= 0 && day <= 4) {
         // Abierto 24 horas hasta las 00:30 siguiente
         isOpen = true;
-        if (currentTime >= 1440 - 30) { // MÃ­nimo 00:30
+        if (currentTime >= 1440 - 30) { // MÃƒÂ­nimo 00:30
             closeTime = 'hasta las 00:30';
         } else {
             closeTime = 'hasta las 00:30';
         }
     } else if (day === 5 || day === 6) {
-        // Viernes y sÃ¡bado abierto hasta 02:30
+        // Viernes y sÃƒÂ¡bado abierto hasta 02:30
         isOpen = true;
         closeTime = 'hasta las 02:30';
     }
 
     if (isOpen) {
-        statusText.textContent = `â° Abierto ${closeTime}`;
+        statusText.textContent = `Ã¢ÂÂ° Abierto ${closeTime}`;
         statusText.classList.remove('closed');
     } else {
-        statusText.textContent = 'âŒ Cerrado en estos momentos';
+        statusText.textContent = 'Ã¢ÂÅ’ Cerrado en estos momentos';
         statusText.classList.add('closed');
     }
 }
@@ -1425,15 +1413,15 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
     const originalText = btn ? btn.innerHTML : '';
     
     if (!navigator.geolocation) {
-        showNotificationMessage('âš ï¸ Tu navegador no soporta geolocalizaciÃ³n.');
+        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Tu navegador no soporta geolocalizaciÃƒÂ³n.');
         return;
     }
 
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Obteniendo ubicaciÃ³n...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Obteniendo ubicaciÃƒÂ³n...';
     }
-    showNotificationMessage('âŒ› Accediendo al GPS...');
+    showNotificationMessage('Ã¢Å’â€º Accediendo al GPS...');
     
     navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -1441,9 +1429,9 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
             const lng = position.coords.longitude;
             const coords = `${lat}, ${lng}`;
             
-            // Intentar Reverse Geocoding (Convertir coordenadas a direcciÃ³n)
+            // Intentar Reverse Geocoding (Convertir coordenadas a direcciÃƒÂ³n)
             try {
-                showNotificationMessage('ðŸ” Identificando direcciÃ³n...');
+                showNotificationMessage('Ã°Å¸â€Â Identificando direcciÃƒÂ³n...');
                 const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
                     headers: { 'Accept-Language': 'es' }
                 });
@@ -1452,14 +1440,14 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
                 if (data && data.display_name) {
                     const addressField = document.getElementById('modalClientAddress');
                     if (addressField) {
-                        // Limpiar direcciÃ³n de partes innecesarias
+                        // Limpiar direcciÃƒÂ³n de partes innecesarias
                         const cleanAddress = data.display_name.split(',').slice(0, 3).join(',').trim();
                         addressField.value = cleanAddress;
                         addressField.classList.add('gps-success');
                     }
                 }
             } catch (geoError) {
-                console.warn('No se pudo obtener la direcciÃ³n exacta:', geoError);
+                console.warn('No se pudo obtener la direcciÃƒÂ³n exacta:', geoError);
             }
 
             // Guardar coordenadas en campos ocultos
@@ -1467,16 +1455,16 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
             const coordInput = document.getElementById('modalCoordinates');
             if (coordInput) coordInput.value = coords;
             
-            // Si el target no es el de direcciÃ³n, poner las coordenadas
+            // Si el target no es el de direcciÃƒÂ³n, poner las coordenadas
             if (target && targetId !== 'modalClientAddress') {
                 target.value = coords;
             }
 
-            showNotificationMessage('ðŸ“ UbicaciÃ³n fijada con Ã©xito');
+            showNotificationMessage('Ã°Å¸â€œÂ UbicaciÃƒÂ³n fijada con ÃƒÂ©xito');
             if (btn) {
                 btn.disabled = false;
                 btn.classList.add('btn-gps-success');
-                btn.innerHTML = 'âœ… UbicaciÃ³n Lista';
+                btn.innerHTML = 'Ã¢Å“â€¦ UbicaciÃƒÂ³n Lista';
                 setTimeout(() => { 
                     btn.innerHTML = originalText;
                     btn.classList.remove('btn-gps-success');
@@ -1484,9 +1472,9 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
             }
         },
         (error) => {
-            let msg = 'âš ï¸ Error al obtener ubicaciÃ³n.';
-            if (error.code === 1) msg = 'âš ï¸ Permiso denegado. Activa el GPS y permite el acceso.';
-            else if (error.code === 3) msg = 'âš ï¸ Tiempo agotado. Intenta de nuevo.';
+            let msg = 'Ã¢Å¡Â Ã¯Â¸Â Error al obtener ubicaciÃƒÂ³n.';
+            if (error.code === 1) msg = 'Ã¢Å¡Â Ã¯Â¸Â Permiso denegado. Activa el GPS y permite el acceso.';
+            else if (error.code === 3) msg = 'Ã¢Å¡Â Ã¯Â¸Â Tiempo agotado. Intenta de nuevo.';
             
             showNotificationMessage(msg);
             console.error('GPS Error:', error);
@@ -1514,7 +1502,7 @@ function removeItemFromModal(productId) {
         
         if (cart.length === 0) {
             closeOrderModal();
-            showNotificationMessage('ðŸ›’ Carrito vacÃ­o');
+            showNotificationMessage('Ã°Å¸â€ºâ€™ Carrito vacÃƒÂ­o');
             return;
         }
 
@@ -1527,7 +1515,7 @@ function removeItemFromModal(productId) {
         if (modalSubtotal) modalSubtotal.textContent = `Subtotal: $${subtotal.toLocaleString('es-CL')}`;
 
         updateDeliveryCost();
-        showNotificationMessage(`ðŸ—‘ï¸ ${item.name} eliminado`);
+        showNotificationMessage(`Ã°Å¸â€”â€˜Ã¯Â¸Â ${item.name} eliminado`);
     }
 }
 
@@ -1542,37 +1530,37 @@ function showOrderSummary() {
 
     // Validaciones
     if (!clientName || clientName.length < 3) {
-        showNotificationMessage('âš ï¸ Por favor ingresa tu nombre completo');
+        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor ingresa tu nombre completo');
         document.getElementById('clientName').focus();
         return;
     }
 
     if (!clientPhone || clientPhone.length < 8) {
-        showNotificationMessage('âš ï¸ Por favor ingresa un nÃºmero de telÃ©fono vÃ¡lido');
+        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor ingresa un nÃƒÂºmero de telÃƒÂ©fono vÃƒÂ¡lido');
         document.getElementById('clientPhone').focus();
         return;
     }
 
     if (!clientComuna) {
-        showNotificationMessage('âš ï¸ Por favor selecciona tu comuna');
+        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor selecciona tu comuna');
         document.getElementById('clientComuna').focus();
         return;
     }
 
     if (!clientSector) {
-        showNotificationMessage('âš ï¸ Por favor selecciona tu sector de entrega');
+        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor selecciona tu sector de entrega');
         document.getElementById('clientSector').focus();
         return;
     }
 
     if (!clientAddress || clientAddress.length < 5) {
-        showNotificationMessage('âš ï¸ Por favor ingresa una direcciÃ³n de entrega vÃ¡lida');
+        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor ingresa una direcciÃƒÂ³n de entrega vÃƒÂ¡lida');
         document.getElementById('clientAddress').focus();
         return;
     }
 
     if (cart.length === 0) {
-        showNotificationMessage('ðŸ›’ Tu carrito estÃ¡ vacÃ­o');
+        showNotificationMessage('Ã°Å¸â€ºâ€™ Tu carrito estÃƒÂ¡ vacÃƒÂ­o');
         return;
     }
     
@@ -1584,22 +1572,22 @@ function showOrderSummary() {
         <div class="order-modal-overlay" id="orderSummaryModal">
             <div class="order-modal">
                 <div class="order-modal-header">
-                    <h3>ðŸ“‹ Resumen de tu Pedido</h3>
-                    <button class="modal-close" onclick="closeOrderSummary()">âœ•</button>
+                    <h3>Ã°Å¸â€œâ€¹ Resumen de tu Pedido</h3>
+                    <button class="modal-close" onclick="closeOrderSummary()">Ã¢Å“â€¢</button>
                 </div>
                 <div class="order-modal-content">
                     <div class="summary-section">
-                        <h4>ðŸ‘¤ Datos del Cliente</h4>
+                        <h4>Ã°Å¸â€˜Â¤ Datos del Cliente</h4>
                         <p><strong>Nombre:</strong> ${clientName}</p>
-                        <p><strong>TelÃ©fono:</strong> ${clientPhone}</p>
-                        <p><strong>UbicaciÃ³n:</strong> ${comunaName} - ${sectorName}</p>
-                        <p><strong>DirecciÃ³n:</strong> ${clientAddress}</p>
+                        <p><strong>TelÃƒÂ©fono:</strong> ${clientPhone}</p>
+                        <p><strong>UbicaciÃƒÂ³n:</strong> ${comunaName} - ${sectorName}</p>
+                        <p><strong>DirecciÃƒÂ³n:</strong> ${clientAddress}</p>
                         ${manualLocation ? `<p><strong>Coordenadas:</strong> ${manualLocation}</p>` : ''}
                         ${clientComments ? `<p><strong>Comentarios:</strong> ${clientComments}</p>` : ''}
                     </div>
                     
                     <div class="summary-section">
-                        <h4>ðŸ›’ Productos</h4>
+                        <h4>Ã°Å¸â€ºâ€™ Productos</h4>
                         ${cart.map(item => `
                             <div class="summary-item">
                                 <span>${item.name} x${item.quantity}</span>
@@ -1609,7 +1597,7 @@ function showOrderSummary() {
                     </div>
                     
                     <div class="summary-section">
-                        <h4>ðŸ’° Resumen</h4>
+                        <h4>Ã°Å¸â€™Â° Resumen</h4>
                         <div class="summary-item">
                             <span>Subtotal productos:</span>
                             <span>$${subtotal.toLocaleString('es-CL')}</span>
@@ -1625,9 +1613,9 @@ function showOrderSummary() {
                     </div>
                     
                     <div class="order-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeOrderSummary()">â† Modificar</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeOrderSummary()">Ã¢â€ Â Modificar</button>
                         <button type="button" class="btn btn-success" onclick="sendOrderToWhatsApp()">
-                            ðŸ“² Confirmar y enviar por WhatsApp
+                            Ã°Å¸â€œÂ² Confirmar y enviar por WhatsApp
                         </button>
                     </div>
                 </div>
@@ -1692,25 +1680,25 @@ function sendOrderToWhatsApp() {
     pedidosHistorial.push(nuevoPedido);
     localStorage.setItem('pedidosHistorial', JSON.stringify(pedidosHistorial));
     
-    let message = `ðŸ›’ *NUEVO PEDIDO - Boti Dival*\n\n`;
-    message += `ðŸ‘¤ *Cliente:* ${clientName}\n`;
-    message += `ðŸ“ž *TelÃ©fono:* ${clientPhone}\n`;
-    message += `ðŸ“ *Sector:* ${sectorName}\n`;
-    message += `ðŸ  *DirecciÃ³n:* ${clientAddress}\n`;
-    if (manualLocation) message += `ðŸ“Œ *UbicaciÃ³n:* ${manualLocation}\n`;
-    if (clientComments) message += `ðŸ“ *Comentarios:* ${clientComments}\n\n`;
+    let message = `Ã°Å¸â€ºâ€™ *NUEVO PEDIDO - Boti Dival*\n\n`;
+    message += `Ã°Å¸â€˜Â¤ *Cliente:* ${clientName}\n`;
+    message += `Ã°Å¸â€œÅ¾ *TelÃƒÂ©fono:* ${clientPhone}\n`;
+    message += `Ã°Å¸â€œÂ *Sector:* ${sectorName}\n`;
+    message += `Ã°Å¸ÂÂ  *DirecciÃƒÂ³n:* ${clientAddress}\n`;
+    if (manualLocation) message += `Ã°Å¸â€œÅ’ *UbicaciÃƒÂ³n:* ${manualLocation}\n`;
+    if (clientComments) message += `Ã°Å¸â€œÂ *Comentarios:* ${clientComments}\n\n`;
     
-    message += `ðŸ›ï¸ *PRODUCTOS:*\n`;
+    message += `Ã°Å¸â€ºÂÃ¯Â¸Â *PRODUCTOS:*\n`;
     cart.forEach(item => {
-        message += `â€¢ ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
+        message += `Ã¢â‚¬Â¢ ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
     });
     
-    message += `\nðŸ’° *RESUMEN:*\n`;
-    message += `â€¢ Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
-    message += `â€¢ Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
-    message += `â€¢ *TOTAL: $${total.toLocaleString('es-CL')}*\n\n`;
+    message += `\nÃ°Å¸â€™Â° *RESUMEN:*\n`;
+    message += `Ã¢â‚¬Â¢ Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
+    message += `Ã¢â‚¬Â¢ Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
+    message += `Ã¢â‚¬Â¢ *TOTAL: $${total.toLocaleString('es-CL')}*\n\n`;
     
-    message += `âœ… *Pedido listo para procesar*`;
+    message += `Ã¢Å“â€¦ *Pedido listo para procesar*`;
     
     const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -1719,12 +1707,12 @@ function sendOrderToWhatsApp() {
     closeOrderSummary();
     closeCart();
     
-    // Limpiar carrito despuÃ©s del pedido
+    // Limpiar carrito despuÃƒÂ©s del pedido
     cart = [];
     updateCartUI();
     updateProductQuantityDisplay();
     saveCartState();
-    showNotificationMessage('âœ… Pedido enviado exitosamente');
+    showNotificationMessage('Ã¢Å“â€¦ Pedido enviado exitosamente');
 }
 
 /* ==================== FUNCIONES DE PROMOCIONES ==================== */
@@ -1762,16 +1750,16 @@ function savePromocion(event) {
     hidePromoForm();
     renderPromociones();
     updateWebPromociones();
-    showNotificationMessage('âœ… PromociÃ³n creada exitosamente');
+    showNotificationMessage('Ã¢Å“â€¦ PromociÃƒÂ³n creada exitosamente');
 }
 
 function deletePromocion(id) {
-    if (confirm('Â¿EstÃ¡s seguro de eliminar esta promociÃ³n?')) {
+    if (confirm('Ã‚Â¿EstÃƒÂ¡s seguro de eliminar esta promociÃƒÂ³n?')) {
         promociones = promociones.filter(p => p.id !== id);
         localStorage.setItem('promociones', JSON.stringify(promociones));
         renderPromociones();
         updateWebPromociones();
-        showNotificationMessage('ðŸ—‘ï¸ PromociÃ³n eliminada');
+        showNotificationMessage('Ã°Å¸â€”â€˜Ã¯Â¸Â PromociÃƒÂ³n eliminada');
     }
 }
 
@@ -1782,7 +1770,7 @@ function togglePromocion(id) {
         localStorage.setItem('promociones', JSON.stringify(promociones));
         renderPromociones();
         updateWebPromociones();
-        showNotificationMessage(promo.active ? 'âœ… PromociÃ³n activada' : 'â¸ï¸ PromociÃ³n pausada');
+        showNotificationMessage(promo.active ? 'Ã¢Å“â€¦ PromociÃƒÂ³n activada' : 'Ã¢ÂÂ¸Ã¯Â¸Â PromociÃƒÂ³n pausada');
     }
 }
 
@@ -1799,10 +1787,10 @@ function renderPromociones() {
                     ${promo.price ? `<p class="card-text"><strong>$${promo.price.toLocaleString('es-CL')}</strong></p>` : ''}
                     <div class="mt-auto">
                         <button class="btn btn-sm ${promo.active ? 'btn-warning' : 'btn-success'}" onclick="togglePromocion(${promo.id})">
-                            ${promo.active ? 'â¸ï¸ Pausar' : 'â–¶ï¸ Activar'}
+                            ${promo.active ? 'Ã¢ÂÂ¸Ã¯Â¸Â Pausar' : 'Ã¢â€“Â¶Ã¯Â¸Â Activar'}
                         </button>
                         <button class="btn btn-sm btn-danger ms-1" onclick="deletePromocion(${promo.id})">
-                            ðŸ—‘ï¸ Eliminar
+                            Ã°Å¸â€”â€˜Ã¯Â¸Â Eliminar
                         </button>
                     </div>
                 </div>
@@ -1832,7 +1820,7 @@ function saveVideo(event) {
     // Extraer ID de YouTube
     const videoId = extractYouTubeId(url);
     if (!videoId) {
-        showNotificationMessage('âš ï¸ URL de YouTube invÃ¡lida');
+        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â URL de YouTube invÃƒÂ¡lida');
         return;
     }
     
@@ -1852,7 +1840,7 @@ function saveVideo(event) {
     hideVideoForm();
     renderVideos();
     updateWebVideos();
-    showNotificationMessage('âœ… Video subido exitosamente');
+    showNotificationMessage('Ã¢Å“â€¦ Video subido exitosamente');
 }
 
 function extractYouTubeId(url) {
@@ -1862,12 +1850,12 @@ function extractYouTubeId(url) {
 }
 
 function deleteVideo(id) {
-    if (confirm('Â¿EstÃ¡s seguro de eliminar este video?')) {
+    if (confirm('Ã‚Â¿EstÃƒÂ¡s seguro de eliminar este video?')) {
         videos = videos.filter(v => v.id !== id);
         localStorage.setItem('videos', JSON.stringify(videos));
         renderVideos();
         updateWebVideos();
-        showNotificationMessage('ðŸ—‘ï¸ Video eliminado');
+        showNotificationMessage('Ã°Å¸â€”â€˜Ã¯Â¸Â Video eliminado');
     }
 }
 
@@ -1878,7 +1866,7 @@ function toggleVideo(id) {
         localStorage.setItem('videos', JSON.stringify(videos));
         renderVideos();
         updateWebVideos();
-        showNotificationMessage(video.active ? 'âœ… Video activado' : 'â¸ï¸ Video pausado');
+        showNotificationMessage(video.active ? 'Ã¢Å“â€¦ Video activado' : 'Ã¢ÂÂ¸Ã¯Â¸Â Video pausado');
     }
 }
 
@@ -1898,10 +1886,10 @@ function renderVideos() {
                     ${video.description ? `<p class="card-text">${video.description}</p>` : ''}
                     <div class="mt-auto">
                         <button class="btn btn-sm ${video.active ? 'btn-warning' : 'btn-success'}" onclick="toggleVideo(${video.id})">
-                            ${video.active ? 'â¸ï¸ Pausar' : 'â–¶ï¸ Activar'}
+                            ${video.active ? 'Ã¢ÂÂ¸Ã¯Â¸Â Pausar' : 'Ã¢â€“Â¶Ã¯Â¸Â Activar'}
                         </button>
                         <button class="btn btn-sm btn-danger ms-1" onclick="deleteVideo(${video.id})">
-                            ðŸ—‘ï¸ Eliminar
+                            Ã°Å¸â€”â€˜Ã¯Â¸Â Eliminar
                         </button>
                     </div>
                 </div>
@@ -1917,7 +1905,7 @@ function setDeliveryStatus(status) {
     localStorage.setItem('deliveryStatus', JSON.stringify(deliveryStatus));
     updateDeliveryStatusUI();
     updateWebDeliveryStatus();
-    showNotificationMessage(status ? 'ðŸšš Delivery activado' : 'ðŸª Solo ventas presenciales activado');
+    showNotificationMessage(status ? 'Ã°Å¸Å¡Å¡ Delivery activado' : 'Ã°Å¸ÂÂª Solo ventas presenciales activado');
 }
 
 function updateDeliveryStatusUI() {
@@ -1930,20 +1918,20 @@ function updateDeliveryStatusUI() {
     if (deliveryStatus) {
         statusDot.className = 'status-dot active';
         statusText.textContent = 'Delivery Activo';
-        currentStatus.textContent = 'El servicio de delivery estÃ¡ funcionando normalmente.';
+        currentStatus.textContent = 'El servicio de delivery estÃƒÂ¡ funcionando normalmente.';
         activateBtn.style.display = 'none';
         deactivateBtn.style.display = 'inline-block';
     } else {
         statusDot.className = 'status-dot inactive';
         statusText.textContent = 'Solo Ventas Presenciales';
-        currentStatus.textContent = 'El delivery estÃ¡ fuera de servicio. Solo se aceptan ventas presenciales.';
+        currentStatus.textContent = 'El delivery estÃƒÂ¡ fuera de servicio. Solo se aceptan ventas presenciales.';
         activateBtn.style.display = 'inline-block';
         deactivateBtn.style.display = 'none';
     }
 }
 
 function updateWebDeliveryStatus() {
-    // Esta funciÃ³n se ejecutarÃ¡ en la pÃ¡gina principal para actualizar el estado
+    // Esta funciÃƒÂ³n se ejecutarÃƒÂ¡ en la pÃƒÂ¡gina principal para actualizar el estado
     if (typeof updateDeliveryDisplay === 'function') {
         updateDeliveryDisplay(deliveryStatus);
     }
@@ -1978,7 +1966,7 @@ function getPedidosStats() {
 function renderPedidosDashboard() {
     const stats = getPedidosStats();
     
-    // Actualizar estadÃ­sticas en el dashboard
+    // Actualizar estadÃƒÂ­sticas en el dashboard
     document.getElementById('totalPedidos').textContent = stats.totalPedidos;
     document.getElementById('pedidosHoy').textContent = stats.pedidosHoy;
     document.getElementById('pedidosSemana').textContent = stats.pedidosSemana;
@@ -2015,14 +2003,14 @@ function renderPedidosHistorial(filtroTipo = 'todos', filtroFecha = '') {
                 <td>${pedido.id}</td>
                 <td>${fecha} ${hora}</td>
                 <td>${pedido.cliente.nombre}</td>
-                <td>${pedido.tipo === 'delivery' ? 'ðŸšš Delivery' : 'ðŸª Presencial'}</td>
+                <td>${pedido.tipo === 'delivery' ? 'Ã°Å¸Å¡Å¡ Delivery' : 'Ã°Å¸ÂÂª Presencial'}</td>
                 <td>${pedido.cliente.comuna} - ${pedido.cliente.sector}</td>
                 <td>${pedido.productos.length} productos</td>
                 <td>$${pedido.costos.delivery.toLocaleString('es-CL')}</td>
                 <td><strong>$${pedido.costos.total.toLocaleString('es-CL')}</strong></td>
                 <td>
                     <button class="btn btn-sm btn-info" onclick="verDetallePedido(${pedido.id})">
-                        ðŸ‘ï¸ Ver
+                        Ã°Å¸â€˜ÂÃ¯Â¸Â Ver
                     </button>
                 </td>
             </tr>
@@ -2041,30 +2029,30 @@ function verDetallePedido(pedidoId) {
         <div class="order-modal-overlay" id="pedidoDetailModal">
             <div class="order-modal order-modal--large">
                 <div class="order-modal-header">
-                    <h3>ðŸ“‹ Detalle del Pedido #${pedido.id}</h3>
-                    <button class="modal-close" onclick="closePedidoDetail()">âœ•</button>
+                    <h3>Ã°Å¸â€œâ€¹ Detalle del Pedido #${pedido.id}</h3>
+                    <button class="modal-close" onclick="closePedidoDetail()">Ã¢Å“â€¢</button>
                 </div>
                 <div class="order-modal-content">
                     <div class="pedido-info-grid">
                         <div class="info-section">
-                            <h4>ðŸ“… InformaciÃ³n General</h4>
+                            <h4>Ã°Å¸â€œâ€¦ InformaciÃƒÂ³n General</h4>
                             <p><strong>Fecha:</strong> ${fecha} ${hora}</p>
-                            <p><strong>Tipo:</strong> ${pedido.tipo === 'delivery' ? 'ðŸšš Delivery' : 'ðŸª Presencial'}</p>
-                            <p><strong>Estado:</strong> âœ… Completado</p>
+                            <p><strong>Tipo:</strong> ${pedido.tipo === 'delivery' ? 'Ã°Å¸Å¡Å¡ Delivery' : 'Ã°Å¸ÂÂª Presencial'}</p>
+                            <p><strong>Estado:</strong> Ã¢Å“â€¦ Completado</p>
                         </div>
                         
                         <div class="info-section">
-                            <h4>ðŸ‘¤ Datos del Cliente</h4>
+                            <h4>Ã°Å¸â€˜Â¤ Datos del Cliente</h4>
                             <p><strong>Nombre:</strong> ${pedido.cliente.nombre}</p>
-                            <p><strong>TelÃ©fono:</strong> ${pedido.cliente.telefono}</p>
-                            <p><strong>UbicaciÃ³n:</strong> ${pedido.cliente.comuna} - ${pedido.cliente.sector}</p>
-                            <p><strong>DirecciÃ³n:</strong> ${pedido.cliente.direccion}</p>
+                            <p><strong>TelÃƒÂ©fono:</strong> ${pedido.cliente.telefono}</p>
+                            <p><strong>UbicaciÃƒÂ³n:</strong> ${pedido.cliente.comuna} - ${pedido.cliente.sector}</p>
+                            <p><strong>DirecciÃƒÂ³n:</strong> ${pedido.cliente.direccion}</p>
                             ${pedido.cliente.coordenadas ? `<p><strong>Coordenadas:</strong> ${pedido.cliente.coordenadas}</p>` : ''}
                         </div>
                     </div>
                     
                     <div class="info-section">
-                        <h4>ðŸ›’ Productos</h4>
+                        <h4>Ã°Å¸â€ºâ€™ Productos</h4>
                         <div class="productos-lista">
                             ${pedido.productos.map(prod => `
                                 <div class="producto-item">
@@ -2077,7 +2065,7 @@ function verDetallePedido(pedidoId) {
                     </div>
                     
                     <div class="info-section">
-                        <h4>ðŸ’° Resumen de Costos</h4>
+                        <h4>Ã°Å¸â€™Â° Resumen de Costos</h4>
                         <div class="costos-resumen">
                             <div class="costo-item">
                                 <span>Subtotal productos:</span>
@@ -2096,7 +2084,7 @@ function verDetallePedido(pedidoId) {
                     
                     ${pedido.comentarios ? `
                         <div class="info-section">
-                            <h4>ðŸ’¬ Comentarios</h4>
+                            <h4>Ã°Å¸â€™Â¬ Comentarios</h4>
                             <p>${pedido.comentarios}</p>
                         </div>
                     ` : ''}
@@ -2104,7 +2092,7 @@ function verDetallePedido(pedidoId) {
                     <div class="order-actions">
                         <button type="button" class="btn btn-secondary" onclick="closePedidoDetail()">Cerrar</button>
                         <button type="button" class="btn btn-success" onclick="reenviarPedidoWhatsApp(${pedido.id})">
-                            ðŸ“² Reenviar por WhatsApp
+                            Ã°Å¸â€œÂ² Reenviar por WhatsApp
                         </button>
                     </div>
                 </div>
@@ -2124,24 +2112,24 @@ function reenviarPedidoWhatsApp(pedidoId) {
     const pedido = pedidosHistorial.find(p => p.id === pedidoId);
     if (!pedido) return;
     
-    let message = `ðŸº *REENVÃO PEDIDO Boti Dival #${pedido.id}*\n\n`;
-    message += `ðŸ‘¤ *Cliente:* ${pedido.cliente.nombre}\n`;
-    message += `ðŸ“ž *TelÃ©fono:* ${pedido.cliente.telefono}\n`;
-    message += `ðŸ“ *UbicaciÃ³n:* ${pedido.cliente.comuna} - ${pedido.cliente.sector}\n`;
-    message += `ðŸ  *DirecciÃ³n:* ${pedido.cliente.direccion}\n`;
-    if (pedido.cliente.coordenadas) message += `ðŸ“Œ *Coordenadas:* ${pedido.cliente.coordenadas}\n`;
-    if (pedido.comentarios) message += `ðŸ’¬ *Comentarios:* ${pedido.comentarios}\n\n`;
+    let message = `Ã°Å¸ÂÂº *REENVÃƒÂO PEDIDO Boti Dival #${pedido.id}*\n\n`;
+    message += `Ã°Å¸â€˜Â¤ *Cliente:* ${pedido.cliente.nombre}\n`;
+    message += `Ã°Å¸â€œÅ¾ *TelÃƒÂ©fono:* ${pedido.cliente.telefono}\n`;
+    message += `Ã°Å¸â€œÂ *UbicaciÃƒÂ³n:* ${pedido.cliente.comuna} - ${pedido.cliente.sector}\n`;
+    message += `Ã°Å¸ÂÂ  *DirecciÃƒÂ³n:* ${pedido.cliente.direccion}\n`;
+    if (pedido.cliente.coordenadas) message += `Ã°Å¸â€œÅ’ *Coordenadas:* ${pedido.cliente.coordenadas}\n`;
+    if (pedido.comentarios) message += `Ã°Å¸â€™Â¬ *Comentarios:* ${pedido.comentarios}\n\n`;
     
-    message += `ðŸ›’ *PRODUCTOS:*\n`;
+    message += `Ã°Å¸â€ºâ€™ *PRODUCTOS:*\n`;
     pedido.productos.forEach(item => {
-        message += `â€¢ ${item.nombre} x${item.cantidad} - $${(item.precioUnitario * item.cantidad).toLocaleString('es-CL')}\n`;
+        message += `Ã¢â‚¬Â¢ ${item.nombre} x${item.cantidad} - $${(item.precioUnitario * item.cantidad).toLocaleString('es-CL')}\n`;
     });
     
-    message += `\nðŸ’° *SUBTOTAL:* $${pedido.costos.subtotal.toLocaleString('es-CL')}\n`;
-    message += `ðŸšš *DELIVERY:* $${pedido.costos.delivery.toLocaleString('es-CL')}\n`;
-    message += `ðŸ’µ *TOTAL:* $${pedido.costos.total.toLocaleString('es-CL')}\n\n`;
+    message += `\nÃ°Å¸â€™Â° *SUBTOTAL:* $${pedido.costos.subtotal.toLocaleString('es-CL')}\n`;
+    message += `Ã°Å¸Å¡Å¡ *DELIVERY:* $${pedido.costos.delivery.toLocaleString('es-CL')}\n`;
+    message += `Ã°Å¸â€™Âµ *TOTAL:* $${pedido.costos.total.toLocaleString('es-CL')}\n\n`;
     
-    message += `ðŸ”„ *Pedido reenviado para confirmaciÃ³n*`;
+    message += `Ã°Å¸â€â€ž *Pedido reenviado para confirmaciÃƒÂ³n*`;
     
     const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -2243,7 +2231,7 @@ function updateDynamicMarketing() {
     const banner = document.getElementById('deliveryStatusBanner');
     if (!banner) return;
 
-    // Si el delivery estÃ¡ activo, mostramos un mensaje positivo basado en deliveryTrips
+    // Si el delivery estÃƒÂ¡ activo, mostramos un mensaje positivo basado en deliveryTrips
     if (deliveryStatus) {
         const now = new Date();
         const weekStart = new Date(now);
@@ -2255,12 +2243,12 @@ function updateDynamicMarketing() {
         if (totalEntregas > 5) {
             banner.style.display = 'block';
             banner.className = 'delivery-status-banner success';
-            banner.innerHTML = `<i class="fas fa-shipping-fast me-2"></i> Â¡Ya llevamos <strong>${totalEntregas}</strong> entregas exitosas esta semana! ConfÃ­a en nosotros.`;
+            banner.innerHTML = `<i class="fas fa-shipping-fast me-2"></i> Ã‚Â¡Ya llevamos <strong>${totalEntregas}</strong> entregas exitosas esta semana! ConfÃƒÂ­a en nosotros.`;
         } else {
             banner.style.display = 'none';
         }
     } else {
-        // Si estÃ¡ desactivado, mostramos el mensaje de fuera de servicio
+        // Si estÃƒÂ¡ desactivado, mostramos el mensaje de fuera de servicio
         banner.style.display = 'block';
         banner.className = 'delivery-status-banner warning';
         banner.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> Servicio de Delivery Fuera de Servicio - Solo Ventas Presenciales`;
@@ -2307,7 +2295,7 @@ function updateDeliveryDisplay(status) {
             statusDot.classList.remove('active');
             statusDot.classList.add('inactive');
         }
-        if(statusText) statusText.textContent = 'â° Delivery No Disponible';
+        if(statusText) statusText.textContent = 'Ã¢ÂÂ° Delivery No Disponible';
         
         // Ocultar features de delivery en el status bar
         const features = statusBar.querySelectorAll('.feature-badge');
@@ -2317,7 +2305,7 @@ function updateDeliveryDisplay(status) {
             }
         });
     } else {
-        statusText.textContent = 'â° Delivery Disponible';
+        statusText.textContent = 'Ã¢ÂÂ° Delivery Disponible';
         
         // Mostrar features de delivery
         const features = statusBar.querySelectorAll('.feature-badge');
@@ -2327,7 +2315,7 @@ function updateDeliveryDisplay(status) {
     }
 }
 
-/* ==================== INICIALIZACIÃ“N DE CONTENIDO DINÃMICO ==================== */
+/* ==================== INICIALIZACIÃƒâ€œN DE CONTENIDO DINÃƒÂMICO ==================== */
 
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar promociones activas
@@ -2360,29 +2348,29 @@ window.addEventListener('storage', (event) => {
 function generateWhatsAppMessage(name, address, phone, comments) {
     const timestamp = new Date().toLocaleString('es-CL');
     const itemsList = cart.map(item => 
-        `â€¢ ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-CL')}`
+        `Ã¢â‚¬Â¢ ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-CL')}`
     ).join('\n');
     
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    let message = `ðŸ›’ *NUEVO PEDIDO BOTI DIVAL* ðŸ›’\n\n`;
-    message += `ðŸ“Œ *InformaciÃ³n del Cliente*\n`;
-    message += `ðŸ‘¤ Nombre: ${name}\n`;
-    message += `ðŸ“ž TelÃ©fono: ${phone}\n`;
-    message += `ðŸ“ DirecciÃ³n: ${address}\n`;
-    message += `â° Fecha/Hora: ${timestamp}\n\n`;
-    message += `ðŸ“¦ *Productos Pedidos (${totalItems} items)*\n`;
+    let message = `Ã°Å¸â€ºâ€™ *NUEVO PEDIDO BOTI DIVAL* Ã°Å¸â€ºâ€™\n\n`;
+    message += `Ã°Å¸â€œÅ’ *InformaciÃƒÂ³n del Cliente*\n`;
+    message += `Ã°Å¸â€˜Â¤ Nombre: ${name}\n`;
+    message += `Ã°Å¸â€œÅ¾ TelÃƒÂ©fono: ${phone}\n`;
+    message += `Ã°Å¸â€œÂ DirecciÃƒÂ³n: ${address}\n`;
+    message += `Ã¢ÂÂ° Fecha/Hora: ${timestamp}\n\n`;
+    message += `Ã°Å¸â€œÂ¦ *Productos Pedidos (${totalItems} items)*\n`;
     message += itemsList + '\n\n';
-    message += `ðŸ’° *Subtotal: $${subtotal.toLocaleString('es-CL')}*\n`;
-    message += `ðŸšš EnvÃ­o: A cotizar segÃºn distancia\n\n`;
+    message += `Ã°Å¸â€™Â° *Subtotal: $${subtotal.toLocaleString('es-CL')}*\n`;
+    message += `Ã°Å¸Å¡Å¡ EnvÃƒÂ­o: A cotizar segÃƒÂºn distancia\n\n`;
     
     if (comments) {
-        message += `ðŸ“ *Comentarios*\n${comments}\n\n`;
+        message += `Ã°Å¸â€œÂ *Comentarios*\n${comments}\n\n`;
     }
     
-    message += `âœ… *Por favor confirma disponibilidad y costo de envÃ­o*\n`;
-    message += `Â¡Gracias por tu pedido! ðŸ˜Š`;
+    message += `Ã¢Å“â€¦ *Por favor confirma disponibilidad y costo de envÃƒÂ­o*\n`;
+    message += `Ã‚Â¡Gracias por tu pedido! Ã°Å¸ËœÅ `;
 
     return message;
 }
@@ -2394,11 +2382,11 @@ function contactShipping() {
     var oldModal = document.getElementById('shippingModal');
     if (oldModal) oldModal.remove();
 
-    // Datos de zonas de envÃ­o
+    // Datos de zonas de envÃƒÂ­o
     var zones = [
-        { comuna: "DoÃ±ihue", sector: "DoÃ±ihue Centro", price: 6600 },
-        { comuna: "Coltauco", sector: "QuimÃ¡vida", price: 6000 },
-        { comuna: "DoÃ±ihue", sector: "Cerrillos", price: 6000 },
+        { comuna: "DoÃƒÂ±ihue", sector: "DoÃƒÂ±ihue Centro", price: 6600 },
+        { comuna: "Coltauco", sector: "QuimÃƒÂ¡vida", price: 6000 },
+        { comuna: "DoÃƒÂ±ihue", sector: "Cerrillos", price: 6000 },
         { comuna: "Coltauco", sector: "Lo de Cuevas", price: 5800 },
         { comuna: "Coltauco", sector: "Hijuela del Medio", price: 5800 },
         { comuna: "Coltauco", sector: "Rinconada de Parral", price: 4700 },
@@ -2423,13 +2411,13 @@ function contactShipping() {
     var minP = Math.min.apply(null, prices);
     var avgP = Math.round(zones.reduce(function(s,z){ return s + z.price; }, 0) / zones.length);
     var coltN = zones.filter(function(z){ return z.comuna === "Coltauco"; }).length;
-    var donN = zones.filter(function(z){ return z.comuna === "DoÃ±ihue"; }).length;
+    var donN = zones.filter(function(z){ return z.comuna === "DoÃƒÂ±ihue"; }).length;
 
     function distLevel(price) {
         var r = (price - minP) / (maxP - minP);
-        if (r > 0.7) return { label: "Distancia Alta", color: "#ef4444", ring: "rgba(239,68,68,0.15)", dot: "ðŸ”´" };
-        if (r > 0.35) return { label: "Distancia Media", color: "#f59e0b", ring: "rgba(245,158,11,0.15)", dot: "ðŸŸ¡" };
-        return { label: "Cercano", color: "#10b981", ring: "rgba(16,185,129,0.15)", dot: "ðŸŸ¢" };
+        if (r > 0.7) return { label: "Distancia Alta", color: "#ef4444", ring: "rgba(239,68,68,0.15)", dot: "Ã°Å¸â€Â´" };
+        if (r > 0.35) return { label: "Distancia Media", color: "#f59e0b", ring: "rgba(245,158,11,0.15)", dot: "Ã°Å¸Å¸Â¡" };
+        return { label: "Cercano", color: "#10b981", ring: "rgba(16,185,129,0.15)", dot: "Ã°Å¸Å¸Â¢" };
     }
 
     function fmt(n) { return "$" + n.toLocaleString("es-CL"); }
@@ -2446,7 +2434,7 @@ function contactShipping() {
         else list.sort(function(a,b){ return b.price - a.price; });
 
         if (list.length === 0) {
-            return '<div class="shp-empty"><div class="shp-empty-ring"></div><span class="shp-empty-icon">ðŸ“</span><h4>Sin resultados</h4><p>No encontramos sectores con ese criterio</p></div>';
+            return '<div class="shp-empty"><div class="shp-empty-ring"></div><span class="shp-empty-icon">Ã°Å¸â€œÂ</span><h4>Sin resultados</h4><p>No encontramos sectores con ese criterio</p></div>';
         }
 
         var html = "";
@@ -2454,7 +2442,7 @@ function contactShipping() {
             var z = list[i];
             var d = distLevel(z.price);
             var pct = Math.max(((z.price - minP) / (maxP - minP)) * 100, 12);
-            var cls = z.comuna === "DoÃ±ihue" ? "shp-donihue" : "shp-coltauco";
+            var cls = z.comuna === "DoÃƒÂ±ihue" ? "shp-donihue" : "shp-coltauco";
             var waText = encodeURIComponent("Hola Boti Dival, quiero consultar el delivery a " + z.sector + ", " + z.comuna);
             html += '<div class="shp-card" style="--delay:' + (i * 0.05) + 's" onclick="this.classList.toggle(\'expanded\')">' +
                 '<div class="shp-card-left"><div class="shp-distance-ring" style="--ring-color:' + d.ring + '"><div class="shp-distance-dot" style="background:' + d.color + '"></div></div></div>' +
@@ -2466,32 +2454,32 @@ function contactShipping() {
                     '<h4 class="shp-card-sector">' + z.sector + '</h4>' +
                     '<div class="shp-bar-track"><div class="shp-bar-fill" style="--bar-width:' + pct + '%;--bar-color:' + d.color + '"></div></div>' +
                     '<div class="shp-card-expand">' +
-                        '<p>ðŸ“Œ RegiÃ³n: Libertador Gral. Bernardo O\'Higgins</p>' +
-                        '<a href="https://wa.me/56985062378?text=' + waText + '" target="_blank" class="shp-card-wa">ðŸ’¬ Consultar este sector</a>' +
+                        '<p>Ã°Å¸â€œÅ’ RegiÃƒÂ³n: Libertador Gral. Bernardo O\'Higgins</p>' +
+                        '<a href="https://wa.me/56985062378?text=' + waText + '" target="_blank" class="shp-card-wa">Ã°Å¸â€™Â¬ Consultar este sector</a>' +
                     '</div>' +
                 '</div></div>';
         }
         return html;
     }
 
-    var waFooter = encodeURIComponent("Hola Boti Dival, me gustarÃ­a consultar sobre el costo de envÃ­o a mi zona.");
+    var waFooter = encodeURIComponent("Hola Boti Dival, me gustarÃƒÂ­a consultar sobre el costo de envÃƒÂ­o a mi zona.");
 
     var m = '<div class="shp-overlay" id="shippingModal">' +
         '<div class="shp-modal">' +
             '<div class="shp-header"><div class="shp-header-bg"></div>' +
                 '<div class="shp-header-content">' +
                     '<div class="shp-header-left">' +
-                        '<div class="shp-header-icon-wrap"><span class="shp-header-icon">ðŸšš</span><span class="shp-header-pulse"></span></div>' +
-                        '<div><h2 class="shp-title">Tarifas de Delivery</h2><p class="shp-subtitle">RegiÃ³n de O\'Higgins Â· Precios actualizados</p></div>' +
+                        '<div class="shp-header-icon-wrap"><span class="shp-header-icon">Ã°Å¸Å¡Å¡</span><span class="shp-header-pulse"></span></div>' +
+                        '<div><h2 class="shp-title">Tarifas de Delivery</h2><p class="shp-subtitle">RegiÃƒÂ³n de O\'Higgins Ã‚Â· Precios actualizados</p></div>' +
                     '</div>' +
                     '<button class="shp-close" onclick="closeShippingModal()" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1 1l16 16M17 1L1 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>' +
                 '</div>' +
             '</div>' +
             '<div class="shp-stats">' +
-                '<div class="shp-stat-card"><span class="shp-stat-icon">ðŸ“</span><div class="shp-stat-data"><span class="shp-stat-value">' + zones.length + '</span><span class="shp-stat-label">Zonas</span></div></div>' +
-                '<div class="shp-stat-card"><span class="shp-stat-icon">ðŸ’š</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(minP) + '</span><span class="shp-stat-label">Desde</span></div></div>' +
-                '<div class="shp-stat-card"><span class="shp-stat-icon">ðŸ“Š</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(avgP) + '</span><span class="shp-stat-label">Promedio</span></div></div>' +
-                '<div class="shp-stat-card"><span class="shp-stat-icon">ðŸ“Œ</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(maxP) + '</span><span class="shp-stat-label">MÃ¡ximo</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">Ã°Å¸â€œÂ</span><div class="shp-stat-data"><span class="shp-stat-value">' + zones.length + '</span><span class="shp-stat-label">Zonas</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">Ã°Å¸â€™Å¡</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(minP) + '</span><span class="shp-stat-label">Desde</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">Ã°Å¸â€œÅ </span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(avgP) + '</span><span class="shp-stat-label">Promedio</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">Ã°Å¸â€œÅ’</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(maxP) + '</span><span class="shp-stat-label">MÃƒÂ¡ximo</span></div></div>' +
             '</div>' +
             '<div class="shp-controls">' +
                 '<div class="shp-search-wrap">' +
@@ -2501,19 +2489,19 @@ function contactShipping() {
                 '<div class="shp-controls-row">' +
                     '<div class="shp-filters">' +
                         '<button class="shp-filter active" onclick="setShippingFilter(this,\'all\')">Todos <span class="shp-filter-count">' + zones.length + '</span></button>' +
-                        '<button class="shp-filter" onclick="setShippingFilter(this,\'Coltauco\')">ðŸ˜ï¸ Coltauco <span class="shp-filter-count">' + coltN + '</span></button>' +
-                        '<button class="shp-filter" onclick="setShippingFilter(this,\'DoÃ±ihue\')">ðŸ¡ DoÃ±ihue <span class="shp-filter-count">' + donN + '</span></button>' +
+                        '<button class="shp-filter" onclick="setShippingFilter(this,\'Coltauco\')">Ã°Å¸ÂËœÃ¯Â¸Â Coltauco <span class="shp-filter-count">' + coltN + '</span></button>' +
+                        '<button class="shp-filter" onclick="setShippingFilter(this,\'DoÃƒÂ±ihue\')">Ã°Å¸ÂÂ¡ DoÃƒÂ±ihue <span class="shp-filter-count">' + donN + '</span></button>' +
                     '</div>' +
                     '<div class="shp-sort">' +
-                        '<button class="shp-sort-btn active" onclick="setShippingSort(this,\'price-desc\')" title="Mayor precio">â†“$</button>' +
-                        '<button class="shp-sort-btn" onclick="setShippingSort(this,\'price-asc\')" title="Menor precio">â†‘$</button>' +
+                        '<button class="shp-sort-btn active" onclick="setShippingSort(this,\'price-desc\')" title="Mayor precio">Ã¢â€ â€œ$</button>' +
+                        '<button class="shp-sort-btn" onclick="setShippingSort(this,\'price-asc\')" title="Menor precio">Ã¢â€ â€˜$</button>' +
                         '<button class="shp-sort-btn" onclick="setShippingSort(this,\'name\')" title="A-Z">A-Z</button>' +
                     '</div>' +
                 '</div>' +
             '</div>' +
             '<div class="shp-list" id="shippingZonesList">' + buildCards("all", "", "price-desc") + '</div>' +
             '<div class="shp-footer">' +
-                '<div class="shp-footer-info"><span class="shp-footer-dot"></span><p>Los precios son referenciales y pueden variar segÃºn condiciones del pedido</p></div>' +
+                '<div class="shp-footer-info"><span class="shp-footer-dot"></span><p>Los precios son referenciales y pueden variar segÃƒÂºn condiciones del pedido</p></div>' +
                 '<div class="shp-footer-actions">' +
                     '<button class="shp-btn-ghost" onclick="closeShippingModal()">Cerrar</button>' +
                     '<a href="https://wa.me/56985062378?text=' + waFooter + '" target="_blank" class="shp-btn-wa">' +
@@ -2565,7 +2553,7 @@ function closeShippingModal() {
 }
 
 function contactShippingWhatsApp() {
-    var message = "Hola Boti Dival, me gustarÃ­a consultar sobre el costo de envÃ­o a mi zona. Mi direcciÃ³n es: [Mi direcciÃ³n]";
+    var message = "Hola Boti Dival, me gustarÃƒÂ­a consultar sobre el costo de envÃƒÂ­o a mi zona. Mi direcciÃƒÂ³n es: [Mi direcciÃƒÂ³n]";
     window.open("https://wa.me/56985062378?text=" + encodeURIComponent(message), "_blank");
 }
 
@@ -2614,7 +2602,7 @@ function initScrollAnimations() {
         });
     }, observerOptions);
 
-    // Agregar clases de animaciÃ³n a elementos
+    // Agregar clases de animaciÃƒÂ³n a elementos
     document.querySelectorAll('.promo-card').forEach((card, index) => {
         card.classList.add('animate-on-scroll');
         if (index % 2 === 0) {
@@ -2639,7 +2627,7 @@ function initScrollAnimations() {
 /* ==================== MEJORAS DE UX ==================== */
 
 function addTouchFeedback() {
-    // Agregar feedback tÃ¡ctil en mÃ³viles solo a botones y promociones
+    // Agregar feedback tÃƒÂ¡ctil en mÃƒÂ³viles solo a botones y promociones
     document.querySelectorAll('.btn, .promo-card').forEach(el => {
         el.addEventListener('touchstart', () => {
             el.style.transform = 'scale(0.98)';
@@ -2652,7 +2640,7 @@ function addTouchFeedback() {
 }
 
 function enhanceSearch() {
-    // Mejorar bÃºsqueda con debounce
+    // Mejorar bÃƒÂºsqueda con debounce
     let searchTimeout;
     const searchInput = document.getElementById('searchInput');
     
@@ -2666,7 +2654,7 @@ function enhanceSearch() {
 
 function addKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-        // Ctrl/Cmd + K para focus en bÃºsqueda
+        // Ctrl/Cmd + K para focus en bÃƒÂºsqueda
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
             document.getElementById('searchInput').focus();
@@ -2680,17 +2668,17 @@ function addKeyboardShortcuts() {
 }
 
 
-/* ==================== OPTIMIZACIÃ“N DE RENDIMIENTO ==================== */
+/* ==================== OPTIMIZACIÃƒâ€œN DE RENDIMIENTO ==================== */
 
 function setupLazyLoad() {
-    // Aplicar animaciÃ³n de entrada suave a las tarjetas (sin ocultarlas)
+    // Aplicar animaciÃƒÂ³n de entrada suave a las tarjetas (sin ocultarlas)
     document.querySelectorAll('.product-card').forEach((card, index) => {
         card.style.animationDelay = `${index * 0.05}s`;
         card.classList.add('fade-in-card');
     });
 }
 
-/* ==================== DARK MODE (AutomÃ¡tico segÃºn hora) ==================== */
+/* ==================== DARK MODE (AutomÃƒÂ¡tico segÃƒÂºn hora) ==================== */
 
 function checkDarkMode() {
     const hour = new Date().getHours();
@@ -2706,7 +2694,7 @@ setInterval(checkDarkMode, 600000); // Check cada 10 minutos
 /* ==================== CONTADOR DE DEMANDA ==================== */
 
 function updateDemandStatus() {
-    // SimulaciÃ³n - en producciÃ³n esto vendrÃ­a de un servidor
+    // SimulaciÃƒÂ³n - en producciÃƒÂ³n esto vendrÃƒÂ­a de un servidor
     const hour = new Date().getHours();
     if (hour >= 22 || hour <= 2) {
         // "Alta demanda" en horarios pico nocturnos
@@ -2719,18 +2707,18 @@ function updateDemandStatus() {
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {
-        // Service worker no disponible, continuar sin Ã©l
+        // Service worker no disponible, continuar sin ÃƒÂ©l
     });
 }
 
-/* ==================== MANEJO DE CONEXIÃ“N ==================== */
+/* ==================== MANEJO DE CONEXIÃƒâ€œN ==================== */
 
 window.addEventListener('online', () => {
-    showNotificationMessage('âœ“ ConexiÃ³n establecida');
+    showNotificationMessage('Ã¢Å“â€œ ConexiÃƒÂ³n establecida');
 });
 
 window.addEventListener('offline', () => {
-    showNotificationMessage('âš ï¸ Sin conexiÃ³n a internet');
+    showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Sin conexiÃƒÂ³n a internet');
 });
 
 /* ==================== PRODUCT DETAIL MODAL ==================== */
@@ -2748,7 +2736,7 @@ function openProductModal(id) {
     // Populate modal
     document.getElementById('modalProductCategory').textContent = getCategoryLabel(product.category);
     document.getElementById('modalProductName').textContent = product.name;
-    document.getElementById('modalProductDescription').textContent = product.description || 'Sin descripción detallada.';
+    document.getElementById('modalProductDescription').textContent = product.description || 'Sin descripciÃ³n detallada.';
     
     document.getElementById('modalProductPrice').textContent = '$' + product.price.toLocaleString('es-CL');
     if (product.previousPrice) {
@@ -2819,14 +2807,14 @@ function confirmModalAdd() {
     // Cerrar el modal
     closeProductModal();
     
-    // Opcional: mostrar un feedback visual temporal en el botón
+    // Opcional: mostrar un feedback visual temporal en el botÃ³n
 }
 
 // Global click listener for product cards (Event Delegation)
 document.addEventListener('click', (e) => {
     const card = e.target.closest('.product-card');
     if (card) {
-        // Ignorar clics en los botones de acción del carrito dentro de la tarjeta
+        // Ignorar clics en los botones de acciÃ³n del carrito dentro de la tarjeta
         if (e.target.closest('.product-actions')) return;
         
         const productId = parseInt(card.dataset.id);
@@ -2915,13 +2903,13 @@ function showToastNotification(title, message) {
         toast = document.createElement('div');
         toast.id = 'toastNotification';
         toast.className = 'toast-notification';
-        toast.innerHTML = 
-            <div class="toast-icon">✓</div>
+        toast.innerHTML = `
+            <div class="toast-icon">âœ“</div>
             <div class="toast-content">
-                <div style="font-weight: 800; font-size: 0.75rem; text-transform: uppercase; opacity: 0.7;">\</div>
-                <div>\</div>
+                <div style="font-weight: 800; font-size: 0.75rem; text-transform: uppercase; opacity: 0.7;">${title}</div>
+                <div>${message}</div>
             </div>
-        ;
+        `;
         document.body.appendChild(toast);
     } else {
         toast.querySelector('.toast-content div:last-child').textContent = message;
