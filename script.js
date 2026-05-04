@@ -1,16 +1,16 @@
-/* ==================== PRODUCTOS ==================== */
+﻿/* ==================== PRODUCTOS ==================== */
 
 const DEFAULT_PRODUCTS = [
     // Destilados
-    { id: 1, name: 'Pisco Alto del Carmen', category: 'destilados', price: 9500, image: 'images/alto.jpg.jpeg', description: '35Ã‚Â° - Botella 750ml de tradiciÃƒÂ³n chilena', popular: true, active: true },
-    { id: 2, name: 'Whisky Chivas Regal 12', category: 'destilados', price: 28900, image: 'images/chivas.jpg.jpeg', description: '12 AÃƒÂ±os - Whisky EscocÃƒÂ©s Premium 750ml', active: true },
-    { id: 3, name: 'Jack Daniel\'s Old No. 7', category: 'destilados', price: 26500, image: 'images/jack1.jpg.jpeg', description: 'Tennessee Whisky - El clÃƒÂ¡sico de siempre 750ml', popular: true, active: true },
+    { id: 1, name: 'Pisco Alto del Carmen', category: 'destilados', price: 9500, image: 'images/alto.jpg.jpeg', description: '35° - Botella 750ml de tradición chilena', popular: true, active: true },
+    { id: 2, name: 'Whisky Chivas Regal 12', category: 'destilados', price: 28900, image: 'images/chivas.jpg.jpeg', description: '12 Años - Whisky Escocés Premium 750ml', active: true },
+    { id: 3, name: 'Jack Daniel\'s Old No. 7', category: 'destilados', price: 26500, image: 'images/jack1.jpg.jpeg', description: 'Tennessee Whisky - El clásico de siempre 750ml', popular: true, active: true },
     { id: 4, name: 'Jack Daniel\'s Honey', category: 'destilados', price: 26500, image: 'images/jack2.jpg.jpeg', description: 'Tennessee Honey - Suave toque de miel 750ml', active: true },
     { id: 5, name: 'Jack Daniel\'s Apple', category: 'destilados', price: 26500, image: 'images/jack3.jpg.jpeg', description: 'Tennessee Apple - Refrescante sabor manzana 750ml', active: true },
     { id: 6, name: 'Johnnie Walker Red Label', category: 'destilados', price: 15900, image: 'images/redlabel1.jpg.jpeg', description: 'JW Red Label - Mezcla vibrante 750ml', active: true },
-    { id: 7, name: 'Johnnie Walker Black Label', category: 'destilados', price: 32900, image: 'images/rednegro.jpg.jpeg', description: 'JW Black Label - 12 AÃƒÂ±os de profundidad 750ml', popular: true, active: true },
+    { id: 7, name: 'Johnnie Walker Black Label', category: 'destilados', price: 32900, image: 'images/rednegro.jpg.jpeg', description: 'JW Black Label - 12 Años de profundidad 750ml', popular: true, active: true },
     { id: 8, name: 'Pisco Nobel Reservado', category: 'destilados', price: 12900, image: 'images/nobel.jpg.jpeg', description: 'Pisco Nobel - Calidad excepcional 750ml', active: true },
-    { id: 9, name: 'Pisco Nobel 40Ã‚Â°', category: 'destilados', price: 14500, image: 'images/nobel2.jpg.jpeg', description: 'Pisco Nobel 40Ã‚Â° - EdiciÃƒÂ³n especial 750ml', active: true },
+    { id: 9, name: 'Pisco Nobel 40°', category: 'destilados', price: 14500, image: 'images/nobel2.jpg.jpeg', description: 'Pisco Nobel 40° - Edición especial 750ml', active: true },
     { id: 10, name: 'Promo Mix Alcohol', category: 'destilados', price: 15990, image: 'images/alchol.png', description: 'Pack especial para tu previa', active: true },
     
     // Cervezas
@@ -19,13 +19,17 @@ const DEFAULT_PRODUCTS = [
     // Vinos
     { id: 12, name: 'Vino Gato Negro Tinto', category: 'vinos', price: 3900, image: 'images/gato1.jpg.jpeg', description: 'Botella 1.5L - Varietal Cabernet Sauvignon', active: true },
     { id: 13, name: 'Vino Gato Negro Blanco', category: 'vinos', price: 3900, image: 'images/gato2.jpg.jpeg', description: 'Botella 1.5L - Varietal Sauvignon Blanc', active: true },
+
+    // Bebidas & Mixers
+    { id: 14, name: 'Monster Energy', category: 'bebidas', price: 2500, image: 'images/monster.jpg.jpeg', description: 'Lata 473ml - Energía extrema', active: true },
+    { id: 15, name: 'Bebida Coca-Cola 1.5L', category: 'bebidas', price: 2200, image: 'images/coca.jpg.jpeg', description: 'Botella 1.5L - Sabor original', active: true },
+    { id: 16, name: 'Bebida Sprite 1.5L', category: 'bebidas', price: 2200, image: 'images/sprite.jpg.jpeg', description: 'Botella 1.5L - Lima-limón', active: true },
     
-    // Bebidas
-    { id: 14, name: 'Monster Energy', category: 'bebidas', price: 2500, image: 'images/monster.jpg.jpeg', description: 'Lata 473ml - EnergÃƒÂ­a extrema', active: true },
-    { id: 15, name: 'Red Bull Energy Drink', category: 'bebidas', price: 2200, image: 'images/redbull .jpg.jpeg', description: 'Lata 250ml - Te da alas', active: true },
+    // Hielo
+    { id: 17, name: 'Bolsa de Hielo 2kg', category: 'hielo', price: 1500, image: 'images/hielo.jpg.jpeg', description: 'Hielo en cubitos purificado', active: true },
     
     // Snacks
-    { id: 16, name: 'Deli Snacks Mix', category: 'snacks', price: 4500, image: 'images/deli.png.png', description: 'Variedad de snacks premium para compartir', active: true },
+    { id: 18, name: 'Deli Snacks Mix', category: 'snacks', price: 4500, image: 'images/snacks.jpg.jpeg', description: 'Variedad de snacks premium para compartir', active: true }
 ];
 
 
@@ -556,7 +560,8 @@ function renderProducts(products) {
                 </div>
                 <div class="product-actions">
                     <div class="quantity-control">
-                        <button class="qty-btn" onclick="addToCart(${product.id}, -1)">Ã¢Ë†â€™</button>
+                        <button class="qty-btn" onclick="addToCart(${product.id}, -1)">−</button>
+                        <button class="qty-btn" onclick="addToCart(${product.id}, -1)">−</button>
                         <span class="qty-display" id="qty-${product.id}">0</span>
                         <button class="qty-btn" onclick="addToCart(${product.id}, 1)">+</button>
                     </div>
@@ -574,13 +579,15 @@ function renderProducts(products) {
 
 function getCategoryLabel(category) {
     const labels = {
-        'cervezas': 'Ã°Å¸ÂÂº Cervezas',
-        'destilados': 'Ã°Å¸Â¥Æ’ Destilados',
-        'vinos': 'Ã°Å¸ÂÂ· Vinos',
-        'hielo': 'Ã°Å¸Â§Å  Hielo',
-        'snacks': 'Ã°Å¸ÂÅ¸ Snacks',
-        'bebidas': 'Ã°Å¸Â¥Â¤ Bebidas'
+        'cervezas': '🍺 Cervezas',
+        'destilados': '🍸 Destilados',
+        'vinos': '🍷 Vinos',
+        'hielo': '🧊 Hielo',
+        'snacks': '🥨 Snacks',
+        'bebidas': '🥤 Bebidas'
     };
+    return labels[category] || category;
+};
     return labels[category] || category;
 }
 
@@ -609,8 +616,8 @@ function addToCart(productId, quantity = 1, showNotification = true) {
     saveCartState();
 
     if (showNotification) {
-        showNotificationMessage(`Ã¢Å“â€œ ${product.name} agregado al carrito`);
-        // Abrir automÃƒÂ¡ticamente el formulario de pedido al agregar
+        showNotificationMessage(`✔ ${product.name} agregado al carrito`);
+        // Abrir automáticamente el formulario de pedido al agregar
         setTimeout(openOrderForm, 500);
     }
 }
@@ -642,7 +649,7 @@ function updateCartUI() {
         }
     });
 
-    // Actualizar Mini Resumen (Sticky bar en mÃ³vil)
+    // Actualizar Mini Resumen (Sticky bar en móvil)
     const miniSummary = document.getElementById('miniSummary');
     if (miniSummary) {
         if (totalItems > 0) {
@@ -664,7 +671,7 @@ function removeItemFromCart(productId) {
         updateCartUI();
         updateProductQuantityDisplay();
         saveCartState();
-        showNotificationMessage(`Ã°Å¸â€”â€˜Ã¯Â¸Â ${item.name} eliminado del carrito`);
+        showNotificationMessage(`🗑️ ${item.name} eliminado del carrito`);
     }
 }
 
@@ -676,10 +683,10 @@ function removeFromCartAndRefresh(productId) {
         updateProductQuantityDisplay();
         saveCartState();
         
-        // Si el carrito queda vacÃƒÂ­o, cerrar el modal
+        // Si el carrito queda vacío, cerrar el modal
         if (cart.length === 0) {
             closeOrderModal();
-            showNotificationMessage('Ã°Å¸â€ºâ€™ El carrito estÃƒÂ¡ vacÃƒÂ­o');
+            showNotificationMessage('🛒 El carrito está vacío');
         } else {
             // Refrescar el modal de pedido
             openOrderForm();
@@ -698,11 +705,11 @@ function openCartSummaryModal() {
         modal.innerHTML = `
             <div class="order-modal order-modal--small">
                 <div class="order-modal-header">
-                    <h3>Ã°Å¸â€ºâ€™ Carrito vacÃƒÂ­o</h3>
-                    <button class="modal-close" onclick="closeCartSummaryModal()">Ã¢Å“â€¢</button>
+                    <h3>🛒 Carrito vacío</h3>
+                    <button class="modal-close" onclick="closeCartSummaryModal()">✖</button>
                 </div>
                 <div class="order-modal-content">
-                    <p>TodavÃƒÂ­a no has agregado productos.</p>
+                    <p>Todavía no has agregado productos.</p>
                     <div class="order-actions" style="justify-content: center; margin-top: 16px;">
                         <button type="button" class="btn btn-primary" onclick="closeCartSummaryModal()">Cerrar</button>
                     </div>
@@ -724,7 +731,7 @@ function openCartSummaryModal() {
         const moreCount = cart.length - displayedItems.length;
         const moreHtml = moreCount > 0 ? `
             <div class="order-item order-item-more">
-                <span class="order-item-name">... y ${moreCount} producto(s) mÃƒÂ¡s</span>
+                <span class="order-item-name">... y ${moreCount} producto(s) más</span>
             </div>
         ` : '';
 
@@ -733,8 +740,8 @@ function openCartSummaryModal() {
         modal.innerHTML = `
             <div class="order-modal order-modal--small">
                 <div class="order-modal-header">
-                    <h3>Ã°Å¸â€ºâ€™ Tu Pedido</h3>
-                    <button class="modal-close" onclick="closeCartSummaryModal()">Ã¢Å“â€¢</button>
+                    <h3>🛒 Tu Pedido</h3>
+                    <button class="modal-close" onclick="closeCartSummaryModal()">✖</button>
                 </div>
                 <div class="order-modal-content">
                     <div class="order-summary">
@@ -795,7 +802,7 @@ function setCompactMode(compact = true) {
         cartExpanded = true;
         // Auto-expand cart items and form when opening full view
         updateCartUI();
-        // Mostrar formulario automÃƒÂ¡ticamente en modo expandido
+        // Mostrar formulario automáticamente en modo expandido
         document.getElementById('cartForm').style.display = 'block';
         document.getElementById('cartSummary').style.display = 'block';
         document.getElementById('checkoutBtn').style.display = 'block';
@@ -824,7 +831,7 @@ function updateStepIndicator(step) {
 
 function openOrderForm() {
     if (cart.length === 0) {
-        showNotificationMessage('âŒ Tu carrito estÃ¡ vacÃ­o.');
+        showNotificationMessage('❌ Tu carrito está vacío.');
         return;
     }
 
@@ -838,8 +845,8 @@ function openOrderForm() {
     modal.innerHTML = `
         <div class="order-modal-premium">
             <div class="order-modal-header">
-                <h3>ðŸ›’ Finalizar Compra</h3>
-                <button class="modal-close" onclick="closeOrderModal()">Ã—</button>
+                <h3>🛒 Finalizar Compra</h3>
+                <button class="modal-close" onclick="closeOrderModal()">×</button>
             </div>
 
             <div class="order-modal-content slim-scroll">
@@ -872,7 +879,7 @@ function openOrderForm() {
                             <span class="total-val">$${subtotal.toLocaleString('es-CL')}</span>
                         </div>
                         <div id="deliveryRow" class="total-row" style="display: none;">
-                            <span class="total-label">EnvÃ­o</span>
+                            <span class="total-label">Envío</span>
                             <span id="modalDeliveryCost" class="total-val">$0</span>
                         </div>
                         <div class="total-row grand-total">
@@ -885,18 +892,18 @@ function openOrderForm() {
                 <!-- Formulario -->
                 <form class="order-form-premium" onsubmit="submitOrder(event)">
                     <div class="form-section">
-                        <h4>ðŸ“ Datos de Entrega</h4>
+                        <h4>📍 Datos de Entrega</h4>
                         
                         <div class="premium-input-group">
-                            <label>MÃ©todo de Entrega</label>
+                            <label>Método de Entrega</label>
                             <div class="radio-group">
                                 <div class="radio-option">
                                     <input type="radio" id="typeDelivery" name="orderType" value="delivery" checked onchange="toggleOrderTypeFields()">
-                                    <label for="typeDelivery">ðŸ›µ Delivery</label>
+                                    <label for="typeDelivery">🛵 Delivery</label>
                                 </div>
                                 <div class="radio-option">
                                     <input type="radio" id="typeRetiro" name="orderType" value="retiro" onchange="toggleOrderTypeFields()">
-                                    <label for="typeRetiro">ðŸª Retiro</label>
+                                    <label for="typeRetiro">🛍️ Retiro</label>
                                 </div>
                             </div>
                         </div>
@@ -928,11 +935,11 @@ function openOrderForm() {
                             </div>
 
                             <div class="premium-input-group">
-                                <label>DirecciÃ³n Exacta *</label>
+                                <label>Dirección Exacta *</label>
                                 <div style="display:flex; gap:8px;">
-                                    <input type="text" id="modalClientAddress" class="premium-input" placeholder="Calle, NÂ°, Block..." required>
+                                    <input type="text" id="modalClientAddress" class="premium-input" placeholder="Calle, N°, Block..." required>
                                     <button type="button" class="gps-btn" onclick="getCurrentLocation('modalClientAddress')" id="btnGps">
-                                        ðŸ“ <span class="desktop-only">GPS</span>
+                                        📍 <span class="desktop-only">GPS</span>
                                     </button>
                                 </div>
                             </div>
@@ -1084,20 +1091,20 @@ function submitOrder(event) {
     const autoGps = document.getElementById('modalCoordinates')?.value.trim();
 
     if (!name) return alert('Por favor ingresa tu nombre completo');
-    if (!phone) return alert('Por favor ingresa tu nÃƒÂºmero de telÃƒÂ©fono');
+    if (!phone) return alert('Por favor ingresa tu número de teléfono');
 
     const phoneRegex = /^(\+56\s?9|\+569|9)\s?\d{4}\s?\d{4}$/;
     if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-        return alert('Formato de telÃƒÂ©fono invÃƒÂ¡lido. Usa +56 9 XXXX XXXX');
+        return alert('Formato de teléfono inválido. Usa +56 9 XXXX XXXX');
     }
 
     if (orderType === 'delivery') {
         if (!comuna) return alert('Por favor selecciona tu comuna');
         if (!sector) return alert('Por favor selecciona tu sector');
-        if (!address) return alert('Por favor ingresa tu direcciÃƒÂ³n completa');
+        if (!address) return alert('Por favor ingresa tu dirección completa');
     }
 
-    if (cart.length === 0) return alert('Tu carrito estÃƒÂ¡ vacÃƒÂ­o');
+    if (cart.length === 0) return alert('Tu carrito está vacío');
 
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
@@ -1112,39 +1119,39 @@ function submitOrder(event) {
     const sectorName = orderType === 'delivery' ? (DELIVERY_ZONES[comuna]?.sectors.find(s => s.id === sector)?.name || '') : '';
     const comunaName = orderType === 'delivery' ? DELIVERY_ZONES[comuna]?.name : '';
 
-    let message = `Ã°Å¸â€ºâ€™ *NUEVO PEDIDO Ã¢â‚¬â€œ BOTILLERÃƒÂA DIVAL*\n\n`;
-    message += `Ã°Å¸â€˜Â¤ Cliente: ${name}\n`;
-    message += `Ã°Å¸â€œÅ¾ TelÃƒÂ©fono: ${phone}\n\n`;
+    let message = `🛒 *NUEVO PEDIDO – BOTILLERÍA DIVAL*\n\n`;
+    message += `🧑 Cliente: ${name}\n`;
+    message += `📞 Teléfono: ${phone}\n\n`;
     
-    message += `Ã°Å¸â€ºÂ Productos:\n`;
+    message += `📦 Productos:\n`;
     cart.forEach(item => {
-        message += `Ã¢â‚¬Â¢ ${item.name} x${item.quantity}\n`;
+        message += `• ${item.name} x${item.quantity}\n`;
     });
 
-    message += `\nÃ°Å¸â€™Â° Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
+    message += `\n💰 Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
     if(orderType === 'delivery') {
-        message += `Ã°Å¸Å¡Å¡ Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
+        message += `🚚 Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
     } else {
-        message += `Ã°Å¸ÂÂª Delivery: $0 (Retiro Local)\n`;
+        message += `🛍️ Delivery: $0 (Retiro Local)\n`;
     }
-    message += `Ã°Å¸â€™Âµ Total Final: $${total.toLocaleString('es-CL')}\n\n`;
+    message += `💵 Total Final: $${total.toLocaleString('es-CL')}\n\n`;
 
     if (orderType === 'delivery') {
-        message += `Ã°Å¸â€œÂ Comuna: ${comunaName}\n`;
-        message += `Ã°Å¸â€œÅ’ Sector: ${sectorName}\n`;
-        message += `Ã°Å¸ÂÂ  DirecciÃƒÂ³n: ${address}\n\n`;
+        message += `🏠 Comuna: ${comunaName}\n`;
+        message += `📌 Sector: ${sectorName}\n`;
+        message += `🏡 Dirección: ${address}\n\n`;
 
         if (autoGps) {
-            message += `Ã°Å¸â€œÂ UbicaciÃƒÂ³n:\nhttps://www.google.com/maps?q=${autoGps.replace(/\s/g, '')}\n\n`;
+            message += `📍 Ubicación:\nhttps://www.google.com/maps?q=${autoGps.replace(/\s/g, '')}\n\n`;
         } else if (manualGps) {
-            message += `Ã°Å¸â€œÂ UbicaciÃƒÂ³n manual:\n${manualGps}\n\n`;
+            message += `📍 Ubicación manual:\n${manualGps}\n\n`;
         }
     } else {
-         message += `Ã°Å¸â€œÂ Retiro Presencial en Local\n\n`;
+         message += `📍 Retiro Presencial en Local\n\n`;
     }
 
     if (comments) {
-        message += `Ã°Å¸â€œÂ Observaciones:\n${comments}\n`;
+        message += `📝 Observaciones:\n${comments}\n`;
     }
 
     const nuevoPedido = {
@@ -1192,7 +1199,7 @@ const PROMOS = [
         name: 'Pack Pisco Party',
         price: 19900,
         image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
-        description: 'Pisco Capel AÃƒÂ±ejo + Bebida 3L + Hielo premium + Copas'
+        description: 'Pisco Capel Añejo + Bebida 3L + Hielo premium + Copas'
     },
     {
         id: 1002,
@@ -1213,7 +1220,7 @@ const PROMOS = [
         name: 'Combo Familiar',
         price: 27900,
         image: 'https://images.unsplash.com/photo-1608270861620-7c80b6ff7435?w=400&h=300&fit=crop',
-        description: 'Vino + Cervezas + Snacks + Bebidas no alcohÃƒÂ³licas'
+        description: 'Vino + Cervezas + Snacks + Bebidas no alcohólicas'
     }
 ];
 
@@ -1243,7 +1250,7 @@ function addPromoToCart(promoId) {
     }
 
     updateCartUI();
-    showNotificationMessage(`Ã¢Å“â€œ ${promo.name} agregado al carrito`);
+    showNotificationMessage(`✔ ${promo.name} agregado al carrito`);
 }
 
 function scrollPromo(direction) {
@@ -1257,7 +1264,7 @@ function scrollPromo(direction) {
     });
 }
 
-/* ==================== BÃƒÅ¡SQUEDA ==================== */
+/* ==================== BÚSQUEDA ==================== */
 
 function handleSearch(e) {
     const query = e.target.value.toLowerCase();
@@ -1308,6 +1315,8 @@ function handleSearchResultClick(productId) {
 function updateStatus() {
     const statusBar = document.getElementById('statusBar');
     const statusText = document.getElementById('statusText');
+    if (!statusBar || !statusText) return;
+    
     const now = new Date();
     const day = now.getDay();
     const hours = now.getHours();
@@ -1317,28 +1326,35 @@ function updateStatus() {
     let isOpen = false;
     let closeTime = '';
 
-    // Domingo (0) a Jueves (4): abierto hasta 00:30 (30 minutos del dÃƒÂ­a siguiente)
-    // Viernes (5) y SÃƒÂ¡bado (6): abierto hasta 02:30 (150 minutos del dÃƒÂ­a siguiente)
-
     if (day >= 0 && day <= 4) {
-        // Abierto 24 horas hasta las 00:30 siguiente
         isOpen = true;
-        if (currentTime >= 1440 - 30) { // MÃƒÂ­nimo 00:30
-            closeTime = 'hasta las 00:30';
-        } else {
-            closeTime = 'hasta las 00:30';
-        }
+        closeTime = 'hasta las 00:30';
     } else if (day === 5 || day === 6) {
-        // Viernes y sÃƒÂ¡bado abierto hasta 02:30
         isOpen = true;
         closeTime = 'hasta las 02:30';
     }
 
     if (isOpen) {
-        statusText.textContent = `Ã¢ÂÂ° Abierto ${closeTime}`;
+        statusText.textContent = '🟢 Abierto ' + closeTime;
         statusText.classList.remove('closed');
     } else {
-        statusText.textContent = 'Ã¢ÂÅ’ Cerrado en estos momentos';
+        statusText.textContent = '⭕ Cerrado en estos momentos';
+        statusText.classList.add('closed');
+    }
+} else {
+            closeTime = 'hasta las 00:30';
+        }
+    } else if (day === 5 || day === 6) {
+        // Viernes y sábado abierto hasta 02:30
+        isOpen = true;
+        closeTime = 'hasta las 02:30';
+    }
+
+    if (isOpen) {
+        statusText.textContent = `🟢 Abierto ${closeTime}`;
+        statusText.classList.remove('closed');
+    } else {
+        statusText.textContent = '⭕ Cerrado en estos momentos';
         statusText.classList.add('closed');
     }
 }
@@ -2923,3 +2939,7 @@ function showToastNotification(title, message) {
         toast.classList.remove('active');
     }, 3000);
 }
+
+
+
+
