@@ -576,21 +576,31 @@ function updateCartUI() {
         }
     });
 
-    // Actualizar Botón Flotante Principal (Nueva UX)
+    // Actualizar Botón Flotante Principal (Nueva UX - Siempre visible)
     const floatingCheckout = document.getElementById('floatingCheckout');
     if (floatingCheckout) {
-        if (totalItems > 0) {
-            floatingCheckout.classList.add('active');
-            const floatingCount = document.getElementById('floatingCartCount');
-            const floatingTotal = document.getElementById('floatingCartTotal');
-            if (floatingCount) floatingCount.textContent = totalItems;
-            if (floatingTotal) floatingTotal.textContent = `$${totalPrice.toLocaleString('es-CL')}`;
+        floatingCheckout.classList.add('active'); // Siempre activo
+        const floatingCount = document.getElementById('floatingCartCount');
+        const floatingTotal = document.getElementById('floatingCartTotal');
+        const floatingText = floatingCheckout.querySelector('.floating-checkout-text');
+        
+        if (floatingCount) floatingCount.textContent = totalItems;
+        if (floatingTotal) floatingTotal.textContent = `$${totalPrice.toLocaleString('es-CL')}`;
+        
+        if (totalItems === 0) {
+            if (floatingText) floatingText.textContent = "Ver Carrito";
+            floatingCheckout.style.opacity = "0.7";
         } else {
-            floatingCheckout.classList.remove('active');
+            if (floatingText) floatingText.textContent = "Realizar Pedido";
+            floatingCheckout.style.opacity = "1";
         }
     }
 
-    // Actualizar Mini Resumen (Legacy - Opcional)
+    const headerTotal = document.getElementById('headerCartTotal');
+    if (headerTotal) {
+        headerTotal.textContent = `$${totalPrice.toLocaleString('es-CL')}`;
+        headerTotal.style.display = totalItems > 0 ? 'inline' : 'none';
+    }
     const miniSummary = document.getElementById('miniSummary');
     if (miniSummary) {
         if (totalItems > 0) {
