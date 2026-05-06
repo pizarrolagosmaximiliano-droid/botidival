@@ -1,4 +1,20 @@
-// Los datos estáticos ahora se cargan desde config.js
+// Variables de estado global
+let PRODUCTS = [];
+let cart = [];
+let currentFilter = 'all';
+
+function loadProducts() {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEYS.productos);
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_PRODUCTS;
+        }
+    } catch (e) {
+        console.error("Error loading products:", e);
+    }
+    return DEFAULT_PRODUCTS;
+}
 
 function loadCartState() {
     const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -205,6 +221,9 @@ function initializeApp() {
     loadCartState();
     
     // Renderizar componentes si existen los contenedores
+    // Inicializar productos
+    PRODUCTS = loadProducts();
+    
     if (document.getElementById('productsGrid')) {
         renderProducts(PRODUCTS.filter(p => p.active !== false));
     }
