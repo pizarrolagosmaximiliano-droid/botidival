@@ -41,8 +41,7 @@
 </head>
 
 <body>
-    <!-- Cargar configuración -->
-    <script src="config.js"></script>
+    <!-- Configuración cargada al final para evitar bloqueo -->
     <!-- Notificación flotante -->
     <div id="notification" class="notification"></div>
 
@@ -53,10 +52,10 @@
                 <div class="navbar-brand">
                     <div class="logo">
                         <img src="images/image.png" alt="Boti Dival Logo" class="logo-img"
-                            style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
+                            style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;" loading="eager">
                         <div>
                             <h1>Boti Dival</h1>
-                            <p class="tagline">Botillería Premium & Delivery Nocturno</p>
+                            <p class="tagline">Premium & Delivery Nocturno</p>
                         </div>
                     </div>
                 </div>
@@ -133,7 +132,7 @@
                 <svg class="drawer-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </a>
             <div class="drawer-divider"></div>
-            <a href="javascript:void(0)" class="drawer-link drawer-cart-link" onclick="closeMobileMenu(); openOrderForm();">
+            <a href="javascript:void(0)" class="drawer-link drawer-cart-link" onclick="openOrderForm(); closeMobileMenu();">
                 <span class="drawer-icon">🛒</span>
                 <span>Ver mi Carrito</span>
                 <span class="drawer-badge" id="drawerCartCount">0</span>

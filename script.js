@@ -625,10 +625,11 @@ function addToCart(productId, quantity = 1, showNotification = true) {
     saveCartState();
 
     if (showNotification) {
-        showNotificationMessage(`✔ ${product.name} agregado al carrito`);
-        // Abrir directamente en el paso de "Pago/Envío" para rapidez
+        showNotificationMessage(`✔ ${product.name} agregado`);
+        // Redirección automática a finalizar compra (Checkout)
         openOrderForm();
-        setTimeout(() => goToCheckoutStep(2), 10);
+        // Ir directamente al paso de datos de envío si se agregó un nuevo producto
+        setTimeout(() => goToCheckoutStep(2), 50);
     }
 }
 
@@ -650,9 +651,11 @@ function updateCartUI() {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
-    [cartCount, mobileCartCount, drawerCartCount].forEach(el => {
+    const badges = [cartCount, mobileCartCount, drawerCartCount];
+    badges.forEach(el => {
         if (el) {
             el.textContent = totalItems;
+            el.style.display = totalItems > 0 ? 'flex' : 'none';
             el.classList.remove('pop');
             void el.offsetWidth; // Force reflow
             el.classList.add('pop');
@@ -663,14 +666,19 @@ function updateCartUI() {
     const miniSummary = document.getElementById('miniSummary');
     if (miniSummary) {
         if (totalItems > 0) {
-            miniSummary.style.display = 'block';
+            miniSummary.classList.add('active');
             const qtyEl = document.getElementById('miniSummaryQty');
             const totalEl = document.getElementById('miniSummaryTotal');
             if (qtyEl) qtyEl.textContent = `${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}`;
             if (totalEl) totalEl.textContent = `$${totalPrice.toLocaleString('es-CL')}`;
         } else {
-            miniSummary.style.display = 'none';
+            miniSummary.classList.remove('active');
         }
+    }
+    
+    // Sincronizar checkout si está abierto
+    if (document.getElementById('checkoutOverlay')?.classList.contains('active')) {
+        renderCheckoutCart();
     }
 }
 
@@ -702,98 +710,7 @@ function removeFromCartAndRefresh(productId) {
     }
 }
 
-// Legacy openOrderForm removed. See active definition below.
-
-function openCartSummaryModal() {
-    const modal = document.createElement('div');
-    modal.id = 'cartSummaryModal';
-    modal.className = 'order-modal-overlay';
-
-    if (cart.length === 0) {
-        modal.innerHTML = `
-            <div class="order-modal order-modal--small">
-                <div class="order-modal-header">
-                    <h3>🛒 Carrito vacío</h3>
-                    <button class="modal-close" onclick="closeCartSummaryModal()">✖</button>
-                </div>
-                <div class="order-modal-content">
-                    <p>Todavía no has agregado productos.</p>
-                    <div class="order-actions" style="justify-content: center; margin-top: 16px;">
-                        <button type="button" class="btn btn-primary" onclick="closeCartSummaryModal()">Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        `;
-    } else {
-        const displayedItems = cart.slice(0, 4);
-        const itemsHtml = displayedItems.map(item => `
-            <div class="order-item">
-                <div class="order-item-info">
-                    <span class="order-item-name">${item.name}</span>
-                    <span class="order-item-qty">x${item.quantity}</span>
-                </div>
-                <span class="order-item-price">$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
-            </div>
-        `).join('');
-
-        const moreCount = cart.length - displayedItems.length;
-        const moreHtml = moreCount > 0 ? `
-            <div class="order-item order-item-more">
-                <span class="order-item-name">... y ${moreCount} producto(s) más</span>
-            </div>
-        ` : '';
-
-        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-        modal.innerHTML = `
-            <div class="order-modal order-modal--small">
-                <div class="order-modal-header">
-                    <h3>🛒 Tu Pedido</h3>
-                    <button class="modal-close" onclick="closeCartSummaryModal()">✖</button>
-                </div>
-                <div class="order-modal-content">
-                    <div class="order-summary">
-                        <div class="order-items">
-                            ${itemsHtml}
-                            ${moreHtml}
-                        </div>
-                        <div class="order-total">
-                            <strong>Total: $${total.toLocaleString('es-CL')}</strong>
-                        </div>
-                    </div>
-                    <div class="order-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeCartSummaryModal()">Cerrar</button>
-                        <button type="button" class="btn btn-primary" onclick="openOrderForm()">Continuar</button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    document.body.appendChild(modal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeCartSummaryModal();
-        }
-    });
-    document.addEventListener('keydown', handleSummaryEscapeKey);
-    setTimeout(() => modal.classList.add('active'), 10);
-}
-
-function closeCartSummaryModal() {
-    const modal = document.getElementById('cartSummaryModal');
-    if (modal) {
-        modal.classList.remove('active');
-        document.removeEventListener('keydown', handleSummaryEscapeKey);
-        setTimeout(() => modal.remove(), 300);
-    }
-}
-
-function handleSummaryEscapeKey(event) {
-    if (event.key === 'Escape') {
-        closeCartSummaryModal();
-    }
-}
+// Fin de lógica de carrito principal
 
 
 function setCompactMode(compact = true) {
