@@ -70,17 +70,17 @@ let PRODUCTS = loadProducts();
 
 // ConfiguraciÃƒÂ³n de delivery
 const DELIVERY_ZONES = {
-    'doÃƒÂ±ihue': {
-        name: 'DoÃƒÂ±ihue',
+    'donihue': {
+        name: 'Doñihue',
         sectors: [
-            { id: 'centro', name: 'DoÃƒÂ±ihue Centro', cost: 6600 },
+            { id: 'centro', name: 'Doñihue Centro', cost: 6600 },
             { id: 'cerrillos', name: 'Cerrillos', cost: 6000 }
         ]
     },
     'coltauco': {
         name: 'Coltauco',
         sectors: [
-            { id: 'quimÃƒÂ¡vida', name: 'QuimÃƒÂ¡vida', cost: 6000 },
+            { id: 'quimavida', name: 'Quimávida', cost: 6000 },
             { id: 'lo_de_cuevas', name: 'Lo de Cuevas', cost: 5800 },
             { id: 'hijuela_del_medio', name: 'Hijuela del Medio', cost: 5800 },
             { id: 'rinconada_de_parral', name: 'Rinconada de Parral', cost: 4700 },
@@ -626,8 +626,8 @@ function addToCart(productId, quantity = 1, showNotification = true) {
 
     if (showNotification) {
         showNotificationMessage(`✔ ${product.name} agregado al carrito`);
-        // Abrir automáticamente el formulario de pedido al agregar
-        setTimeout(openOrderForm, 500);
+        // Abrir automáticamente el formulario de pedido al agregar (instantáneo)
+        openOrderForm();
     }
 }
 
@@ -1149,6 +1149,70 @@ function closeOrderModal() {
 function submitOrder(event) {
     event.preventDefault();
 
+    const clientName = document.getElementById('modalClientName').value.trim();
+    const clientPhone = document.getElementById('modalClientPhone').value.trim();
+    const orderType = document.querySelector('input[name="orderType"]:checked')?.value || 'delivery';
+    
+    // Validaciones base
+    if (!clientName || !clientPhone) {
+        showNotificationMessage('⚠️ Por favor completa tu nombre y teléfono');
+        return;
+    }
+
+    let message = `🛒 *NUEVO PEDIDO - Boti Dival*\n\n`;
+    message += `👤 *Cliente:* ${clientName}\n`;
+    message += `📞 *WhatsApp:* ${clientPhone}\n`;
+    message += `📦 *Tipo:* ${orderType === 'delivery' ? 'Delivery a domicilio' : 'Retiro en local'}\n`;
+
+    let dCost = 0;
+
+    if (orderType === 'delivery') {
+        const comunaId = document.getElementById('modalClientComuna').value;
+        const sectorId = document.getElementById('modalClientSector').value;
+        const address = document.getElementById('modalClientAddress').value.trim();
+        const coords = document.getElementById('modalCoordinates')?.value;
+
+        if (!comunaId || !sectorId || !address) {
+            showNotificationMessage('⚠️ Por favor completa los datos de entrega');
+            return;
+        }
+
+        const comunaName = DELIVERY_ZONES[comunaId].name;
+        const sectorData = DELIVERY_ZONES[comunaId].sectors.find(s => s.id === sectorId);
+        dCost = sectorData ? sectorData.cost : 0;
+
+        message += `📍 *Comuna:* ${comunaName}\n`;
+        message += `🏘️ *Sector:* ${sectorData ? sectorData.name : sectorId}\n`;
+        message += `🏠 *Dirección:* ${address}\n`;
+        if (coords) message += `📍 *GPS:* https://www.google.com/maps?q=${coords}\n`;
+    }
+
+    const comments = document.getElementById('modalClientComments').value.trim();
+    if (comments) message += `💬 *Comentarios:* ${comments}\n`;
+
+    message += `\n📋 *DETALLE:*\n`;
+    cart.forEach(item => {
+        message += `• ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
+    });
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    message += `\n💰 *RESUMEN:*`;
+    message += `\n- Subtotal: $${subtotal.toLocaleString('es-CL')}`;
+    if (orderType === 'delivery') message += `\n- Envío: $${dCost.toLocaleString('es-CL')}`;
+    message += `\n*TOTAL: $${(subtotal + dCost).toLocaleString('es-CL')}*`;
+
+    const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+
+    // Limpiar carrito y cerrar
+    cart = [];
+    updateCartUI();
+    updateProductQuantityDisplay();
+    saveCartState();
+    closeOrderForm();
+    showNotificationMessage('✅ ¡Pedido enviado! Te contactaremos pronto.');
+}
+
     const orderType = document.querySelector('input[name="orderType"]:checked').value;
     const name = document.getElementById('modalClientName').value.trim();
     const phone = document.getElementById('modalClientPhone').value.trim();
@@ -1490,7 +1554,7 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Obteniendo ubicaciÃƒÂ³n...';
     }
-    showNotificationMessage('Ã¢Å’â€º Accediendo al GPS...');
+    showNotificationMessage('⌛ Accediendo al GPS...');
     
     navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -1498,9 +1562,9 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
             const lng = position.coords.longitude;
             const coords = `${lat}, ${lng}`;
             
-            // Intentar Reverse Geocoding (Convertir coordenadas a direcciÃƒÂ³n)
+            // Intentar Reverse Geocoding (Convertir coordenadas a dirección)
             try {
-                showNotificationMessage('Ã°Å¸â€Â Identificando direcciÃƒÂ³n...');
+                showNotificationMessage('🔍 Identificando dirección...');
                 const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
                     headers: { 'Accept-Language': 'es' }
                 });
@@ -1509,14 +1573,14 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
                 if (data && data.display_name) {
                     const addressField = document.getElementById('modalClientAddress');
                     if (addressField) {
-                        // Limpiar direcciÃƒÂ³n de partes innecesarias
+                        // Limpiar dirección de partes innecesarias
                         const cleanAddress = data.display_name.split(',').slice(0, 3).join(',').trim();
                         addressField.value = cleanAddress;
                         addressField.classList.add('gps-success');
                     }
                 }
             } catch (geoError) {
-                console.warn('No se pudo obtener la direcciÃƒÂ³n exacta:', geoError);
+                console.warn('No se pudo obtener la dirección exacta:', geoError);
             }
 
             // Guardar coordenadas en campos ocultos
@@ -1524,16 +1588,16 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
             const coordInput = document.getElementById('modalCoordinates');
             if (coordInput) coordInput.value = coords;
             
-            // Si el target no es el de direcciÃƒÂ³n, poner las coordenadas
+            // Si el target no es el de dirección, poner las coordenadas
             if (target && targetId !== 'modalClientAddress') {
                 target.value = coords;
             }
 
-            showNotificationMessage('Ã°Å¸â€œÂ UbicaciÃƒÂ³n fijada con ÃƒÂ©xito');
+            showNotificationMessage('📍 Ubicación fijada con éxito');
             if (btn) {
                 btn.disabled = false;
                 btn.classList.add('btn-gps-success');
-                btn.innerHTML = 'Ã¢Å“â€¦ UbicaciÃƒÂ³n Lista';
+                btn.innerHTML = '✅ Ubicación Lista';
                 setTimeout(() => { 
                     btn.innerHTML = originalText;
                     btn.classList.remove('btn-gps-success');
