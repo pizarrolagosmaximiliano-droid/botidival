@@ -1,5 +1,5 @@
 // Service Worker para Boti Dival PWA
-const CACHE_NAME = 'boti-dival-v6';
+const CACHE_NAME = 'boti-dival-v7';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
