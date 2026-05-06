@@ -1,165 +1,66 @@
-/* ==================== CONFIGURACIÓN FÁCIL BOTI DIVAL ==================== */
-/* 
- * Este archivo permite personalizar la web FÁCILMENTE sin tocar código
- * Solo reemplaza los valores en este archivo
- */
+/* ==================== CONFIGURACIÓN Y DATOS ==================== */
 
-// ========== CONFIGURACIÓN AUTOMÁTICA DE RUTAS ==========
-// Detecta si estamos en GitHub Pages o localhost y ajusta las rutas
-const BASE_URL = (() => {
-    const href = window.location.href;
-    // Si está en GitHub Pages (botidival)
-    if (href.includes('github.io') || href.includes('botidival')) {
-        return '/botidival/';
-    }
-    // Si está en localhost o servidor local
-    return '/';
-})();
+const DEFAULT_PRODUCTS = [
+    // Destilados
+    { id: 1, name: 'Pisco Alto del Carmen', category: 'destilados', price: 9500, image: 'images/alto.jpg.jpeg', description: '35° - Botella 750ml de tradición chilena', popular: true, active: true },
+    { id: 2, name: 'Whisky Chivas Regal 12', category: 'destilados', price: 28900, image: 'images/chivas.jpg.jpeg', description: '12 Años - Whisky Escocés Premium 750ml', active: true },
+    { id: 3, name: 'Jack Daniel\'s Old No. 7', category: 'destilados', price: 26500, image: 'images/jack1.jpg.jpeg', description: 'Tennessee Whisky - El clásico de siempre 750ml', popular: true, active: true },
+    { id: 4, name: 'Jack Daniel\'s Honey', category: 'destilados', price: 26500, image: 'images/jack2.jpg.jpeg', description: 'Tennessee Honey - Suave toque de miel 750ml', active: true },
+    { id: 5, name: 'Jack Daniel\'s Apple', category: 'destilados', price: 26500, image: 'images/jack3.jpg.jpeg', description: 'Tennessee Apple - Refrescante sabor manzana 750ml', active: true },
+    { id: 6, name: 'Johnnie Walker Red Label', category: 'destilados', price: 15900, image: 'images/redlabel1.jpg.jpeg', description: 'JW Red Label - Mezcla vibrante 750ml', active: true },
+    { id: 7, name: 'Johnnie Walker Black Label', category: 'destilados', price: 32900, image: 'images/rednegro.jpg.jpeg', description: 'JW Black Label - 12 Años de profundidad 750ml', popular: true, active: true },
+    { id: 8, name: 'Pisco Nobel Reservado', category: 'destilados', price: 12900, image: 'images/nobel.jpg.jpeg', description: 'Pisco Nobel - Calidad excepcional 750ml', active: true },
+    { id: 9, name: 'Pisco Nobel 40°', category: 'destilados', price: 14500, image: 'images/nobel2.jpg.jpeg', description: 'Pisco Nobel 40° - Edición especial 750ml', active: true },
+    { id: 10, name: 'Promo Mix Alcohol', category: 'destilados', price: 15990, image: 'images/alchol.png', description: 'Pack especial para tu previa', active: true },
+    { id: 11, name: 'Pack Cerveza Corona', category: 'cervezas', price: 14900, image: 'images/pack corona .jpeg', description: 'Balde/Pack 6 Botellas - 355ml c/u', popular: true, active: true },
+    { id: 12, name: 'Vino Gato Negro Tinto', category: 'vinos', price: 3900, image: 'images/gato1.jpg.jpeg', description: 'Botella 1.5L - Varietal Cabernet Sauvignon', active: true },
+    { id: 13, name: 'Vino Gato Negro Blanco', category: 'vinos', price: 3900, image: 'images/gato2.jpg.jpeg', description: 'Botella 1.5L - Varietal Sauvignon Blanc', active: true },
+    { id: 14, name: 'Monster Energy', category: 'bebidas', price: 2500, image: 'images/monster.jpg.jpeg', description: 'Lata 473ml - Energía extrema', active: true },
+    { id: 15, name: 'Bebida Coca-Cola 1.5L', category: 'bebidas', price: 2200, image: 'images/coca.jpg.jpeg', description: 'Botella 1.5L - Sabor original', active: true },
+    { id: 16, name: 'Bebida Sprite 1.5L', category: 'bebidas', price: 2200, image: 'images/sprite.jpg.jpeg', description: 'Botella 1.5L - Lima-limón', active: true },
+    { id: 17, name: 'Bolsa de Hielo 2kg', category: 'hielo', price: 1500, image: 'images/hielo.jpg.jpeg', description: 'Hielo en cubitos purificado', active: true },
+    { id: 18, name: 'Deli Snacks Mix', category: 'snacks', price: 4500, image: 'images/snacks.jpg.jpeg', description: 'Variedad de snacks premium para compartir', active: true }
+];
 
-const CONFIG = {
-    // ========== INFORMACIÓN DEL NEGOCIO ==========
-    BUSINESS: {
-        name: 'Boti Dival',
-        tagline: 'Premium & Nocturno',
-        description: 'Botillería Premium con más de 20 años de experiencia',
-        
-        address: 'Ruta H-30 #303, Coltauco',
-        region: 'Región de O\'Higgins, Chile',
-        
-        phone_primary: '+56 9 6404 4114',
-        phone_secondary: '+56 9 8506 2378',
-        
-        whatsapp_number: '56985062378',  // Sin + (el código lo agrega)
-        
-        email: 'contacto@botidival.com',  // Opcional
+const DELIVERY_ZONES = {
+    'donihue': {
+        name: 'Doñihue',
+        sectors: [
+            { id: 'centro', name: 'Doñihue Centro', cost: 6600 },
+            { id: 'cerrillos', name: 'Cerrillos', cost: 6000 }
+        ]
     },
-
-    // ========== HORARIOS ==========
-    HOURS: {
-        weekday: {
-            days: 'Domingo a Jueves',
-            closing: '00:30'
-        },
-        weekend: {
-            days: 'Viernes y Sábado',
-            closing: '02:30'
-        }
-    },
-
-    // ========== COLORES PERSONALIZADOS ==========
-    COLORS: {
-        primary: '#D4AF37',      // Dorado (cambiar aquí para dorado diferente)
-        secondary: '#C41E3A',    // Rojo (cambiar aquí para rojo diferente)
-        dark_bg: '#0a0a0a',      // Negro muy oscuro
-        card_bg: '#1a1a1a',      // Negro para tarjetas
-        text_primary: '#ffffff', // Blanco
-        text_secondary: '#b0b0b0' // Gris claro
-    },
-
-    // ========== SOCIAL MEDIA (Futuro) ==========
-    SOCIAL: {
-        facebook: '',           // Agregar URL si existe
-        instagram: '',          // Agregar URL si existe
-        tiktok: '',            // Agregar URL si existe
-        youtube: '',           // Agregar URL si existe
-    },
-
-    // ========== URLS Maps ==========
-    MAPS: {
-        google_maps: 'https://maps.google.com/?q=Ruta+H-30+303+Coltauco',
-        coordinates: '-33.98,-70.15'  // Coltauco, O'Higgins
-    },
-
-    // ========== POLÍTICAS ==========
-    POLICIES: {
-        delivery_info: 'Despachos disponibles en Coltauco. Costo según distancia.',
-        payment_methods: 'Aceptamos transferencia, efectivo y débito',
-        return_policy: 'Los productos se devuelven en 24 horas si llegan en mal estado',
-    },
-
-    // ========== PROMOCIONES ESPECIALES ==========
-    PROMOTIONS: [
-        {
-            title: 'Pack Pisco Party',
-            badge: '🔥 HOT',
-            items: 'Pisco Capel + Bebida 3L + Hielo',
-            price_from: 19900
-        },
-        {
-            title: 'Combo Cervecero',
-            badge: '⭐ ESPECIAL',
-            items: '6 Cervezas Artesanales + Snacks',
-            price_from: 24900,
-            image: 'https://cdnx.jumpseller.com/cerveza-mas-56/image/22316272/resize/640/640?1655388937'
-        },
-        {
-            title: 'Kit Vino Nocturno',
-            badge: '✨ NUEVO',
-            items: '2 Vinos Premium + Hielo + Copas',
-            price_from: 29900
-        }
-    ],
-
-    // ========== CONFIGURACIÓN DE PWA ==========
-    PWA: {
-        app_name: 'Boti Dival - Botillería Premium',
-        app_short_name: 'Boti Dival',
-        app_description: 'Botillería Premium con Delivery Nocturno',
-        display: 'standalone',
-        theme_color: '#D4AF37',
-        background_color: '#0a0a0a'
-    },
-
-    // ========== SEO ==========
-    SEO: {
-        keywords: 'botillería, delivery, coltauco, bebidas, pisco, vino, cerveza, othiggins, chile',
-        author: 'Boti Dival',
-        og_title: 'Boti Dival - Botillería Premium',
-        og_description: 'Tus bebidas a la puerta de tu casa 🍻 Delivery nocturno en Coltauco'
-    },
-
-    // ========== FUNCIONES AUXILIARES ==========
-    
-    // Obtener número WhatsApp formateado
-    getWhatsAppURL: function(message = '') {
-        const phone = this.BUSINESS.whatsapp_number;
-        const msg = encodeURIComponent(message || `Hola ${this.BUSINESS.name}, me gustaría realizar un pedido`);
-        return `https://wa.me/${phone}?text=${msg}`;
-    },
-
-    // Obtener URL de Google Maps
-    getGoogleMapsURL: function() {
-        return this.MAPS.google_maps;
-    },
-
-    // Verificar si está abierto AHORA
-    isOpenNow: function() {
-        const now = new Date();
-        const day = now.getDay();  // 0=domingo, 6=sábado
-        
-        // Siempre está abierto en esta botillería (24 horas)
-        // Pero puedes personalizar si lo deseas
-        return true;
+    'coltauco': {
+        name: 'Coltauco',
+        sectors: [
+            { id: 'quimavida', name: 'Quimávida', cost: 6000 },
+            { id: 'lo_de_cuevas', name: 'Lo de Cuevas', cost: 5800 },
+            { id: 'hijuela_del_medio', name: 'Hijuela del Medio', cost: 5800 },
+            { id: 'rinconada_de_parral', name: 'Rinconada de Parral', cost: 4700 },
+            { id: 'cuesta_de_idahue', name: 'Cuesta de Idahue', cost: 4600 },
+            { id: 'el_molino', name: 'El Molino', cost: 4300 },
+            { id: 'montegrande', name: 'Montegrande', cost: 4200 },
+            { id: 'el_loreto', name: 'El Loreto', cost: 4000 },
+            { id: 'pampa_de_idahue', name: 'Pampa de Idahue', cost: 3900 },
+            { id: 'puren', name: 'Puren', cost: 3700 },
+            { id: 'idahue', name: 'Idahue', cost: 3500 },
+            { id: 'el_parral', name: 'El Parral', cost: 3000 },
+            { id: 'almendro', name: 'Almendro', cost: 2700 },
+            { id: 'lo_droguett', name: 'Lo Droguett', cost: 2600 },
+            { id: 'idahuillo', name: 'Idahuillo', cost: 2500 },
+            { id: 'san_luis', name: 'San Luis', cost: 2400 },
+            { id: 'lo_ulloa', name: 'Lo Ulloa', cost: 2400 },
+            { id: 'centro_coltauco', name: 'Coltauco Centro', cost: 2200 }
+        ]
     }
 };
 
-// ============== CÓMO USAR EN OTROS ARCHIVOS ==============
-/*
- * 
- * En HTML:
- * <p><%= CONFIG.BUSINESS.name %></p>
- * <p><%= CONFIG.BUSINESS.address %></p>
- * 
- * En JavaScript:
- * const phone = CONFIG.BUSINESS.phone_secondary;
- * const url = CONFIG.getWhatsAppURL('Quiero hacer un pedido');
- * 
- * En CSS (agregar script que aplique colores dinámicamente):
- * document.documentElement.style.setProperty('--primary-color', CONFIG.COLORS.primary);
- * 
- */
-
-// Exportar para Node.js (si se usa en backend)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CONFIG;
-}
+const STORAGE_KEYS = {
+    productos: 'productos',
+    pedidos: 'pedidosHistorial',
+    promociones: 'promociones',
+    carousel: 'carouselImages',
+    delivery: 'deliveryStatus',
+    deliveryTrips: 'deliveryTripsHistory',
+    instagram: 'instagramVideos'
+};

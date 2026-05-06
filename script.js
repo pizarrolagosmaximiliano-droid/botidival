@@ -1,126 +1,4 @@
-/* ==================== PRODUCTOS ==================== */
-
-const DEFAULT_PRODUCTS = [
-    // Destilados
-    { id: 1, name: 'Pisco Alto del Carmen', category: 'destilados', price: 9500, image: 'images/alto.jpg.jpeg', description: '35° - Botella 750ml de tradición chilena', popular: true, active: true },
-    { id: 2, name: 'Whisky Chivas Regal 12', category: 'destilados', price: 28900, image: 'images/chivas.jpg.jpeg', description: '12 Años - Whisky Escocés Premium 750ml', active: true },
-    { id: 3, name: 'Jack Daniel\'s Old No. 7', category: 'destilados', price: 26500, image: 'images/jack1.jpg.jpeg', description: 'Tennessee Whisky - El clásico de siempre 750ml', popular: true, active: true },
-    { id: 4, name: 'Jack Daniel\'s Honey', category: 'destilados', price: 26500, image: 'images/jack2.jpg.jpeg', description: 'Tennessee Honey - Suave toque de miel 750ml', active: true },
-    { id: 5, name: 'Jack Daniel\'s Apple', category: 'destilados', price: 26500, image: 'images/jack3.jpg.jpeg', description: 'Tennessee Apple - Refrescante sabor manzana 750ml', active: true },
-    { id: 6, name: 'Johnnie Walker Red Label', category: 'destilados', price: 15900, image: 'images/redlabel1.jpg.jpeg', description: 'JW Red Label - Mezcla vibrante 750ml', active: true },
-    { id: 7, name: 'Johnnie Walker Black Label', category: 'destilados', price: 32900, image: 'images/rednegro.jpg.jpeg', description: 'JW Black Label - 12 Años de profundidad 750ml', popular: true, active: true },
-    { id: 8, name: 'Pisco Nobel Reservado', category: 'destilados', price: 12900, image: 'images/nobel.jpg.jpeg', description: 'Pisco Nobel - Calidad excepcional 750ml', active: true },
-    { id: 9, name: 'Pisco Nobel 40°', category: 'destilados', price: 14500, image: 'images/nobel2.jpg.jpeg', description: 'Pisco Nobel 40° - Edición especial 750ml', active: true },
-    { id: 10, name: 'Promo Mix Alcohol', category: 'destilados', price: 15990, image: 'images/alchol.png', description: 'Pack especial para tu previa', active: true },
-    
-    // Cervezas
-    { id: 11, name: 'Pack Cerveza Corona', category: 'cervezas', price: 14900, image: 'images/pack corona .jpeg', description: 'Balde/Pack 6 Botellas - 355ml c/u', popular: true, active: true },
-    
-    // Vinos
-    { id: 12, name: 'Vino Gato Negro Tinto', category: 'vinos', price: 3900, image: 'images/gato1.jpg.jpeg', description: 'Botella 1.5L - Varietal Cabernet Sauvignon', active: true },
-    { id: 13, name: 'Vino Gato Negro Blanco', category: 'vinos', price: 3900, image: 'images/gato2.jpg.jpeg', description: 'Botella 1.5L - Varietal Sauvignon Blanc', active: true },
-
-    // Bebidas & Mixers
-    { id: 14, name: 'Monster Energy', category: 'bebidas', price: 2500, image: 'images/monster.jpg.jpeg', description: 'Lata 473ml - Energía extrema', active: true },
-    { id: 15, name: 'Bebida Coca-Cola 1.5L', category: 'bebidas', price: 2200, image: 'images/coca.jpg.jpeg', description: 'Botella 1.5L - Sabor original', active: true },
-    { id: 16, name: 'Bebida Sprite 1.5L', category: 'bebidas', price: 2200, image: 'images/sprite.jpg.jpeg', description: 'Botella 1.5L - Lima-limón', active: true },
-    
-    // Hielo
-    { id: 17, name: 'Bolsa de Hielo 2kg', category: 'hielo', price: 1500, image: 'images/hielo.jpg.jpeg', description: 'Hielo en cubitos purificado', active: true },
-    
-    // Snacks
-    { id: 18, name: 'Deli Snacks Mix', category: 'snacks', price: 4500, image: 'images/snacks.jpg.jpeg', description: 'Variedad de snacks premium para compartir', active: true }
-];
-
-// Corregir automáticamente datos corruptos en localStorage si existen
-(function fixStorageCorruption() {
-    try {
-        const stored = localStorage.getItem('botidival_products');
-        if (stored && (stored.includes('Ã') || stored.includes('ǟ'))) {
-            console.warn('Detectada corrupción de caracteres en LocalStorage. Reiniciando catálogo...');
-            localStorage.removeItem('botidival_products');
-            window.location.reload();
-        }
-    } catch (e) {}
-})();
-
-
-// InicializaciÃƒÂ³n robusta con versionado para forzar actualizaciÃƒÂ³n
-function loadProducts() {
-    const CATALOG_VERSION = 'v2.0'; // Incrementa esto para forzar reset
-    try {
-        const storedVersion = localStorage.getItem('catalog_version');
-        const raw = localStorage.getItem('productos');
-        
-        if (storedVersion !== CATALOG_VERSION || !raw) {
-            throw new Error('reset');
-        }
-        
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed) || parsed.length === 0) throw new Error('invÃƒÂ¡lido');
-        return parsed;
-    } catch (e) {
-        localStorage.setItem('productos', JSON.stringify(DEFAULT_PRODUCTS));
-        localStorage.setItem('catalog_version', CATALOG_VERSION);
-        return DEFAULT_PRODUCTS;
-    }
-}
-
-let PRODUCTS = loadProducts();
-
-// ConfiguraciÃƒÂ³n de delivery
-const DELIVERY_ZONES = {
-    'donihue': {
-        name: 'Doñihue',
-        sectors: [
-            { id: 'centro', name: 'Doñihue Centro', cost: 6600 },
-            { id: 'cerrillos', name: 'Cerrillos', cost: 6000 }
-        ]
-    },
-    'coltauco': {
-        name: 'Coltauco',
-        sectors: [
-            { id: 'quimavida', name: 'Quimávida', cost: 6000 },
-            { id: 'lo_de_cuevas', name: 'Lo de Cuevas', cost: 5800 },
-            { id: 'hijuela_del_medio', name: 'Hijuela del Medio', cost: 5800 },
-            { id: 'rinconada_de_parral', name: 'Rinconada de Parral', cost: 4700 },
-            { id: 'cuesta_de_idahue', name: 'Cuesta de Idahue', cost: 4600 },
-            { id: 'el_molino', name: 'El Molino', cost: 4300 },
-            { id: 'montegrande', name: 'Montegrande', cost: 4200 },
-            { id: 'el_loreto', name: 'El Loreto', cost: 4000 },
-            { id: 'pampa_de_idahue', name: 'Pampa de Idahue', cost: 3900 },
-            { id: 'puren', name: 'Puren', cost: 3700 },
-            { id: 'idahue', name: 'Idahue', cost: 3500 },
-            { id: 'el_parral', name: 'El Parral', cost: 3000 },
-            { id: 'almendro', name: 'Almendro', cost: 2700 },
-            { id: 'lo_droguett', name: 'Lo Droguett', cost: 2600 },
-            { id: 'idahuillo', name: 'Idahuillo', cost: 2500 },
-            { id: 'san_luis', name: 'San Luis', cost: 2400 },
-            { id: 'lo_ulloa', name: 'Lo Ulloa', cost: 2400 },
-            { id: 'centro_coltauco', name: 'Coltauco Centro', cost: 2200 }
-        ]
-    }
-};
-
-let cart = [];
-let currentFilter = 'all';
-let selectedComuna = '';
-let selectedSector = '';
-let deliveryCost = 0;
-
-function saveCartState() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-
-const STORAGE_KEYS = {
-    productos: 'productos',
-    pedidos: 'pedidosHistorial',
-    promociones: 'promociones',
-    carousel: 'carouselImages',
-    delivery: 'deliveryStatus',
-    deliveryTrips: 'deliveryTripsHistory',
-    instagram: 'instagramVideos'
-};
+// Los datos estáticos ahora se cargan desde config.js
 
 function loadCartState() {
     const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -483,21 +361,25 @@ function setupEventListeners() {
         });
     }
 
-    // Buscador local de categorÃƒÂ­a
+    // Buscador local de categoría con debounce
     const categorySearchInput = document.getElementById('categorySearchInput');
     if (categorySearchInput) {
+        let categorySearchTimeout;
         categorySearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const baseProducts = currentFilter === 'all'
-                ? PRODUCTS.filter(p => p.active !== false)
-                : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
+            clearTimeout(categorySearchTimeout);
+            categorySearchTimeout = setTimeout(() => {
+                const searchTerm = e.target.value.toLowerCase();
+                const baseProducts = currentFilter === 'all'
+                    ? PRODUCTS.filter(p => p.active !== false)
+                    : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
+                    
+                const filtered = baseProducts.filter(p => 
+                    p.name.toLowerCase().includes(searchTerm) || 
+                    p.description.toLowerCase().includes(searchTerm)
+                );
                 
-            const filtered = baseProducts.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.description.toLowerCase().includes(searchTerm)
-            );
-            
-            renderProducts(filtered);
+                renderProducts(filtered);
+            }, 150); // Debounce de 150ms para búsqueda rápida
         });
     }
 
@@ -555,19 +437,27 @@ function renderProducts(products) {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
     
-    grid.innerHTML = products.map(product => `
-        <div class="product-card" data-id="${product.id}" style="${product.active === false ? 'opacity:0.6; pointer-events:none;' : ''}">
-            ${product.popular ? '<div class="popular-badge">Ã°Å¸â€Â¥ Popular</div>' : ''}
+    // Usar DocumentFragment para minimizar reflujos del DOM
+    const fragment = document.createDocumentFragment();
+    
+    products.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'product-card';
+        div.dataset.id = product.id;
+        if (product.active === false) div.style.cssText = 'opacity:0.6; pointer-events:none;';
+        
+        div.innerHTML = `
+            ${product.popular ? '<div class="popular-badge">🔥 Popular</div>' : ''}
             ${product.active === false ? '<div class="popular-badge" style="background:#dc3545; right:auto; left:10px;">Agotado</div>' : ''}
             <div class="product-image">
-                <img src="${product.image}" alt="${product.name}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; filter: ${product.active === false ? 'grayscale(100%)' : 'none'};" onerror="this.src='https://via.placeholder.com/400?text=Sin+imagen'; this.onerror=null;">
+                <img src="${product.image}" alt="${product.name}" loading="lazy" class="${product.active === false ? 'grayscale' : ''}" onerror="this.src='https://via.placeholder.com/400?text=Sin+imagen'; this.onerror=null;">
             </div>
             <div class="product-info">
                 <div class="product-category">${getCategoryLabel(product.category)}</div>
                 <h3 class="product-name">${product.name}</h3>
                 <p class="product-description">${product.description}</p>
                 <div class="product-price">
-                    ${product.previousPrice ? `<span style="text-decoration:line-through; color:#999; font-size:0.85em; margin-right:8px;">$${product.previousPrice.toLocaleString('es-CL')}</span>` : ''}
+                    ${product.previousPrice ? `<span class="prev-price">$${product.previousPrice.toLocaleString('es-CL')}</span>` : ''}
                     $${product.price.toLocaleString('es-CL')}
                 </div>
                 <div class="product-actions">
@@ -581,10 +471,13 @@ function renderProducts(products) {
                     </button>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+        fragment.appendChild(div);
+    });
 
-    // Actualizar cantidades en el UI
+    grid.innerHTML = '';
+    grid.appendChild(fragment);
+
     updateProductQuantityDisplay();
 }
 
@@ -2748,42 +2641,29 @@ function confirmModalAdd() {
     // Opcional: mostrar un feedback visual temporal en el botÃ³n
 }
 
-// Global click listener for product cards (Event Delegation)
+// Global click listener (Consolidado para evitar múltiples listeners)
 document.addEventListener('click', (e) => {
-    const card = e.target.closest('.product-card');
-    if (card) {
-        // Ignorar clics en los botones de acciÃ³n del carrito dentro de la tarjeta
-        if (e.target.closest('.product-actions')) return;
-        
-        const productId = parseInt(card.dataset.id);
-        if (!isNaN(productId)) {
-            openProductModal(productId);
-        }
-    }
-    
-    // Cerrar modal al hacer clic en el overlay oscuro
-    if (e.target.classList.contains('product-modal-overlay')) {
-        closeProductModal();
-    }
-});
-
-
-// Global click listener for product cards (Event Delegation)
-document.addEventListener('click', (e) => {
+    // 1. Manejo de tarjetas de productos
     const card = e.target.closest('.product-card');
     if (card) {
         // Ignorar clics en los botones de acción del carrito dentro de la tarjeta
-        if (e.target.closest('.product-actions')) return;
-        
-        const productId = parseInt(card.dataset.id);
-        if (!isNaN(productId)) {
-            openProductModal(productId);
+        if (!e.target.closest('.product-actions')) {
+            const productId = parseInt(card.dataset.id);
+            if (!isNaN(productId)) {
+                openProductModal(productId);
+            }
         }
     }
     
-    // Cerrar modal al hacer clic en el overlay oscuro
+    // 2. Cerrar modal de producto al hacer clic en el overlay
     if (e.target.classList.contains('product-modal-overlay')) {
         closeProductModal();
+    }
+
+    // 3. Cerrar resultados de búsqueda al hacer clic fuera
+    if (!e.target.closest('.search-box')) {
+        const searchResults = document.getElementById('searchResults');
+        if (searchResults) searchResults.classList.remove('active');
     }
 });
 

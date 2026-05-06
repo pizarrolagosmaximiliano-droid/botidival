@@ -1,10 +1,11 @@
 // Service Worker para Boti Dival PWA
-const CACHE_NAME = 'boti-dival-v5';
+const CACHE_NAME = 'boti-dival-v6';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
     '/styles.css',
-    '/script.js'
+    '/script.js',
+    '/config.js'
 ];
 
 // Instalar service worker
