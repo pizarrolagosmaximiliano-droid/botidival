@@ -602,34 +602,63 @@ function getCategoryLabel(category) {
 
 /* ==================== CARRITO ==================== */
 
-function addToCart(productId, quantity = 1, showNotification = true) {
+async function addToCart(productId, quantity = 1, forceRedirect = false) {
     const product = PRODUCTS.find(p => p.id === productId);
     if (!product) return;
 
-    const cartItem = cart.find(item => item.id === productId);
-
-    if (cartItem) {
-        cartItem.quantity += quantity;
-        if (cartItem.quantity <= 0) {
-            cart = cart.filter(item => item.id !== productId);
-        }
-    } else if (quantity > 0) {
-        cart.push({
-            ...product,
-            quantity: quantity
-        });
+    // Feedback visual opcional (Loading state)
+    const btn = document.querySelector(`.product-card[data-id="${productId}"] .add-to-cart-btn`);
+    if (btn && forceRedirect) {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Agregando...';
+        btn.disabled = true;
     }
 
-    updateCartUI();
-    updateProductQuantityDisplay();
-    saveCartState();
+    // Simulación de integración con Backend (Django si aplica)
+    // En un entorno real aquí iría un fetch('/cart/add/', { method: 'POST', body: ... })
+    try {
+        // Simulamos un pequeño delay de red
+        if (forceRedirect) await new Promise(resolve => setTimeout(resolve, 300));
+        
+        const cartItem = cart.find(item => item.id === productId);
 
-    if (showNotification) {
-        showNotificationMessage(`✔ ${product.name} agregado`);
-        // Redirección automática a finalizar compra (Checkout)
-        openOrderForm();
-        // Ir directamente al paso de datos de envío si se agregó un nuevo producto
-        setTimeout(() => goToCheckoutStep(2), 50);
+        if (cartItem) {
+            cartItem.quantity += quantity;
+            if (cartItem.quantity <= 0) {
+                cart = cart.filter(item => item.id !== productId);
+            }
+        } else if (quantity > 0) {
+            cart.push({
+                ...product,
+                quantity: quantity
+            });
+        }
+
+        updateCartUI();
+        updateProductQuantityDisplay();
+        saveCartState();
+
+        if (forceRedirect) {
+            showNotificationMessage(`✔ ${product.name} agregado`);
+            
+            // Redirección automática al flujo de compra (Overlay Step 2)
+            openOrderForm();
+            
+            // Asegurar que el DOM esté listo antes de cambiar de paso
+            setTimeout(() => {
+                goToCheckoutStep(2);
+                if (btn) {
+                    btn.innerHTML = 'Agregar';
+                    btn.disabled = false;
+                }
+            }, 50);
+        }
+    } catch (error) {
+        console.error('Error al agregar al carrito:', error);
+        showNotificationMessage('❌ Error al conectar con el servidor');
+        if (btn) {
+            btn.innerHTML = 'Agregar';
+            btn.disabled = false;
+        }
     }
 }
 
@@ -1244,10 +1273,10 @@ function handleSearch(e) {
 }
 
 function handleSearchResultClick(productId) {
+    // El addToCart ya maneja la apertura del formulario y el cambio de paso
     addToCart(productId, 1, true);
     document.getElementById('searchInput').value = '';
     document.getElementById('searchResults').classList.remove('active');
-    openOrderForm();
 }
 
 /* ==================== HORARIOS Y ESTADO ==================== */
