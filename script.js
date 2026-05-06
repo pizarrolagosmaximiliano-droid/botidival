@@ -537,9 +537,13 @@ function addToCart(productId, quantity = 1, forceRedirect = false) {
     saveCartState();
 
     if (forceRedirect) {
-        // Redirección inmediata a "Mi Pedido" (Step 1) para máxima rapidez
+        // Redirección inmediata a "Mi Pedido" (Step 1)
         openOrderForm();
-        setTimeout(() => goToCheckoutStep(1), 10);
+        // Asegurar que el scroll se bloquee y se muestre el paso 1
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => {
+            if (typeof goToCheckoutStep === 'function') goToCheckoutStep(1);
+        }, 50);
     }
 }
 
@@ -572,17 +576,31 @@ function updateCartUI() {
         }
     });
 
-    // Actualizar Mini Resumen (Sticky bar en móvil)
+    // Actualizar Botón Flotante Principal (Nueva UX)
+    const floatingCheckout = document.getElementById('floatingCheckout');
+    if (floatingCheckout) {
+        if (totalItems > 0) {
+            floatingCheckout.classList.add('active');
+            const floatingCount = document.getElementById('floatingCartCount');
+            const floatingTotal = document.getElementById('floatingCartTotal');
+            if (floatingCount) floatingCount.textContent = totalItems;
+            if (floatingTotal) floatingTotal.textContent = `$${totalPrice.toLocaleString('es-CL')}`;
+        } else {
+            floatingCheckout.classList.remove('active');
+        }
+    }
+
+    // Actualizar Mini Resumen (Legacy - Opcional)
     const miniSummary = document.getElementById('miniSummary');
     if (miniSummary) {
         if (totalItems > 0) {
-            miniSummary.classList.add('active');
+            miniSummary.style.display = 'flex';
             const qtyEl = document.getElementById('miniSummaryQty');
             const totalEl = document.getElementById('miniSummaryTotal');
             if (qtyEl) qtyEl.textContent = `${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}`;
             if (totalEl) totalEl.textContent = `$${totalPrice.toLocaleString('es-CL')}`;
         } else {
-            miniSummary.classList.remove('active');
+            miniSummary.style.display = 'none';
         }
     }
     
@@ -785,7 +803,7 @@ function openOrderForm() {
 
                 <div id="footerStep1">
                     <button class="checkout-btn" onclick="goToCheckoutStep(2)">
-                        Continuar al Pago
+                        Realizar Pedido
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
