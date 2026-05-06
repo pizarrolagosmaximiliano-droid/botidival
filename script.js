@@ -692,13 +692,11 @@ function removeFromCartAndRefresh(productId) {
         updateProductQuantityDisplay();
         saveCartState();
         
-        // Si el carrito queda vacío, cerrar el modal
+        // Refrescar el resumen en el sidebar
+        renderCheckoutCart();
+        
         if (cart.length === 0) {
-            closeOrderModal();
             showNotificationMessage('🛒 El carrito está vacío');
-        } else {
-            // Refrescar el modal de pedido
-            openOrderForm();
         }
     }
 }
@@ -839,148 +837,255 @@ function updateStepIndicator(step) {
 }
 
 function openOrderForm() {
-    if (cart.length === 0) {
-        showNotificationMessage('❌ Tu carrito está vacío.');
+    // Si ya existe el overlay, no crear otro
+    if (document.getElementById('checkoutOverlay')) {
+        document.getElementById('checkoutOverlay').classList.add('active');
+        renderCheckoutCart();
         return;
     }
 
-    const modal = document.createElement('div');
-    modal.id = 'orderModal';
-    modal.className = 'order-modal-overlay';
+    const overlay = document.createElement('div');
+    overlay.id = 'checkoutOverlay';
+    overlay.className = 'checkout-overlay';
     
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    modal.innerHTML = `
-        <div class="order-modal-premium">
-            <div class="order-modal-header">
-                <h3>🛒 Finalizar Compra</h3>
-                <button class="modal-close" onclick="closeOrderModal()">×</button>
+    overlay.innerHTML = `
+        <div class="checkout-sidebar">
+            <div class="checkout-header">
+                <h3>🛒 Mi Pedido</h3>
+                <button class="checkout-close" onclick="closeOrderForm()">✕</button>
             </div>
 
-            <div class="order-modal-content slim-scroll">
-                <!-- Pedido -->
-                <div class="order-summary-premium">
-                    <div class="summary-header">
-                        <h4>Resumen del Pedido</h4>
-                        <span class="badge">${totalItems} items</span>
-                    </div>
-                    <div class="order-items">
-                        ${cart.map(item => `
-                            <div class="order-item-premium">
-                                <div class="item-main-info">
-                                    <div class="item-qty-badge">${item.quantity}x</div>
-                                    <span class="item-name">${item.name}</span>
-                                </div>
-                                <div class="item-side-info">
-                                    <span class="item-price">$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
-                                    <button class="delete-item-btn" onclick="removeFromCartAndRefresh(${item.id})" title="Eliminar">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                    </button>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="total-premium">
-                        <div class="total-row">
-                            <span class="total-label">Subtotal</span>
-                            <span class="total-val">$${subtotal.toLocaleString('es-CL')}</span>
-                        </div>
-                        <div id="deliveryRow" class="total-row" style="display: none;">
-                            <span class="total-label">Envío</span>
-                            <span id="modalDeliveryCost" class="total-val">$0</span>
-                        </div>
-                        <div class="total-row grand-total">
-                            <span class="total-label">TOTAL</span>
-                            <span id="modalTotalAmount" class="total-val">$${subtotal.toLocaleString('es-CL')}</span>
-                        </div>
+            <div class="checkout-steps">
+                <div id="stepIndicator1" class="step-item active"></div>
+                <div id="stepIndicator2" class="step-item"></div>
+            </div>
+
+            <div class="checkout-content">
+                <!-- VISTA 1: RESUMEN DEL CARRITO -->
+                <div id="viewStep1" class="checkout-view active">
+                    <div id="checkoutCartItems">
+                        <!-- Se llena con renderCheckoutCart() -->
                     </div>
                 </div>
 
-                <!-- Formulario -->
-                <form class="order-form-premium" onsubmit="submitOrder(event)">
-                    <div class="form-section">
-                        <h4>📍 Datos de Entrega</h4>
-                        
-                        <div class="premium-input-group">
-                            <label>Método de Entrega</label>
-                            <div class="radio-group">
-                                <div class="radio-option">
-                                    <input type="radio" id="typeDelivery" name="orderType" value="delivery" checked onchange="toggleOrderTypeFields()">
-                                    <label for="typeDelivery">🛵 Delivery</label>
+                <!-- VISTA 2: DATOS DE ENVÍO -->
+                <div id="viewStep2" class="checkout-view">
+                    <form id="checkoutForm" class="checkout-form" onsubmit="submitOrder(event)">
+                        <div class="form-group">
+                            <label>📍 Método de Entrega</label>
+                            <div class="method-selector">
+                                <div class="method-option">
+                                    <input type="radio" id="methodDelivery" name="orderType" value="delivery" checked onchange="toggleOrderTypeFields()">
+                                    <label for="methodDelivery">
+                                        <span class="method-icon">🛵</span>
+                                        <span class="method-label">Delivery</span>
+                                    </label>
                                 </div>
-                                <div class="radio-option">
-                                    <input type="radio" id="typeRetiro" name="orderType" value="retiro" onchange="toggleOrderTypeFields()">
-                                    <label for="typeRetiro">🛍️ Retiro</label>
+                                <div class="method-option">
+                                    <input type="radio" id="methodRetiro" name="orderType" value="retiro" onchange="toggleOrderTypeFields()">
+                                    <label for="methodRetiro">
+                                        <span class="method-icon">🛍️</span>
+                                        <span class="method-label">Retiro</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="premium-input-group">
-                            <label>Nombre Completo *</label>
-                            <input type="text" id="modalClientName" class="premium-input" placeholder="Tu nombre" required>
+                        <div class="form-group">
+                            <label>Nombre Completo</label>
+                            <input type="text" id="modalClientName" class="form-input" placeholder="Ej: Juan Pérez" required>
                         </div>
 
-                        <div class="premium-input-group">
-                            <label>WhatsApp *</label>
-                            <input type="tel" id="modalClientPhone" class="premium-input" placeholder="+56 9 XXXX XXXX" required>
+                        <div class="form-group">
+                            <label>Teléfono / WhatsApp</label>
+                            <input type="tel" id="modalClientPhone" class="form-input" placeholder="+56 9 XXXX XXXX" required>
                         </div>
 
-                        <div id="deliveryFields">
-                            <div class="premium-input-group">
-                                <label>Comuna *</label>
-                                <select id="modalClientComuna" class="premium-input" onchange="updateSectores()" required>
-                                    <option value="">Seleccionar Comuna</option>
-                                    ${Object.keys(DELIVERY_ZONES).map(id => `<option value="${id}">${DELIVERY_ZONES[id].name}</option>`).join('')}
-                                </select>
+                        <div id="deliveryFieldsGroup">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Comuna</label>
+                                    <select id="modalClientComuna" class="form-input" onchange="updateSectores()">
+                                        <option value="">Seleccionar...</option>
+                                        ${Object.keys(DELIVERY_ZONES).map(id => `<option value="${id}">${DELIVERY_ZONES[id].name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Sector</label>
+                                    <select id="modalClientSector" class="form-input" disabled onchange="updateDeliveryCost()">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <div class="premium-input-group">
-                                <label>Sector *</label>
-                                <select id="modalClientSector" class="premium-input" disabled required onchange="updateDeliveryCost()">
-                                    <option value="">Seleccionar Sector</option>
-                                </select>
-                            </div>
-
-                            <div class="premium-input-group">
-                                <label>Dirección Exacta *</label>
+                            <div class="form-group">
+                                <label>Dirección Exacta</label>
                                 <div style="display:flex; gap:8px;">
-                                    <input type="text" id="modalClientAddress" class="premium-input" placeholder="Calle, N°, Block..." required>
-                                    <button type="button" class="gps-btn" onclick="getCurrentLocation('modalClientAddress')" id="btnGps">
-                                        📍 <span class="desktop-only">GPS</span>
-                                    </button>
+                                    <input type="text" id="modalClientAddress" class="form-input" placeholder="Calle, N°, depto...">
+                                    <button type="button" class="gps-btn" onclick="getCurrentLocation()" id="btnGps" title="Usar GPS">📍</button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="premium-input-group">
-                            <label>Nota adicional (Opcional)</label>
-                            <textarea id="modalClientComments" class="premium-input" placeholder="Ej: Llamar al llegar..." rows="2"></textarea>
+                        <div class="form-group">
+                            <label>Comentarios</label>
+                            <textarea id="modalClientComments" class="form-input" placeholder="Ej: Casa blanca con reja negra..." rows="2"></textarea>
                         </div>
+                        
+                        <input type="hidden" id="modalCoordinates">
+                    </form>
+                </div>
+            </div>
 
-                        <button type="submit" class="submit-order-btn">
-                            <span>Pedir por WhatsApp</span>
+            <div class="checkout-footer">
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>$${subtotal.toLocaleString('es-CL')}</span>
+                    </div>
+                    <div id="sidebarDeliveryRow" class="summary-row" style="display:none;">
+                        <span>Envío</span>
+                        <span id="sidebarDeliveryCost">$0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span id="sidebarTotalAmount">$${subtotal.toLocaleString('es-CL')}</span>
+                    </div>
+                </div>
+
+                <div id="footerStep1">
+                    <button class="checkout-btn" onclick="goToCheckoutStep(2)">
+                        Continuar
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+
+                <div id="footerStep2" style="display:none;">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <button type="submit" form="checkoutForm" class="checkout-btn whatsapp">
+                            Pedir por WhatsApp
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                         </button>
+                        <button class="back-btn" onclick="goToCheckoutStep(1)">
+                            ← Volver al carrito
+                        </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     `;
 
-    document.body.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    // Bloquear scroll
+    document.body.style.overflow = 'hidden';
 
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeOrderModal();
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeOrderForm();
     });
 
-    document.addEventListener('keydown', handleEscapeKey);
-
     setTimeout(() => {
-        modal.classList.add('active');
+        overlay.classList.add('active');
+        renderCheckoutCart();
         toggleOrderTypeFields();
     }, 10);
+}
+
+function closeOrderForm() {
+    const overlay = document.getElementById('checkoutOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        setTimeout(() => overlay.remove(), 400);
+    }
+}
+
+function goToCheckoutStep(step) {
+    const v1 = document.getElementById('viewStep1');
+    const v2 = document.getElementById('viewStep2');
+    const f1 = document.getElementById('footerStep1');
+    const f2 = document.getElementById('footerStep2');
+    const s1 = document.getElementById('stepIndicator1');
+    const s2 = document.getElementById('stepIndicator2');
+
+    if (step === 1) {
+        v1.classList.add('active');
+        v2.classList.remove('active');
+        f1.style.display = 'block';
+        f2.style.display = 'none';
+        s1.classList.add('active');
+        s2.classList.remove('active');
+    } else {
+        if (cart.length === 0) return showNotificationMessage('❌ El carrito está vacío');
+        v1.classList.remove('active');
+        v2.classList.add('active');
+        f1.style.display = 'none';
+        f2.style.display = 'block';
+        s1.classList.add('active');
+        s2.classList.add('active');
+    }
+}
+
+function renderCheckoutCart() {
+    const container = document.getElementById('checkoutCartItems');
+    if (!container) return;
+
+    if (cart.length === 0) {
+        container.innerHTML = `
+            <div class="checkout-empty">
+                <span class="empty-icon">🛒</span>
+                <h4>Tu carrito está vacío</h4>
+                <p>Agrega algunos productos deliciosos para comenzar tu pedido.</p>
+                <button class="btn btn-primary" onclick="closeOrderForm()">Explorar Catálogo</button>
+            </div>
+        `;
+        // Actualizar total a 0
+        updateCheckoutTotals();
+        return;
+    }
+
+    container.innerHTML = cart.map(item => `
+        <div class="checkout-item">
+            <div class="item-img-placeholder">
+                <img src="${item.image}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;" onerror="this.parentElement.innerHTML='🍺'">
+            </div>
+            <div class="item-details">
+                <h4>${item.name}</h4>
+                <div class="item-meta">${item.quantity} x $${item.price.toLocaleString('es-CL')}</div>
+            </div>
+            <div class="item-price-qty">
+                <span class="item-total-price">$${(item.price * item.quantity).toLocaleString('es-CL')}</span>
+                <button class="item-remove-btn" onclick="removeFromCartAndRefresh(${item.id})" title="Eliminar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    updateCheckoutTotals();
+}
+
+function updateCheckoutTotals() {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const orderType = document.querySelector('input[name="orderType"]:checked')?.value || 'delivery';
+    
+    let dCost = 0;
+    if (orderType === 'delivery') {
+        const comuna = document.getElementById('modalClientComuna')?.value;
+        const sectorId = document.getElementById('modalClientSector')?.value;
+        const sectorData = (comuna && sectorId) ? DELIVERY_ZONES[comuna].sectors.find(s => s.id === sectorId) : null;
+        if (sectorData) dCost = sectorData.cost;
+    }
+
+    const deliveryRow = document.getElementById('sidebarDeliveryRow');
+    const deliveryCostEl = document.getElementById('sidebarDeliveryCost');
+    const totalEl = document.getElementById('sidebarTotalAmount');
+
+    if (deliveryRow) deliveryRow.style.display = orderType === 'delivery' ? 'flex' : 'none';
+    if (deliveryCostEl) deliveryCostEl.textContent = `$${dCost.toLocaleString('es-CL')}`;
+    if (totalEl) totalEl.textContent = `$${(subtotal + dCost).toLocaleString('es-CL')}`;
 }
 
 function handleEscapeKey(event) {
@@ -1009,65 +1114,25 @@ function updateSectores() {
 }
 
 function updateDeliveryCost() {
-    const comunaSelect = document.getElementById('modalClientComuna');
-    const sectorSelect = document.getElementById('modalClientSector');
-    const costLabel = document.getElementById('modalDeliveryCost');
-    const deliveryRow = document.getElementById('deliveryRow');
-    const modalGrandTotal = document.getElementById('modalGrandTotal');
-    const orderType = document.querySelector('input[name="orderType"]:checked')?.value;
-
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    let dCost = 0;
-
-    if (orderType === 'presencial') {
-        if(costLabel) costLabel.textContent = '$0';
-        if(deliveryRow) deliveryRow.style.display = 'none';
-    } else {
-        if(deliveryRow) deliveryRow.style.display = 'flex';
-        const comuna = comunaSelect.value;
-        const sectorId = sectorSelect.value;
-        const sectorData = (comuna && sectorId) ? DELIVERY_ZONES[comuna].sectors.find(s => s.id === sectorId) : null;
-        
-        if (sectorData) {
-            dCost = sectorData.cost;
-            costLabel.textContent = `$${dCost.toLocaleString('es-CL')}`;
-            costLabel.style.color = '#2563eb';
-        } else {
-            costLabel.textContent = '--';
-            costLabel.style.color = '#64748b';
-        }
-    }
-    
-    if (modalGrandTotal) {
-        modalGrandTotal.textContent = `$${(subtotal + dCost).toLocaleString('es-CL')}`;
-    }
+    updateCheckoutTotals();
 }
 
 function toggleOrderTypeFields() {
     const orderType = document.querySelector('input[name="orderType"]:checked')?.value || 'delivery';
-    const deliveryFields = document.querySelectorAll('.order-delivery-field');
+    const deliveryFieldsGroup = document.getElementById('deliveryFieldsGroup');
     const comunaSelect = document.getElementById('modalClientComuna');
     const sectorSelect = document.getElementById('modalClientSector');
     const addressInput = document.getElementById('modalClientAddress');
 
-    const isDelivery = orderType === 'delivery';
-
-    deliveryFields.forEach(field => {
-        field.style.display = isDelivery ? '' : 'none';
-    });
-
-    if (comunaSelect) comunaSelect.required = isDelivery;
-    if (sectorSelect) sectorSelect.required = isDelivery;
-    if (addressInput) {
-        addressInput.required = isDelivery;
-        if (!isDelivery) {
-            addressInput.value = 'Retiro en local';
-        } else if (addressInput.value === 'Retiro en local') {
-            addressInput.value = '';
-        }
+    if (deliveryFieldsGroup) {
+        deliveryFieldsGroup.style.display = (orderType === 'delivery') ? 'block' : 'none';
     }
 
-    updateDeliveryCost();
+    if (comunaSelect) comunaSelect.required = (orderType === 'delivery');
+    if (sectorSelect) sectorSelect.required = (orderType === 'delivery');
+    if (addressInput) addressInput.required = (orderType === 'delivery');
+
+    updateCheckoutTotals();
 }
 
 function calculateDeliveryCost(comuna, sector) {
@@ -1078,12 +1143,7 @@ function calculateDeliveryCost(comuna, sector) {
 }
 
 function closeOrderModal() {
-    const modal = document.getElementById('orderModal');
-    if (modal) {
-        modal.classList.remove('active');
-        document.removeEventListener('keydown', handleEscapeKey);
-        setTimeout(() => modal.remove(), 300);
-    }
+    closeOrderForm();
 }
 
 function submitOrder(event) {
