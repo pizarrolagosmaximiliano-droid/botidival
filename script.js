@@ -576,25 +576,6 @@ function updateCartUI() {
         }
     });
 
-    // Actualizar Botón Flotante Principal (Nueva UX - Siempre visible)
-    const floatingCheckout = document.getElementById('floatingCheckout');
-    if (floatingCheckout) {
-        floatingCheckout.classList.add('active'); // Siempre activo
-        const floatingCount = document.getElementById('floatingCartCount');
-        const floatingTotal = document.getElementById('floatingCartTotal');
-        const floatingText = floatingCheckout.querySelector('.floating-checkout-text');
-        
-        if (floatingCount) floatingCount.textContent = totalItems;
-        if (floatingTotal) floatingTotal.textContent = `$${totalPrice.toLocaleString('es-CL')}`;
-        
-        if (totalItems === 0) {
-            if (floatingText) floatingText.textContent = "Ver Carrito";
-            floatingCheckout.style.opacity = "0.7";
-        } else {
-            if (floatingText) floatingText.textContent = "Realizar Pedido";
-            floatingCheckout.style.opacity = "1";
-        }
-    }
 
     const headerTotal = document.getElementById('headerCartTotal');
     if (headerTotal) {
@@ -813,7 +794,7 @@ function openOrderForm() {
 
                 <div id="footerStep1">
                     <button class="checkout-btn" onclick="goToCheckoutStep(2)">
-                        Realizar Pedido
+                        Continuar con el Pedido
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
@@ -821,7 +802,7 @@ function openOrderForm() {
                 <div id="footerStep2" style="display:none;">
                     <div style="display:flex; flex-direction:column; gap:12px;">
                         <button type="submit" form="checkoutForm" class="checkout-btn whatsapp">
-                            Pedir por WhatsApp 🚀
+                            Finalizar y Realizar Pedido 🚀
                         </button>
                         <button class="back-btn" onclick="goToCheckoutStep(1)">
                             ← Revisar productos
