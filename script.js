@@ -626,8 +626,9 @@ function addToCart(productId, quantity = 1, showNotification = true) {
 
     if (showNotification) {
         showNotificationMessage(`✔ ${product.name} agregado al carrito`);
-        // Abrir automáticamente el formulario de pedido al agregar (instantáneo)
+        // Abrir directamente en el paso de "Pago/Envío" para rapidez
         openOrderForm();
+        setTimeout(() => goToCheckoutStep(2), 10);
     }
 }
 
@@ -950,14 +951,14 @@ function openOrderForm() {
                         <span id="sidebarDeliveryCost">$0</span>
                     </div>
                     <div class="summary-row total">
-                        <span>Total</span>
+                        <span>Total a Pagar</span>
                         <span id="sidebarTotalAmount">$${subtotal.toLocaleString('es-CL')}</span>
                     </div>
                 </div>
 
                 <div id="footerStep1">
                     <button class="checkout-btn" onclick="goToCheckoutStep(2)">
-                        Continuar
+                        Continuar al Pago
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
@@ -965,11 +966,10 @@ function openOrderForm() {
                 <div id="footerStep2" style="display:none;">
                     <div style="display:flex; flex-direction:column; gap:12px;">
                         <button type="submit" form="checkoutForm" class="checkout-btn whatsapp">
-                            Pedir por WhatsApp
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            Pedir por WhatsApp 🚀
                         </button>
                         <button class="back-btn" onclick="goToCheckoutStep(1)">
-                            ← Volver al carrito
+                            ← Revisar productos
                         </button>
                     </div>
                 </div>
