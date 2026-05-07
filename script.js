@@ -2211,7 +2211,7 @@ window.addEventListener('storage', (event) => {
         carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || [];
         updateWebVideos();
     }
-    if (event.key === 'deliveryStatus') {
+    if (event.key === 'deliveryStatus' || event.key === 'closingTime') {
         deliveryStatus = JSON.parse(localStorage.getItem('deliveryStatus'));
         updateDeliveryDisplay(deliveryStatus !== null ? deliveryStatus : true);
     }
