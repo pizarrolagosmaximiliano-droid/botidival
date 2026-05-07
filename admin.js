@@ -694,17 +694,26 @@ function renderDeliveryStatus() {
     }
 }
 
-// Escuchar cambios en el input visual para guardar automáticamente
-document.addEventListener('DOMContentLoaded', () => {
+window.saveClosingTime = function() {
     const closingTimeInput = document.getElementById('closingTimeInput');
     if (closingTimeInput) {
-        closingTimeInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            localStorage.setItem(STORAGE_KEYS.closingTime, val);
-            window.dispatchEvent(new Event('storage'));
-        });
+        const val = closingTimeInput.value.trim();
+        localStorage.setItem(STORAGE_KEYS.closingTime, val);
+        window.dispatchEvent(new Event('storage'));
+        
+        // Show temporary feedback on button
+        const btn = document.getElementById('saveClosingTimeBtn');
+        if (btn) {
+            const originalText = btn.textContent;
+            btn.textContent = '¡GUARDADO!';
+            btn.classList.replace('btn-primary', 'btn-success');
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.replace('btn-success', 'btn-primary');
+            }, 2000);
+        }
     }
-});
+};
 /* =================== PRODUCTOS (CATÁLOGO) =================== */
 
 async function saveProducto(event) {
