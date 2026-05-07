@@ -86,6 +86,7 @@ function resetSlideShow() {
 /* ==================== INICIALIZACIÃƒÆ’Ã¢â‚¬Å“N ==================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded and parsed');
     initializeApp();
 });
 
@@ -523,11 +524,8 @@ function updateStepIndicator(step) {
 }
 
 function openOrderForm() {
-    if (!deliveryStatus) {
-        showNotificationMessage('ðŸš« El delivery se encuentra cerrado en este momento.');
-        return;
-    }
-
+    console.log('Opening order form...');
+    
     // Si ya existe el overlay, no crear otro
     const existingOverlay = document.getElementById('checkoutOverlay');
     if (existingOverlay) {
@@ -639,9 +637,15 @@ function openOrderForm() {
                         <span>$${subtotal.toLocaleString('es-CL')}</span>
                     </div>
                     <div id="sidebarDeliveryRow" class="summary-row" style="display:none;">
-                        <span>EnvÃ­o</span>
+                        <span>Envío</span>
                         <span id="sidebarDeliveryCost">$0</span>
                     </div>
+                    ${!deliveryStatus ? `
+                    <div class="delivery-closed-warning" style="margin-top: 15px; padding: 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; color: #92400e; font-size: 0.85rem; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.2rem;">⚠️</span>
+                        <span><strong>Delivery pausado:</strong> Solo disponible para retiro en local por el momento.</span>
+                    </div>
+                    ` : ''}
                     <div class="summary-row total">
                         <span>Total a Pagar</span>
                         <span id="sidebarTotalAmount">$${subtotal.toLocaleString('es-CL')}</span>
@@ -658,7 +662,7 @@ function openOrderForm() {
                 <div id="footerStep2" style="display:none;">
                     <div style="display:flex; flex-direction:column; gap:12px;">
                         <button type="submit" form="checkoutForm" class="checkout-btn whatsapp">
-                            Finalizar y Realizar Pedido ðŸš€
+                            Finalizar y Realizar Pedido 🚀
                         </button>
                         <button class="back-btn" onclick="goToCheckoutStep(1)">
                             â† Revisar productos
@@ -1427,7 +1431,7 @@ function sendOrderToWhatsApp() {
     
     // Cerrar modal y panel
     closeOrderSummary();
-    closeCart();
+    closeOrderForm();
     
     // Limpiar carrito despuÃƒÆ’Ã‚Â©s del pedido
     cart = [];
@@ -2391,7 +2395,7 @@ function addKeyboardShortcuts() {
         
         // Escape para cerrar carrito
         if (e.key === 'Escape') {
-            closeCart();
+            closeOrderForm();
         }
     });
 }
@@ -2652,11 +2656,10 @@ function showToastNotification(title, message) {
     }
 
     toast.classList.add('active');
-    
-    // Auto-hide after 3s
 }
 
 // Exponer funciones al ámbito global para compatibilidad con onclick y scripts externos
+console.log('Global functions export start...');
 window.openOrderForm = openOrderForm;
 window.closeOrderForm = closeOrderForm;
 window.goToCheckoutStep = goToCheckoutStep;
@@ -2677,6 +2680,9 @@ window.confirmModalAdd = confirmModalAdd;
 window.contactShipping = contactShipping;
 window.scrollPromo = scrollPromo;
 window.addToCart = addToCart;
+console.log('Global functions export end.');
+
+
 
 
 
