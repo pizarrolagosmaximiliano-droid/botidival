@@ -27,44 +27,8 @@ function loadCartState() {
 let promociones = JSON.parse(localStorage.getItem(STORAGE_KEYS.promociones)) || [];
 let instagramVideos = JSON.parse(localStorage.getItem(STORAGE_KEYS.instagram)) || [];
 let carouselImages = JSON.parse(localStorage.getItem(STORAGE_KEYS.carousel)) || [];
-function evaluateDeliverySchedule() {
-    const manualStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
-    const isManualActive = manualStatus !== null ? manualStatus : true;
-    
-    const scheduleStr = localStorage.getItem(STORAGE_KEYS.deliverySchedule);
-    if (!scheduleStr) return isManualActive;
-    
-    const schedule = JSON.parse(scheduleStr);
-    if (!schedule.enabled) return isManualActive;
-    
-    const now = new Date();
-    const currentTime = now.getHours() + now.getMinutes() / 60;
-    
-    const [startH, startM] = schedule.start.split(':').map(Number);
-    const [endH, endM] = schedule.end.split(':').map(Number);
-    const startTime = startH + startM / 60;
-    const endTime = endH + endM / 60;
-    
-    if (startTime <= endTime) {
-        return currentTime >= startTime && currentTime < endTime;
-    } else {
-        return currentTime >= startTime || currentTime < endTime;
-    }
-}
-
-let deliveryStatus = evaluateDeliverySchedule();
-let lastScheduleMessage = '';
-
-// Check schedule every minute
-setInterval(() => {
-    const newStatus = evaluateDeliverySchedule();
-    if (newStatus !== deliveryStatus) {
-        deliveryStatus = newStatus;
-        if (typeof updateDeliveryDisplay === 'function') {
-            updateDeliveryDisplay(deliveryStatus);
-        }
-    }
-}, 60000);
+let deliveryStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
+if (deliveryStatus === null) deliveryStatus = true;
 let deliveryTrips = JSON.parse(localStorage.getItem(STORAGE_KEYS.deliveryTrips)) || [];
 
 // Variables para control de pedidos
@@ -336,12 +300,10 @@ function initializeApp() {
             updateWebCarousel();
         }
 
-        if (e.key === STORAGE_KEYS.delivery || e.key === STORAGE_KEYS.deliverySchedule || e.type === 'storage') {
-            const newStatus = evaluateDeliverySchedule();
-            if (newStatus !== deliveryStatus || e.key === STORAGE_KEYS.deliverySchedule || e.key === STORAGE_KEYS.delivery) {
-                deliveryStatus = newStatus;
-                updateDeliveryDisplay(deliveryStatus);
-            }
+        if (e.key === STORAGE_KEYS.delivery || e.key === STORAGE_KEYS.closingTime || e.type === 'storage') {
+            const newStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
+            deliveryStatus = newStatus !== null ? newStatus : true;
+            updateDeliveryDisplay(deliveryStatus);
         }
 
         if (e.key === STORAGE_KEYS.deliveryTrips) {
@@ -2200,16 +2162,7 @@ function updateDeliveryDisplay(status) {
             statusDot.classList.add('inactive');
         }
         
-        let customMessage = 'Delivery No Disponible';
-        const scheduleStr = localStorage.getItem(STORAGE_KEYS.deliverySchedule);
-        if (scheduleStr) {
-            const schedule = JSON.parse(scheduleStr);
-            if (schedule.enabled) {
-                customMessage = `Delivery Cerrado (Horario: ${schedule.start} - ${schedule.end})`;
-            }
-        }
-        
-        if(statusText) statusText.textContent = '⏱️ ' + customMessage;
+        if(statusText) statusText.textContent = '⏱️ Delivery No Disponible';
         
         // Ocultar features de delivery en el status bar
         const features = statusBar.querySelectorAll('.feature-badge');
@@ -2219,7 +2172,14 @@ function updateDeliveryDisplay(status) {
             }
         });
     } else {
-        if (statusText) statusText.textContent = '⏱️ Delivery Disponible';
+        const closingTime = localStorage.getItem(STORAGE_KEYS.closingTime) || '';
+        if (statusText) {
+            if (closingTime) {
+                statusText.textContent = `⏱️ ABIERTO HASTA LAS ${closingTime}`;
+            } else {
+                statusText.textContent = '⏱️ Delivery Disponible';
+            }
+        }
         
         // Mostrar features de delivery
         const features = statusBar.querySelectorAll('.feature-badge');

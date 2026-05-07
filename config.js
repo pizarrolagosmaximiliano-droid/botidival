@@ -63,5 +63,5 @@ const STORAGE_KEYS = {
     delivery: 'deliveryStatus',
     deliveryTrips: 'deliveryTripsHistory',
     instagram: 'instagramVideos',
-    deliverySchedule: 'deliverySchedule'
+    closingTime: 'closingTime'
 };

@@ -188,11 +188,11 @@
 
 
                 <section id="estado-deliverySection" style="display:none;">
-                    <h2 class="h4 mt-4 mb-3">Estado delivery inteligente</h2>
+                    <h2 class="h4 mt-4 mb-3">Estado de Delivery</h2>
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-header bg-white fw-bold py-3">Control Manual</div>
+                                <div class="card-header bg-white fw-bold py-3">Control de Operaciones</div>
                                 <div class="card-body">
                                     <div class="delivery-status">
                                         <div class="status-indicator mb-3">
@@ -200,40 +200,19 @@
                                             <span class="status-text fs-5" id="deliveryStatusText">Cargando...</span>
                                         </div>
                                         <p id="deliveryCurrentStatus" class="text-muted mb-4"></p>
-                                        <button class="btn btn-success me-2 fw-bold" id="activateDeliveryBtn" onclick="setDeliveryStatus(true)">ACTIVO</button>
-                                        <button class="btn btn-danger fw-bold" id="deactivateDeliveryBtn" onclick="setDeliveryStatus(false)">INACTIVO</button>
-                                    </div>
-                                    <div id="scheduleOverrideWarning" class="alert alert-warning mt-3 d-none">
-                                        <i class="fas fa-exclamation-triangle me-2"></i> El control manual está deshabilitado porque el horario automático está encendido.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid #0d6efd !important;">
-                                <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                                    <span><i class="fas fa-clock me-2 text-primary"></i>Horario Automático</span>
-                                    <div class="form-check form-switch fs-5 mb-0">
-                                        <input class="form-check-input" type="checkbox" id="enableScheduleToggle" onchange="toggleSchedule()">
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <form id="scheduleForm" onsubmit="saveSchedule(event)">
-                                        <div class="row g-3 mb-3">
-                                            <div class="col-6">
-                                                <label class="form-label text-muted small fw-bold">HORA APERTURA</label>
-                                                <input type="time" class="form-control form-control-lg" id="scheduleStart" required disabled>
+                                        
+                                        <div class="mb-4">
+                                            <label class="form-label text-muted small fw-bold">HORA DE CIERRE VISUAL (Aviso)</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                                <input type="text" class="form-control" id="closingTimeInput" placeholder="Ej: 00:30 o 02:30">
                                             </div>
-                                            <div class="col-6">
-                                                <label class="form-label text-muted small fw-bold">HORA CIERRE</label>
-                                                <input type="time" class="form-control form-control-lg" id="scheduleEnd" required disabled>
-                                            </div>
+                                            <div class="form-text">Este texto se mostrará en el banner principal como "Abierto hasta las X" cuando el delivery esté activo.</div>
                                         </div>
-                                        <button type="submit" class="btn btn-primary w-100 fw-bold" id="scheduleSaveBtn" disabled>
-                                            <i class="fas fa-save me-2"></i>Guardar Horario
-                                        </button>
-                                    </form>
-                                    <p class="text-muted small mt-3 mb-0"><i class="fas fa-info-circle me-1"></i> Si configuras de 20:00 a 04:00, el sistema cerrará automáticamente a las 4 AM del día siguiente.</p>
+
+                                        <button class="btn btn-success me-2 fw-bold" id="activateDeliveryBtn" onclick="setDeliveryStatus(true)">ABRIR DELIVERY</button>
+                                        <button class="btn btn-danger fw-bold" id="deactivateDeliveryBtn" onclick="setDeliveryStatus(false)">CERRAR DELIVERY</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
