@@ -1,21 +1,11 @@
 // Variables de estado global
+import { listenToProducts, listenToPromotions } from './services/products.service.js';
+import { listenToSettings } from './services/settings.service.js';
+import { createOrderToDB } from './services/orders.service.js';
+
 let PRODUCTS = [];
 let cart = [];
 let currentFilter = 'all';
-
-function loadProducts() {
-    try {
-        const stored = localStorage.getItem(STORAGE_KEYS.productos);
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_PRODUCTS;
-        }
-    } catch (e) {
-        console.error("Error loading products:", e);
-    }
-    return DEFAULT_PRODUCTS;
-}
-
 function loadCartState() {
     const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
     if (Array.isArray(storedCart)) {
@@ -24,136 +14,17 @@ function loadCartState() {
 }
 
 // Variables para promociones y videos
-let promociones = JSON.parse(localStorage.getItem(STORAGE_KEYS.promociones)) || [];
-let instagramVideos = JSON.parse(localStorage.getItem(STORAGE_KEYS.instagram)) || [];
-let carouselImages = JSON.parse(localStorage.getItem(STORAGE_KEYS.carousel)) || [];
-let deliveryStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
-if (deliveryStatus === null) deliveryStatus = true;
-let deliveryTrips = JSON.parse(localStorage.getItem(STORAGE_KEYS.deliveryTrips)) || [];
+let promociones = [];
+let instagramVideos = [];
+let carouselImages = [];
+let deliveryStatus = true;
+let closingTime = '';
+let deliveryTrips = [];
 
 // Variables para control de pedidos
-let pedidosHistorial = JSON.parse(localStorage.getItem('pedidosHistorial')) || [];
+let pedidosHistorial = [];
 
-// Inicializar datos de ejemplo si no existen
-if (pedidosHistorial.length === 0) {
-    const fechaHoy = new Date();
-    const fechaAyer = new Date(fechaHoy);
-    fechaAyer.setDate(fechaAyer.getDate() - 1);
-    
-    pedidosHistorial = [
-        {
-            id: 1001,
-            fecha: fechaHoy.toISOString(),
-            tipo: 'delivery',
-            cliente: {
-                nombre: 'Juan PÃƒÆ’Ã‚Â©rez',
-                telefono: '+56912345678',
-                comuna: 'Coltauco',
-                sector: 'Centro',
-                direccion: 'Calle Principal 123',
-                coordenadas: '-34.4567, -71.1234'
-            },
-            productos: [
-                { id: 1, nombre: 'Cerveza Artesanal Golden', cantidad: 2, precioUnitario: 3500, subtotal: 7000 },
-                { id: 5, nombre: 'Pisco Capel AÃƒÆ’Ã‚Â±ejo', cantidad: 1, precioUnitario: 12900, subtotal: 12900 }
-            ],
-            costos: {
-                subtotal: 19900,
-                delivery: 0,
-                total: 19900
-            },
-            comentarios: 'Entregar despuÃƒÆ’Ã‚Â©s de las 20:00'
-        },
-        {
-            id: 1002,
-            fecha: fechaAyer.toISOString(),
-            tipo: 'delivery',
-            cliente: {
-                nombre: 'MarÃƒÆ’Ã‚Â­a GonzÃƒÆ’Ã‚Â¡lez',
-                telefono: '+56987654321',
-                comuna: 'DoÃƒÆ’Ã‚Â±ihue',
-                sector: 'Centro',
-                direccion: 'Avenida Central 456',
-                coordenadas: ''
-            },
-            productos: [
-                { id: 7, nombre: 'Whisky Johnny Walker Red', cantidad: 1, precioUnitario: 17900, subtotal: 17900 }
-            ],
-            costos: {
-                subtotal: 17900,
-                delivery: 6600,
-                total: 24500
-            },
-            comentarios: 'Llamar al llegar'
-        },
-        {
-            id: 1003,
-            fecha: fechaHoy.toISOString(),
-            tipo: 'presencial',
-            cliente: {
-                nombre: 'Carlos RodrÃƒÆ’Ã‚Â­guez',
-                telefono: '+56955556666',
-                comuna: 'Coltauco',
-                sector: 'Centro',
-                direccion: 'Local - Retiro en tienda',
-                coordenadas: ''
-            },
-            productos: [
-                { id: 4, nombre: 'Six Pack Cerveza Lager', cantidad: 1, precioUnitario: 18900, subtotal: 18900 }
-            ],
-            costos: {
-                subtotal: 18900,
-                delivery: 0,
-                total: 18900
-            },
-            comentarios: 'Cliente frecuente'
-        }
-    ];
-    localStorage.setItem('pedidosHistorial', JSON.stringify(pedidosHistorial));
-}
-
-// Inicializar datos de ejemplo si no existen
-if (!localStorage.getItem('promociones')) {
-    localStorage.setItem('promociones', JSON.stringify([
-        {
-            id: 1,
-            image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
-            title: 'Happy Hour - 2x1 en Cervezas',
-            description: 'Todas las tardes de 18:00 a 20:00, lleva 2 cervezas y paga solo 1. Ãƒâ€šÃ‚Â¡Perfecto para el after office!',
-            price: 3500,
-            active: true,
-            createdAt: new Date().toISOString()
-        },
-        {
-            id: 2,
-            image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=300&fit=crop',
-            title: 'Pack Familiar - Pisco + Bebidas',
-            description: 'Botella de pisco Capel + 6 gaseosas premium. Ideal para reuniones familiares.',
-            price: 15900,
-            active: true,
-            createdAt: new Date().toISOString()
-        }
-    ]));
-}
-
-if (!localStorage.getItem('videos')) {
-    localStorage.setItem('videos', JSON.stringify([
-        {
-            id: 1,
-            videoId: 'dQw4w9WgXcQ',
-            url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            title: 'Conoce Nuestra Carta Premium',
-            description: 'Descubre nuestra selecciÃƒÆ’Ã‚Â³n de bebidas premium y productos exclusivos.',
-            active: true,
-            createdAt: new Date().toISOString()
-        }
-    ]));
-}
-
-// Recargar variables despuÃƒÆ’Ã‚Â©s de inicializaciÃƒÆ’Ã‚Â³n
-promociones = JSON.parse(localStorage.getItem('promociones')) || [];
-videos = JSON.parse(localStorage.getItem('videos')) || [];
-carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || carouselImages;
+// Eliminado: Inicialización de datos de ejemplo en localStorage
 
 /* ==================== CARRUSEL ==================== */
 
@@ -221,18 +92,29 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeApp() {
     loadCartState();
     
-    // Renderizar componentes si existen los contenedores
-    // Inicializar productos
-    PRODUCTS = loadProducts();
-    
-    if (document.getElementById('productsGrid')) {
-        renderProducts(PRODUCTS.filter(p => p.active !== false));
-    }
-    
-    if (document.getElementById('promoExclusiveTrack')) {
-        updateWebPromociones();
-    }
-    
+    // Inicializar listeners de Firestore en lugar de leer de localStorage
+    listenToProducts((data) => {
+        PRODUCTS = data;
+        const filtered = currentFilter === 'all'
+            ? PRODUCTS.filter(p => p.active !== false)
+            : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
+        if (document.getElementById('productsGrid')) {
+            renderProducts(filtered);
+        }
+    });
+
+    listenToPromotions((data) => {
+        promociones = data;
+        if (document.getElementById('promoExclusiveTrack')) {
+            updateWebPromociones();
+        }
+    });
+
+    listenToSettings((data) => {
+        deliveryStatus = data.deliveryEnabled !== undefined ? data.deliveryEnabled : true;
+        closingTime = data.closingTime || '';
+        updateDeliveryDisplay(deliveryStatus);
+    });
     if (document.getElementById('instagramVideosGrid')) {
         updateWebInstagram();
     }
@@ -275,42 +157,7 @@ function initializeApp() {
     // setInterval(updateStatus, 60000) removed 
     setInterval(checkDarkMode, 600000); // Check cada 10 minutos
 
-    // SincronizaciÃƒÆ’Ã‚Â³n en tiempo real
-    window.addEventListener('storage', (e) => {
-        if (e.key === STORAGE_KEYS.productos) {
-            PRODUCTS = loadProducts();
-            const filtered = currentFilter === 'all'
-                ? PRODUCTS.filter(p => p.active !== false)
-                : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
-            renderProducts(filtered);
-        }
-        
-        if (e.key === STORAGE_KEYS.promociones) {
-            promociones = JSON.parse(localStorage.getItem(STORAGE_KEYS.promociones)) || [];
-            updateWebPromociones();
-        }
-
-        if (e.key === STORAGE_KEYS.instagram) {
-            instagramVideos = JSON.parse(localStorage.getItem(STORAGE_KEYS.instagram)) || [];
-            updateWebInstagram();
-        }
-
-        if (e.key === STORAGE_KEYS.carousel) {
-            carouselImages = JSON.parse(localStorage.getItem(STORAGE_KEYS.carousel)) || [];
-            updateWebCarousel();
-        }
-
-        if (e.key === STORAGE_KEYS.delivery || e.key === STORAGE_KEYS.closingTime || e.type === 'storage') {
-            const newStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
-            deliveryStatus = newStatus !== null ? newStatus : true;
-            updateDeliveryDisplay(deliveryStatus);
-        }
-
-        if (e.key === STORAGE_KEYS.deliveryTrips) {
-            deliveryTrips = JSON.parse(localStorage.getItem(STORAGE_KEYS.deliveryTrips)) || [];
-            updateDynamicMarketing();
-        }
-    });
+    // Sincronización en tiempo real gestionada por Firestore listeners
 }
 
 /* ==================== EVENT LISTENERS ==================== */
@@ -682,8 +529,10 @@ function openOrderForm() {
     }
 
     // Si ya existe el overlay, no crear otro
-    if (document.getElementById('checkoutOverlay')) {
-        document.getElementById('checkoutOverlay').classList.add('active');
+    const existingOverlay = document.getElementById('checkoutOverlay');
+    if (existingOverlay) {
+        existingOverlay.classList.add('active');
+        goToCheckoutStep(1);
         renderCheckoutCart();
         return;
     }
@@ -1043,6 +892,42 @@ function submitOrder(event) {
     message += `\n- Subtotal: $${subtotal.toLocaleString('es-CL')}`;
     if (orderType === 'delivery') message += `\n- EnvÃ­o: $${dCost.toLocaleString('es-CL')}`;
     message += `\n*TOTAL: $${(subtotal + dCost).toLocaleString('es-CL')}*`;
+
+    // Persistencia en Firestore antes de abrir WhatsApp
+    const orderId = Date.now().toString();
+    const orderData = {
+        id: orderId,
+        fecha: new Date().toISOString(),
+        tipo: orderType,
+        estado: 'nuevo',
+        cliente: {
+            nombre: clientName,
+            telefono: clientPhone,
+            comuna: orderType === 'delivery' ? DELIVERY_ZONES[document.getElementById('modalClientComuna').value].name : '-',
+            sector: orderType === 'delivery' ? (DELIVERY_ZONES[document.getElementById('modalClientComuna').value].sectors.find(s => s.id === document.getElementById('modalClientSector').value)?.name || '-') : '-',
+            direccion: orderType === 'delivery' ? document.getElementById('modalClientAddress').value.trim() : '-',
+            coordenadas: document.getElementById('modalCoordinates')?.value || ''
+        },
+        productos: cart.map(item => ({
+            id: item.id,
+            nombre: item.name,
+            cantidad: item.quantity,
+            precioUnitario: item.price,
+            subtotal: item.price * item.quantity
+        })),
+        costos: {
+            subtotal: subtotal,
+            delivery: dCost,
+            total: subtotal + dCost
+        },
+        comentarios: comments
+    };
+
+    createOrderToDB(orderData).then(result => {
+        if (result.success) {
+            console.log("✅ Pedido guardado en la nube");
+        }
+    });
 
     const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -2143,7 +2028,6 @@ function updateDeliveryDisplay(status) {
             }
         });
     } else {
-        const closingTime = localStorage.getItem(STORAGE_KEYS.closingTime) || '';
         if (statusText) {
             if (closingTime) {
                 statusText.textContent = `⏱️ ABIERTO HASTA LAS ${closingTime}`;
@@ -2770,10 +2654,29 @@ function showToastNotification(title, message) {
     toast.classList.add('active');
     
     // Auto-hide after 3s
-    setTimeout(() => {
-        toast.classList.remove('active');
-    }, 3000);
 }
+
+// Exponer funciones al ámbito global para compatibilidad con onclick y scripts externos
+window.openOrderForm = openOrderForm;
+window.closeOrderForm = closeOrderForm;
+window.goToCheckoutStep = goToCheckoutStep;
+window.updateSectores = updateSectores;
+window.updateDeliveryCost = updateDeliveryCost;
+window.toggleOrderTypeFields = toggleOrderTypeFields;
+window.getCurrentLocation = getCurrentLocation;
+window.submitOrder = submitOrder;
+window.removeFromCartAndRefresh = removeFromCartAndRefresh;
+window.scrollToSection = scrollToSection;
+window.changeSlide = changeSlide;
+window.goToSlide = goToSlide;
+window.closeMobileMenu = closeMobileMenu;
+window.openMobileMenu = openMobileMenu;
+window.closeProductModal = closeProductModal;
+window.updateModalQuantity = updateModalQuantity;
+window.confirmModalAdd = confirmModalAdd;
+window.contactShipping = contactShipping;
+window.scrollPromo = scrollPromo;
+window.addToCart = addToCart;
 
 
 

@@ -1060,11 +1060,7 @@ body {
 
 /* ==================== CARRITO (DEPRECATED) ==================== */
 /* Eliminado por redundancia. El sistema ahora usa checkout-sidebar */
-    font-size: 0.85rem;
-    font-weight: 500;
-    flex: 1;
-    margin-right: 8px;
-}
+/* Eliminado por redundancia */
 
 .cart-preview-qty {
     font-size: 0.8rem;
@@ -2450,8 +2446,6 @@ body {
 /* ==================== NOTIFICACIÃƒÆ’Ã¢â‚¬Å“N ==================== */
 
 /* Redundant notification styles removed */
-    transform: translateY(0);
-}
 
 /* ==================== ANIMACIONES ==================== */
 

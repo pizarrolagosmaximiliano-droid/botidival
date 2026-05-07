@@ -1,4 +1,12 @@
 // admin.js - Panel administrativo profesional
+import { uploadImageToImgBB } from '../services/imgbb.service.js';
+import { checkAuth, logout, getCurrentUser } from '../services/auth.service.js';
+import { 
+    listenToProducts, saveProductToDB, deleteProductFromDB,
+    listenToPromotions, savePromotionToDB, deletePromotionFromDB 
+} from '../services/products.service.js';
+import { listenToOrders, updateOrderStatusInDB } from '../services/orders.service.js';
+import { listenToSettings, updateSettings } from '../services/settings.service.js';
 
 if (!window.BASE_URL) {
     window.BASE_URL = (() => {
@@ -27,7 +35,38 @@ let editingPromoId = null;
 let editingCarouselId = null;
 let editingProductId = null;
 
+let firestoreProducts = [];
+let firestorePromotions = [];
+let firestoreOrders = [];
+let firestoreSettings = { deliveryEnabled: true, closingTime: '' };
+
+// Escuchar cambios en Firestore en tiempo real
+listenToProducts((data) => {
+    firestoreProducts = data;
+    if (typeof renderAdminProducts === 'function') renderAdminProducts();
+    if (typeof renderDashboard === 'function') renderDashboard();
+});
+
+listenToPromotions((data) => {
+    firestorePromotions = data;
+    if (typeof renderPromociones === 'function') renderPromociones();
+});
+
+listenToOrders((data) => {
+    firestoreOrders = data;
+    if (typeof renderOrders === 'function') renderOrders();
+    if (typeof renderDashboard === 'function') renderDashboard();
+});
+
+listenToSettings((data) => {
+    firestoreSettings = data;
+    if (typeof renderDeliveryStatus === 'function') renderDeliveryStatus();
+});
+
 function readStorageArray(key) {
+    if (key === STORAGE_KEYS.productos) return firestoreProducts;
+    if (key === STORAGE_KEYS.promociones) return firestorePromotions;
+    if (key === STORAGE_KEYS.pedidos) return firestoreOrders;
     const parsed = JSON.parse(localStorage.getItem(key) || '[]');
     return Array.isArray(parsed) ? parsed : [];
 }
@@ -54,26 +93,19 @@ async function protectDashboard() {
     const isDashboard = window.location.href.includes('admin-dashboard.html');
     if (!isDashboard) return;
 
-    if (typeof Auth === 'undefined') {
-        alert('Error: Sistema de autenticacion no cargado.');
-        window.location.href = window.BASE_URL + 'admin-login.html?error=system';
-        return;
-    }
-
-    await Auth.loadSession();
-    if (!Auth.isAuthenticated() || !Auth.hasRole('admin')) {
-        Auth.logout();
+    const user = await checkAuth();
+    if (!user) {
         window.location.href = window.BASE_URL + 'admin-login.html';
         return;
     }
 
-    const user = Auth.getCurrentUser();
     const userNameSpan = document.querySelector('.dropdown-toggle span.fw-medium');
     const userImg = document.querySelector('.dropdown-toggle img');
     
     if (user) {
-        if (userNameSpan) userNameSpan.textContent = user.name;
-        if (userImg) userImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`;
+        const displayName = user.displayName || user.email.split('@')[0] || 'Administrador';
+        if (userNameSpan) userNameSpan.textContent = displayName;
+        if (userImg) userImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`;
     }
     
     setupLogout();
@@ -82,9 +114,9 @@ async function protectDashboard() {
 function setupLogout() {
     const logoutBtn = document.getElementById('logoutBtn');
     if (!logoutBtn) return;
-    logoutBtn.addEventListener('click', (e) => {
+    logoutBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        Auth.logout();
+        await logout();
         window.location.href = 'index.html';
     });
 }
@@ -330,49 +362,46 @@ async function savePromocion(event) {
 
     let image = imageUrl;
     if (imageFile) {
-        image = await readFileAsDataUrl(imageFile);
+        document.getElementById('promoSaveBtn').textContent = 'Subiendo imagen...';
+        document.getElementById('promoSaveBtn').disabled = true;
+        image = await uploadImageToImgBB(imageFile);
+        document.getElementById('promoSaveBtn').textContent = 'Guardar promocion';
+        document.getElementById('promoSaveBtn').disabled = false;
     }
     if (!image) {
         alert('Debes subir una imagen o pegar URL.');
         return;
     }
 
-    const promociones = readStorageArray(STORAGE_KEYS.promociones);
-    
     // Auto-active logic based on dates
     const today = new Date().setHours(0,0,0,0);
     const end = new Date(endDate).setHours(23,59,59,999);
     const isActive = today <= end;
 
+    let promoData = {
+        image,
+        title,
+        description,
+        price: currentPrice,
+        previousPrice,
+        startDate,
+        endDate,
+        active: isActive
+    };
+
     if (editingPromoId) {
-        const promo = promociones.find((p) => p.id === editingPromoId);
-        if (promo) {
-            promo.image = image;
-            promo.title = title;
-            promo.description = description;
-            promo.price = currentPrice;
-            promo.previousPrice = previousPrice;
-            promo.startDate = startDate;
-            promo.endDate = endDate;
-            promo.active = isActive ? promo.active : false; // Deactivate if expired
-        }
+        promoData.id = editingPromoId;
     } else {
-        promociones.unshift({
-            id: Date.now(),
-            image,
-            title,
-            description,
-            price: currentPrice,
-            previousPrice,
-            startDate,
-            endDate,
-            active: isActive,
-            createdAt: new Date().toISOString()
-        });
+        promoData.createdAt = new Date().toISOString();
     }
-    writeStorageArray(STORAGE_KEYS.promociones, promociones);
+
+    document.getElementById('promoSaveBtn').textContent = 'Guardando en la nube...';
+    document.getElementById('promoSaveBtn').disabled = true;
+
+    await savePromotionToDB(promoData);
+
     resetPromoForm();
-    renderPromociones();
+    // No necesitamos llamar a renderPromociones() aquí, porque onSnapshot lo hará automáticamente
 }
 
 function editPromocion(id) {
@@ -390,20 +419,17 @@ function editPromocion(id) {
     document.getElementById('promoSaveBtn').textContent = 'Actualizar promocion';
 }
 
-function deletePromocion(id) {
-    if (!confirm('Eliminar esta promocion?')) return;
-    const promociones = readStorageArray(STORAGE_KEYS.promociones).filter((p) => p.id !== id);
-    writeStorageArray(STORAGE_KEYS.promociones, promociones);
-    renderPromociones();
+async function deletePromocion(id) {
+    if (!confirm('Eliminar esta promocion permanentemente de la base de datos?')) return;
+    await deletePromotionFromDB(id);
 }
 
-function togglePromocion(id) {
+async function togglePromocion(id) {
     const promociones = readStorageArray(STORAGE_KEYS.promociones);
     const promo = promociones.find((p) => p.id === id);
     if (!promo) return;
-    promo.active = !promo.active;
-    writeStorageArray(STORAGE_KEYS.promociones, promociones);
-    renderPromociones();
+    
+    await savePromotionToDB({ id: promo.id, active: !promo.active });
 }
 
 function resetPromoForm() {
@@ -489,14 +515,16 @@ function getOrderStatusBadge(status) {
     return map[status] || 'bg-secondary';
 }
 
-function updateOrderStatus(id, status) {
-    const pedidos = readStorageArray(STORAGE_KEYS.pedidos);
-    const pedido = pedidos.find((p) => p.id === id);
-    if (!pedido) return;
-    pedido.estado = status;
-    writeStorageArray(STORAGE_KEYS.pedidos, pedidos);
-    renderOrders();
-    renderDashboard();
+async function updateOrderStatus(id, status) {
+    // Optimistic update local
+    const pedido = firestoreOrders.find(p => p.id === id || p.id === id.toString());
+    if (pedido) {
+        pedido.estado = status;
+        renderOrders();
+    }
+    
+    // DB Update
+    await updateOrderStatusInDB(id, status);
 }
 
 function renderOrders() {
@@ -650,19 +678,18 @@ function watchOrdersRealtime() {
     sessionStorage.setItem('adminOrderCount', String(currentCount));
 }
 
-function setDeliveryStatus(status) {
-    localStorage.setItem(STORAGE_KEYS.delivery, JSON.stringify(status));
-    const closingTime = document.getElementById('closingTimeInput')?.value.trim() || '';
-    localStorage.setItem(STORAGE_KEYS.closingTime, closingTime);
-    renderDeliveryStatus();
-    // Dispatch storage event to update index.html immediately if it's open
-    window.dispatchEvent(new Event('storage'));
+async function setDeliveryStatus(status) {
+    const closingTime = document.getElementById('closingTimeInput')?.value.trim() || firestoreSettings.closingTime || '';
+    
+    await updateSettings({
+        deliveryEnabled: status,
+        closingTime: closingTime
+    });
 }
 
 function renderDeliveryStatus() {
-    const deliveryStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
-    const isCurrentlyOpen = deliveryStatus !== null ? deliveryStatus : true;
-    const closingTime = localStorage.getItem(STORAGE_KEYS.closingTime) || '';
+    const isCurrentlyOpen = firestoreSettings.deliveryEnabled !== undefined ? firestoreSettings.deliveryEnabled : true;
+    const closingTime = firestoreSettings.closingTime || '';
 
     const dot = document.getElementById('deliveryStatusDot');
     const text = document.getElementById('deliveryStatusText');
@@ -681,25 +708,27 @@ function renderDeliveryStatus() {
         dot.className = 'status-dot active';
         text.textContent = 'Delivery ACTIVO';
         message.textContent = 'Delivery Disponible para clientes.';
-        activateBtn.style.display = 'none';
-        deactivateBtn.style.display = 'inline-block';
+        if (activateBtn) activateBtn.style.display = 'none';
+        if (deactivateBtn) deactivateBtn.style.display = 'inline-block';
         if (closingTimeInput) closingTimeInput.disabled = false;
     } else {
         dot.className = 'status-dot inactive';
         text.textContent = 'Delivery INACTIVO';
         message.textContent = 'Delivery No Disponible. Solo retiro presencial.';
-        activateBtn.style.display = 'inline-block';
-        deactivateBtn.style.display = 'none';
+        if (activateBtn) activateBtn.style.display = 'inline-block';
+        if (deactivateBtn) deactivateBtn.style.display = 'none';
         if (closingTimeInput) closingTimeInput.disabled = true;
     }
 }
 
-window.saveClosingTime = function() {
+window.saveClosingTime = async function() {
     const closingTimeInput = document.getElementById('closingTimeInput');
     if (closingTimeInput) {
         const val = closingTimeInput.value.trim();
-        localStorage.setItem(STORAGE_KEYS.closingTime, val);
-        window.dispatchEvent(new Event('storage'));
+        
+        await updateSettings({
+            closingTime: val
+        });
         
         // Show temporary feedback on button
         const btn = document.getElementById('saveClosingTimeBtn');
@@ -734,37 +763,44 @@ async function saveProducto(event) {
 
     let image = imageUrl || 'https://via.placeholder.com/400?text=Sin+imagen';
     if (imageFile) {
-        image = await readFileAsDataUrl(imageFile);
+        document.getElementById('prodSaveBtn').textContent = 'Subiendo imagen...';
+        document.getElementById('prodSaveBtn').disabled = true;
+        const uploadedUrl = await uploadImageToImgBB(imageFile);
+        if (uploadedUrl) {
+            image = uploadedUrl;
+        } else {
+            alert('Error al subir la imagen.');
+            document.getElementById('prodSaveBtn').textContent = editingProductId ? 'Actualizar Producto' : 'Guardar Producto';
+            document.getElementById('prodSaveBtn').disabled = false;
+            return;
+        }
+        document.getElementById('prodSaveBtn').textContent = editingProductId ? 'Actualizar Producto' : 'Guardar Producto';
+        document.getElementById('prodSaveBtn').disabled = false;
     }
 
-    const productos = readStorageArray(STORAGE_KEYS.productos);
+    let productData = {
+        name,
+        description,
+        price,
+        category,
+        popular,
+        active
+    };
 
     if (editingProductId) {
+        productData.id = editingProductId;
+        const productos = readStorageArray(STORAGE_KEYS.productos);
         const prod = productos.find(p => p.id === editingProductId);
-        if (prod) {
-            prod.image = imageFile ? image : (imageUrl ? imageUrl : prod.image);
-            prod.name = name;
-            prod.description = description;
-            prod.price = price;
-            prod.category = category;
-            prod.popular = popular;
-            prod.active = active;
-        }
+        productData.image = imageFile ? image : (imageUrl ? imageUrl : (prod ? prod.image : image));
     } else {
-        productos.push({
-            id: Date.now(),
-            image,
-            name,
-            description,
-            price,
-            category,
-            popular,
-            active
-        });
+        productData.image = image;
     }
 
-    writeStorageArray(STORAGE_KEYS.productos, productos);
-    
+    document.getElementById('prodSaveBtn').textContent = 'Guardando en la nube...';
+    document.getElementById('prodSaveBtn').disabled = true;
+
+    await saveProductToDB(productData);
+
     // Close modal
     const modalEl = document.getElementById('productoModal');
     if (modalEl) {
@@ -773,8 +809,7 @@ async function saveProducto(event) {
     }
     
     resetProductoForm();
-    renderAdminProducts();
-    renderDashboard(); // Update active count
+    // onSnapshot update handles renderAdminProducts and renderDashboard automatically
 }
 
 function editProducto(id) {
@@ -796,23 +831,17 @@ function editProducto(id) {
     modal.show();
 }
 
-function deleteProducto(id) {
-    if (!confirm('¿Eliminar este producto permanentemente?')) return;
-    let productos = readStorageArray(STORAGE_KEYS.productos);
-    productos = productos.filter(p => p.id !== id);
-    writeStorageArray(STORAGE_KEYS.productos, productos);
-    renderAdminProducts();
-    renderDashboard();
+async function deleteProducto(id) {
+    if (!confirm('¿Eliminar este producto permanentemente de la base de datos?')) return;
+    await deleteProductFromDB(id);
 }
 
-function toggleProductoStatus(id) {
+async function toggleProductoStatus(id) {
     const productos = readStorageArray(STORAGE_KEYS.productos);
     const prod = productos.find(p => p.id === id);
     if (!prod) return;
-    prod.active = prod.active === false ? true : false;
-    writeStorageArray(STORAGE_KEYS.productos, productos);
-    renderAdminProducts();
-    renderDashboard();
+    
+    await saveProductToDB({ id: prod.id, active: !prod.active });
 }
 
 function resetProductoForm() {
@@ -1226,7 +1255,7 @@ function handlePasswordChange(e) {
         return;
     }
 
-    const result = Auth.changePassword(currentPass, newPass);
+    const result = { success: false, error: 'Cambio de contraseña temporalmente deshabilitado en esta versión.' }; // Auth.changePassword(currentPass, newPass);
     
     if (result.success) {
         alert('✅ Contraseña actualizada correctamente. Se ha registrado el evento de seguridad.');
@@ -1236,4 +1265,32 @@ function handlePasswordChange(e) {
         alert('❌ Error: ' + result.error);
     }
 }
+
+// ==========================================
+// EXPOSICIÓN GLOBAL (Para compatibilidad con HTML y onclicks)
+// ==========================================
+window.protectDashboard = protectDashboard;
+window.renderDashboard = renderDashboard;
+window.setupNavigation = setupNavigation;
+window.renderOrders = renderOrders;
+window.watchOrdersRealtime = watchOrdersRealtime;
+window.updateOrderStatus = updateOrderStatus;
+window.verDetallePedido = verDetallePedido;
+
+window.saveProducto = saveProducto;
+window.editProducto = editProducto;
+window.deleteProducto = deleteProducto;
+window.resetProductoForm = resetProductoForm;
+window.renderAdminProducts = window.renderAdminProducts || function(){};
+
+window.savePromocion = savePromocion;
+window.editPromocion = editPromocion;
+window.deletePromocion = deletePromocion;
+window.togglePromocion = togglePromocion;
+window.resetPromoForm = resetPromoForm;
+window.scrollPromo = window.scrollPromo || function(){};
+
+window.setDeliveryStatus = setDeliveryStatus;
+window.saveClosingTime = window.saveClosingTime || function(){};
+window.setupDeliveryTrips = window.setupDeliveryTrips || function(){};
 
