@@ -72,6 +72,7 @@ self.addEventListener('fetch', event => {
                 });
             })
         );
+        return;
     }
 
     // Network First para todo lo demás
