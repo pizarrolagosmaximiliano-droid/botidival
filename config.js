@@ -62,5 +62,6 @@ const STORAGE_KEYS = {
     carousel: 'carouselImages',
     delivery: 'deliveryStatus',
     deliveryTrips: 'deliveryTripsHistory',
-    instagram: 'instagramVideos'
+    instagram: 'instagramVideos',
+    deliverySchedule: 'deliverySchedule'
 };

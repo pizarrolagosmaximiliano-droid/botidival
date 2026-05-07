@@ -27,7 +27,44 @@ function loadCartState() {
 let promociones = JSON.parse(localStorage.getItem(STORAGE_KEYS.promociones)) || [];
 let instagramVideos = JSON.parse(localStorage.getItem(STORAGE_KEYS.instagram)) || [];
 let carouselImages = JSON.parse(localStorage.getItem(STORAGE_KEYS.carousel)) || [];
-let deliveryStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery)) !== null ? JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery)) : true;
+function evaluateDeliverySchedule() {
+    const manualStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
+    const isManualActive = manualStatus !== null ? manualStatus : true;
+    
+    const scheduleStr = localStorage.getItem(STORAGE_KEYS.deliverySchedule);
+    if (!scheduleStr) return isManualActive;
+    
+    const schedule = JSON.parse(scheduleStr);
+    if (!schedule.enabled) return isManualActive;
+    
+    const now = new Date();
+    const currentTime = now.getHours() + now.getMinutes() / 60;
+    
+    const [startH, startM] = schedule.start.split(':').map(Number);
+    const [endH, endM] = schedule.end.split(':').map(Number);
+    const startTime = startH + startM / 60;
+    const endTime = endH + endM / 60;
+    
+    if (startTime <= endTime) {
+        return currentTime >= startTime && currentTime < endTime;
+    } else {
+        return currentTime >= startTime || currentTime < endTime;
+    }
+}
+
+let deliveryStatus = evaluateDeliverySchedule();
+let lastScheduleMessage = '';
+
+// Check schedule every minute
+setInterval(() => {
+    const newStatus = evaluateDeliverySchedule();
+    if (newStatus !== deliveryStatus) {
+        deliveryStatus = newStatus;
+        if (typeof updateDeliveryDisplay === 'function') {
+            updateDeliveryDisplay(deliveryStatus);
+        }
+    }
+}, 60000);
 let deliveryTrips = JSON.parse(localStorage.getItem(STORAGE_KEYS.deliveryTrips)) || [];
 
 // Variables para control de pedidos
@@ -45,7 +82,7 @@ if (pedidosHistorial.length === 0) {
             fecha: fechaHoy.toISOString(),
             tipo: 'delivery',
             cliente: {
-                nombre: 'Juan PÃƒÂ©rez',
+                nombre: 'Juan PÃƒÆ’Ã‚Â©rez',
                 telefono: '+56912345678',
                 comuna: 'Coltauco',
                 sector: 'Centro',
@@ -54,23 +91,23 @@ if (pedidosHistorial.length === 0) {
             },
             productos: [
                 { id: 1, nombre: 'Cerveza Artesanal Golden', cantidad: 2, precioUnitario: 3500, subtotal: 7000 },
-                { id: 5, nombre: 'Pisco Capel AÃƒÂ±ejo', cantidad: 1, precioUnitario: 12900, subtotal: 12900 }
+                { id: 5, nombre: 'Pisco Capel AÃƒÆ’Ã‚Â±ejo', cantidad: 1, precioUnitario: 12900, subtotal: 12900 }
             ],
             costos: {
                 subtotal: 19900,
                 delivery: 0,
                 total: 19900
             },
-            comentarios: 'Entregar despuÃƒÂ©s de las 20:00'
+            comentarios: 'Entregar despuÃƒÆ’Ã‚Â©s de las 20:00'
         },
         {
             id: 1002,
             fecha: fechaAyer.toISOString(),
             tipo: 'delivery',
             cliente: {
-                nombre: 'MarÃƒÂ­a GonzÃƒÂ¡lez',
+                nombre: 'MarÃƒÆ’Ã‚Â­a GonzÃƒÆ’Ã‚Â¡lez',
                 telefono: '+56987654321',
-                comuna: 'DoÃƒÂ±ihue',
+                comuna: 'DoÃƒÆ’Ã‚Â±ihue',
                 sector: 'Centro',
                 direccion: 'Avenida Central 456',
                 coordenadas: ''
@@ -90,7 +127,7 @@ if (pedidosHistorial.length === 0) {
             fecha: fechaHoy.toISOString(),
             tipo: 'presencial',
             cliente: {
-                nombre: 'Carlos RodrÃƒÂ­guez',
+                nombre: 'Carlos RodrÃƒÆ’Ã‚Â­guez',
                 telefono: '+56955556666',
                 comuna: 'Coltauco',
                 sector: 'Centro',
@@ -118,7 +155,7 @@ if (!localStorage.getItem('promociones')) {
             id: 1,
             image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
             title: 'Happy Hour - 2x1 en Cervezas',
-            description: 'Todas las tardes de 18:00 a 20:00, lleva 2 cervezas y paga solo 1. Ã‚Â¡Perfecto para el after office!',
+            description: 'Todas las tardes de 18:00 a 20:00, lleva 2 cervezas y paga solo 1. Ãƒâ€šÃ‚Â¡Perfecto para el after office!',
             price: 3500,
             active: true,
             createdAt: new Date().toISOString()
@@ -142,14 +179,14 @@ if (!localStorage.getItem('videos')) {
             videoId: 'dQw4w9WgXcQ',
             url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             title: 'Conoce Nuestra Carta Premium',
-            description: 'Descubre nuestra selecciÃƒÂ³n de bebidas premium y productos exclusivos.',
+            description: 'Descubre nuestra selecciÃƒÆ’Ã‚Â³n de bebidas premium y productos exclusivos.',
             active: true,
             createdAt: new Date().toISOString()
         }
     ]));
 }
 
-// Recargar variables despuÃƒÂ©s de inicializaciÃƒÂ³n
+// Recargar variables despuÃƒÆ’Ã‚Â©s de inicializaciÃƒÆ’Ã‚Â³n
 promociones = JSON.parse(localStorage.getItem('promociones')) || [];
 videos = JSON.parse(localStorage.getItem('videos')) || [];
 carouselImages = JSON.parse(localStorage.getItem('carouselImages')) || carouselImages;
@@ -211,7 +248,7 @@ function resetSlideShow() {
     startSlideShow();
 }
 
-/* ==================== INICIALIZACIÃƒâ€œN ==================== */
+/* ==================== INICIALIZACIÃƒÆ’Ã¢â‚¬Å“N ==================== */
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
@@ -274,7 +311,7 @@ function initializeApp() {
     setInterval(updateStatus, 60000); 
     setInterval(checkDarkMode, 600000); // Check cada 10 minutos
 
-    // SincronizaciÃƒÂ³n en tiempo real
+    // SincronizaciÃƒÆ’Ã‚Â³n en tiempo real
     window.addEventListener('storage', (e) => {
         if (e.key === STORAGE_KEYS.productos) {
             PRODUCTS = loadProducts();
@@ -299,9 +336,12 @@ function initializeApp() {
             updateWebCarousel();
         }
 
-        if (e.key === STORAGE_KEYS.delivery) {
-            deliveryStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
-            updateDeliveryDisplay(deliveryStatus);
+        if (e.key === STORAGE_KEYS.delivery || e.key === STORAGE_KEYS.deliverySchedule || e.type === 'storage') {
+            const newStatus = evaluateDeliverySchedule();
+            if (newStatus !== deliveryStatus || e.key === STORAGE_KEYS.deliverySchedule || e.key === STORAGE_KEYS.delivery) {
+                deliveryStatus = newStatus;
+                updateDeliveryDisplay(deliveryStatus);
+            }
         }
 
         if (e.key === STORAGE_KEYS.deliveryTrips) {
@@ -314,13 +354,13 @@ function initializeApp() {
 /* ==================== EVENT LISTENERS ==================== */
 
 function setupEventListeners() {
-    // Filtros (Tarjetas de CategorÃƒÂ­a)
+    // Filtros (Tarjetas de CategorÃƒÆ’Ã‚Â­a)
     document.querySelectorAll('.category-card').forEach(card => {
         card.addEventListener('click', () => {
             const category = card.dataset.category;
             currentFilter = category;
             
-            // Actualizar tÃƒÂ­tulo del catÃƒÂ¡logo
+            // Actualizar tÃƒÆ’Ã‚Â­tulo del catÃƒÆ’Ã‚Â¡logo
             const catalogTitle = document.getElementById('catalogTitle');
             if (catalogTitle) {
                 catalogTitle.textContent = card.querySelector('h3').textContent;
@@ -332,7 +372,7 @@ function setupEventListeners() {
                 : PRODUCTS.filter(p => p.category === currentFilter && p.active !== false);
             renderProducts(filtered);
 
-            // Animar transiciÃƒÂ³n a vista de productos
+            // Animar transiciÃƒÆ’Ã‚Â³n a vista de productos
             const categoriesView = document.getElementById('categoriesView');
             const productsView = document.getElementById('productsView');
             
@@ -350,14 +390,14 @@ function setupEventListeners() {
                     const searchInput = document.getElementById('categorySearchInput');
                     if(searchInput) searchInput.value = '';
                     
-                    // Scroll suave hacia arriba de la secciÃƒÂ³n
+                    // Scroll suave hacia arriba de la secciÃƒÆ’Ã‚Â³n
                     document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });
-                }, 300); // Esperar animaciÃƒÂ³n
+                }, 300); // Esperar animaciÃƒÆ’Ã‚Â³n
             }
         });
     });
 
-    // BotÃƒÂ³n Volver
+    // BotÃƒÆ’Ã‚Â³n Volver
     const btnBack = document.getElementById('btnBackToCategories');
     if (btnBack) {
         btnBack.addEventListener('click', () => {
@@ -380,7 +420,7 @@ function setupEventListeners() {
         });
     }
 
-    // Buscador local de categoría con debounce
+    // Buscador local de categorÃ­a con debounce
     const categorySearchInput = document.getElementById('categorySearchInput');
     if (categorySearchInput) {
         let categorySearchTimeout;
@@ -398,11 +438,11 @@ function setupEventListeners() {
                 );
                 
                 renderProducts(filtered);
-            }, 150); // Debounce de 150ms para búsqueda rápida
+            }, 150); // Debounce de 150ms para bÃºsqueda rÃ¡pida
         });
     }
 
-    // BÃƒÂºsqueda
+    // BÃƒÆ’Ã‚Âºsqueda
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', handleSearch);
     searchInput.addEventListener('focus', () => {
@@ -421,9 +461,9 @@ function setupEventListeners() {
         openOrderForm();
     });
     
-    // Menu mÃƒÂ³vil
+    // Menu mÃƒÆ’Ã‚Â³vil
     const menuToggle = document.getElementById('menuToggle');
-    // El menú ahora se maneja con la lógica del drawer al final del archivo
+    // El menÃº ahora se maneja con la lÃ³gica del drawer al final del archivo
 
 
     // Actualizar nav activa al hacer scroll
@@ -466,7 +506,7 @@ function renderProducts(products) {
         if (product.active === false) div.style.cssText = 'opacity:0.6; pointer-events:none;';
         
         div.innerHTML = `
-            ${product.popular ? '<div class="popular-badge">🔥 Popular</div>' : ''}
+            ${product.popular ? '<div class="popular-badge">ðŸ”¥ Popular</div>' : ''}
             ${product.active === false ? '<div class="popular-badge" style="background:#dc3545; right:auto; left:10px;">Agotado</div>' : ''}
             <div class="product-image">
                 <img src="${product.image}" alt="${product.name}" loading="lazy" class="${product.active === false ? 'grayscale' : ''}" onerror="this.src='https://via.placeholder.com/400?text=Sin+imagen'; this.onerror=null;">
@@ -481,7 +521,7 @@ function renderProducts(products) {
                 </div>
                 <div class="product-actions">
                     <div class="quantity-control">
-                        <button class="qty-btn" onclick="addToCart(${product.id}, -1)">−</button>
+                        <button class="qty-btn" onclick="addToCart(${product.id}, -1)">âˆ’</button>
                         <span class="qty-display" id="qty-${product.id}">0</span>
                         <button class="qty-btn" onclick="addToCart(${product.id}, 1)">+</button>
                     </div>
@@ -502,12 +542,12 @@ function renderProducts(products) {
 
 function getCategoryLabel(category) {
     const labels = {
-        'cervezas': '🍺 Cervezas',
-        'destilados': '🍸 Destilados',
-        'vinos': '🍷 Vinos',
-        'hielo': '🧊 Hielo',
-        'snacks': '🥨 Snacks',
-        'bebidas': '🥤 Bebidas'
+        'cervezas': 'ðŸº Cervezas',
+        'destilados': 'ðŸ¸ Destilados',
+        'vinos': 'ðŸ· Vinos',
+        'hielo': 'ðŸ§Š Hielo',
+        'snacks': 'ðŸ¥¨ Snacks',
+        'bebidas': 'ðŸ¥¤ Bebidas'
     };
     return labels[category] || category;
 }
@@ -537,7 +577,7 @@ function addToCart(productId, quantity = 1, forceRedirect = false) {
     saveCartState();
 
     if (forceRedirect) {
-        // Redirección inmediata a "Mi Pedido" (Step 1)
+        // RedirecciÃ³n inmediata a "Mi Pedido" (Step 1)
         openOrderForm();
         // Asegurar que el scroll se bloquee y se muestre el paso 1
         document.body.style.overflow = 'hidden';
@@ -595,7 +635,7 @@ function updateCartUI() {
         }
     }
     
-    // Sincronizar checkout si está abierto
+    // Sincronizar checkout si estÃ¡ abierto
     if (document.getElementById('checkoutOverlay')?.classList.contains('active')) {
         renderCheckoutCart();
     }
@@ -608,7 +648,7 @@ function removeItemFromCart(productId) {
         updateCartUI();
         updateProductQuantityDisplay();
         saveCartState();
-        showNotificationMessage(`🗑️ ${item.name} eliminado del carrito`);
+        showNotificationMessage(`ðŸ—‘ï¸ ${item.name} eliminado del carrito`);
     }
 }
 
@@ -624,12 +664,12 @@ function removeFromCartAndRefresh(productId) {
         renderCheckoutCart();
         
         if (cart.length === 0) {
-            showNotificationMessage('🛒 El carrito está vacío');
+            showNotificationMessage('ðŸ›’ El carrito estÃ¡ vacÃ­o');
         }
     }
 }
 
-// Fin de lógica de carrito principal
+// Fin de lÃ³gica de carrito principal
 
 
 function setCompactMode(compact = true) {
@@ -646,7 +686,7 @@ function setCompactMode(compact = true) {
         cartExpanded = true;
         // Auto-expand cart items and form when opening full view
         updateCartUI();
-        // Mostrar formulario automáticamente en modo expandido
+        // Mostrar formulario automÃ¡ticamente en modo expandido
         document.getElementById('cartForm').style.display = 'block';
         document.getElementById('cartSummary').style.display = 'block';
         document.getElementById('checkoutBtn').style.display = 'block';
@@ -674,6 +714,11 @@ function updateStepIndicator(step) {
 }
 
 function openOrderForm() {
+    if (!deliveryStatus) {
+        showNotificationMessage('ðŸš« El delivery se encuentra cerrado en este momento.');
+        return;
+    }
+
     // Si ya existe el overlay, no crear otro
     if (document.getElementById('checkoutOverlay')) {
         document.getElementById('checkoutOverlay').classList.add('active');
@@ -690,8 +735,8 @@ function openOrderForm() {
     overlay.innerHTML = `
         <div class="checkout-sidebar">
             <div class="checkout-header">
-                <h3>🛒 Mi Pedido</h3>
-                <button class="checkout-close" onclick="closeOrderForm()">✕</button>
+                <h3>ðŸ›’ Mi Pedido</h3>
+                <button class="checkout-close" onclick="closeOrderForm()">âœ•</button>
             </div>
 
             <div class="checkout-steps">
@@ -707,23 +752,23 @@ function openOrderForm() {
                     </div>
                 </div>
 
-                <!-- VISTA 2: DATOS DE ENVÍO -->
+                <!-- VISTA 2: DATOS DE ENVÃO -->
                 <div id="viewStep2" class="checkout-view">
                     <form id="checkoutForm" class="checkout-form" onsubmit="submitOrder(event)">
                         <div class="form-group">
-                            <label>📍 Método de Entrega</label>
+                            <label>ðŸ“ MÃ©todo de Entrega</label>
                             <div class="method-selector">
                                 <div class="method-option">
                                     <input type="radio" id="methodDelivery" name="orderType" value="delivery" checked onchange="toggleOrderTypeFields()">
                                     <label for="methodDelivery">
-                                        <span class="method-icon">🛵</span>
+                                        <span class="method-icon">ðŸ›µ</span>
                                         <span class="method-label">Delivery</span>
                                     </label>
                                 </div>
                                 <div class="method-option">
                                     <input type="radio" id="methodRetiro" name="orderType" value="retiro" onchange="toggleOrderTypeFields()">
                                     <label for="methodRetiro">
-                                        <span class="method-icon">🛍️</span>
+                                        <span class="method-icon">ðŸ›ï¸</span>
                                         <span class="method-label">Retiro</span>
                                     </label>
                                 </div>
@@ -732,11 +777,11 @@ function openOrderForm() {
 
                         <div class="form-group">
                             <label>Nombre Completo</label>
-                            <input type="text" id="modalClientName" class="form-input" placeholder="Ej: Juan Pérez" required>
+                            <input type="text" id="modalClientName" class="form-input" placeholder="Ej: Juan PÃ©rez" required>
                         </div>
 
                         <div class="form-group">
-                            <label>Teléfono / WhatsApp</label>
+                            <label>TelÃ©fono / WhatsApp</label>
                             <input type="tel" id="modalClientPhone" class="form-input" placeholder="+56 9 XXXX XXXX" required>
                         </div>
 
@@ -758,10 +803,10 @@ function openOrderForm() {
                             </div>
 
                             <div class="form-group">
-                                <label>Dirección Exacta</label>
+                                <label>DirecciÃ³n Exacta</label>
                                 <div style="display:flex; gap:8px;">
-                                    <input type="text" id="modalClientAddress" class="form-input" placeholder="Calle, N°, depto...">
-                                    <button type="button" class="gps-btn" onclick="getCurrentLocation()" id="btnGps" title="Usar GPS">📍</button>
+                                    <input type="text" id="modalClientAddress" class="form-input" placeholder="Calle, NÂ°, depto...">
+                                    <button type="button" class="gps-btn" onclick="getCurrentLocation()" id="btnGps" title="Usar GPS">ðŸ“</button>
                                 </div>
                             </div>
                         </div>
@@ -783,7 +828,7 @@ function openOrderForm() {
                         <span>$${subtotal.toLocaleString('es-CL')}</span>
                     </div>
                     <div id="sidebarDeliveryRow" class="summary-row" style="display:none;">
-                        <span>Envío</span>
+                        <span>EnvÃ­o</span>
                         <span id="sidebarDeliveryCost">$0</span>
                     </div>
                     <div class="summary-row total">
@@ -802,10 +847,10 @@ function openOrderForm() {
                 <div id="footerStep2" style="display:none;">
                     <div style="display:flex; flex-direction:column; gap:12px;">
                         <button type="submit" form="checkoutForm" class="checkout-btn whatsapp">
-                            Finalizar y Realizar Pedido 🚀
+                            Finalizar y Realizar Pedido ðŸš€
                         </button>
                         <button class="back-btn" onclick="goToCheckoutStep(1)">
-                            ← Revisar productos
+                            â† Revisar productos
                         </button>
                     </div>
                 </div>
@@ -854,7 +899,7 @@ function goToCheckoutStep(step) {
         s1.classList.add('active');
         s2.classList.remove('active');
     } else {
-        if (cart.length === 0) return showNotificationMessage('❌ El carrito está vacío');
+        if (cart.length === 0) return showNotificationMessage('âŒ El carrito estÃ¡ vacÃ­o');
         v1.classList.remove('active');
         v2.classList.add('active');
         f1.style.display = 'none';
@@ -871,10 +916,10 @@ function renderCheckoutCart() {
     if (cart.length === 0) {
         container.innerHTML = `
             <div class="checkout-empty">
-                <span class="empty-icon">🛒</span>
-                <h4>Tu carrito está vacío</h4>
+                <span class="empty-icon">ðŸ›’</span>
+                <h4>Tu carrito estÃ¡ vacÃ­o</h4>
                 <p>Agrega algunos productos deliciosos para comenzar tu pedido.</p>
-                <button class="btn btn-primary" onclick="closeOrderForm()">Explorar Catálogo</button>
+                <button class="btn btn-primary" onclick="closeOrderForm()">Explorar CatÃ¡logo</button>
             </div>
         `;
         // Actualizar total a 0
@@ -885,7 +930,7 @@ function renderCheckoutCart() {
     container.innerHTML = cart.map(item => `
         <div class="checkout-item">
             <div class="item-img-placeholder">
-                <img src="${item.image}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;" onerror="this.parentElement.innerHTML='🍺'">
+                <img src="${item.image}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;" onerror="this.parentElement.innerHTML='ðŸº'">
             </div>
             <div class="item-details">
                 <h4>${item.name}</h4>
@@ -991,14 +1036,14 @@ function submitOrder(event) {
     
     // Validaciones base
     if (!clientName || !clientPhone) {
-        showNotificationMessage('⚠️ Por favor completa tu nombre y teléfono');
+        showNotificationMessage('âš ï¸ Por favor completa tu nombre y telÃ©fono');
         return;
     }
 
-    let message = `🛒 *NUEVO PEDIDO - Boti Dival*\n\n`;
-    message += `👤 *Cliente:* ${clientName}\n`;
-    message += `📞 *WhatsApp:* ${clientPhone}\n`;
-    message += `📦 *Tipo:* ${orderType === 'delivery' ? 'Delivery a domicilio' : 'Retiro en local'}\n`;
+    let message = `ðŸ›’ *NUEVO PEDIDO - Boti Dival*\n\n`;
+    message += `ðŸ‘¤ *Cliente:* ${clientName}\n`;
+    message += `ðŸ“ž *WhatsApp:* ${clientPhone}\n`;
+    message += `ðŸ“¦ *Tipo:* ${orderType === 'delivery' ? 'Delivery a domicilio' : 'Retiro en local'}\n`;
 
     let dCost = 0;
 
@@ -1009,7 +1054,7 @@ function submitOrder(event) {
         const coords = document.getElementById('modalCoordinates')?.value;
 
         if (!comunaId || !sectorId || !address) {
-            showNotificationMessage('⚠️ Por favor completa los datos de entrega');
+            showNotificationMessage('âš ï¸ Por favor completa los datos de entrega');
             return;
         }
 
@@ -1017,24 +1062,24 @@ function submitOrder(event) {
         const sectorData = DELIVERY_ZONES[comunaId].sectors.find(s => s.id === sectorId);
         dCost = sectorData ? sectorData.cost : 0;
 
-        message += `📍 *Comuna:* ${comunaName}\n`;
-        message += `🏘️ *Sector:* ${sectorData ? sectorData.name : sectorId}\n`;
-        message += `🏠 *Dirección:* ${address}\n`;
-        if (coords) message += `📍 *GPS:* https://www.google.com/maps?q=${coords}\n`;
+        message += `ðŸ“ *Comuna:* ${comunaName}\n`;
+        message += `ðŸ˜ï¸ *Sector:* ${sectorData ? sectorData.name : sectorId}\n`;
+        message += `ðŸ  *DirecciÃ³n:* ${address}\n`;
+        if (coords) message += `ðŸ“ *GPS:* https://www.google.com/maps?q=${coords}\n`;
     }
 
     const comments = document.getElementById('modalClientComments').value.trim();
-    if (comments) message += `💬 *Comentarios:* ${comments}\n`;
+    if (comments) message += `ðŸ’¬ *Comentarios:* ${comments}\n`;
 
-    message += `\n📋 *DETALLE:*\n`;
+    message += `\nðŸ“‹ *DETALLE:*\n`;
     cart.forEach(item => {
-        message += `• ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
+        message += `â€¢ ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
     });
 
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    message += `\n💰 *RESUMEN:*`;
+    message += `\nðŸ’° *RESUMEN:*`;
     message += `\n- Subtotal: $${subtotal.toLocaleString('es-CL')}`;
-    if (orderType === 'delivery') message += `\n- Envío: $${dCost.toLocaleString('es-CL')}`;
+    if (orderType === 'delivery') message += `\n- EnvÃ­o: $${dCost.toLocaleString('es-CL')}`;
     message += `\n*TOTAL: $${(subtotal + dCost).toLocaleString('es-CL')}*`;
 
     const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
@@ -1046,7 +1091,7 @@ function submitOrder(event) {
     updateProductQuantityDisplay();
     saveCartState();
     closeOrderForm();
-    showNotificationMessage('✅ ¡Pedido enviado! Te contactaremos pronto.');
+    showNotificationMessage('âœ… Â¡Pedido enviado! Te contactaremos pronto.');
 }
 
 
@@ -1058,7 +1103,7 @@ const PROMOS = [
         name: 'Pack Pisco Party',
         price: 19900,
         image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
-        description: 'Pisco Capel Añejo + Bebida 3L + Hielo premium + Copas'
+        description: 'Pisco Capel AÃ±ejo + Bebida 3L + Hielo premium + Copas'
     },
     {
         id: 1002,
@@ -1079,7 +1124,7 @@ const PROMOS = [
         name: 'Combo Familiar',
         price: 27900,
         image: 'https://images.unsplash.com/photo-1608270861620-7c80b6ff7435?w=400&h=300&fit=crop',
-        description: 'Vino + Cervezas + Snacks + Bebidas no alcohólicas'
+        description: 'Vino + Cervezas + Snacks + Bebidas no alcohÃ³licas'
     }
 ];
 
@@ -1109,7 +1154,7 @@ function addPromoToCart(promoId) {
     }
 
     updateCartUI();
-    showNotificationMessage(`✔ ${promo.name} agregado al carrito`);
+    showNotificationMessage(`âœ” ${promo.name} agregado al carrito`);
 }
 
 function scrollPromo(direction) {
@@ -1123,7 +1168,7 @@ function scrollPromo(direction) {
     });
 }
 
-/* ==================== BÚSQUEDA ==================== */
+/* ==================== BÃšSQUEDA ==================== */
 
 function handleSearch(e) {
     const query = e.target.value.toLowerCase();
@@ -1272,15 +1317,15 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
     const originalText = btn ? btn.innerHTML : '';
     
     if (!navigator.geolocation) {
-        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Tu navegador no soporta geolocalizaciÃƒÂ³n.');
+        showNotificationMessage('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Tu navegador no soporta geolocalizaciÃƒÆ’Ã‚Â³n.');
         return;
     }
 
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Obteniendo ubicaciÃƒÂ³n...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Obteniendo ubicaciÃƒÆ’Ã‚Â³n...';
     }
-    showNotificationMessage('⌛ Accediendo al GPS...');
+    showNotificationMessage('âŒ› Accediendo al GPS...');
     
     navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -1288,9 +1333,9 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
             const lng = position.coords.longitude;
             const coords = `${lat}, ${lng}`;
             
-            // Intentar Reverse Geocoding (Convertir coordenadas a dirección)
+            // Intentar Reverse Geocoding (Convertir coordenadas a direcciÃ³n)
             try {
-                showNotificationMessage('🔍 Identificando dirección...');
+                showNotificationMessage('ðŸ” Identificando direcciÃ³n...');
                 const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
                     headers: { 'Accept-Language': 'es' }
                 });
@@ -1299,14 +1344,14 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
                 if (data && data.display_name) {
                     const addressField = document.getElementById('modalClientAddress');
                     if (addressField) {
-                        // Limpiar dirección de partes innecesarias
+                        // Limpiar direcciÃ³n de partes innecesarias
                         const cleanAddress = data.display_name.split(',').slice(0, 3).join(',').trim();
                         addressField.value = cleanAddress;
                         addressField.classList.add('gps-success');
                     }
                 }
             } catch (geoError) {
-                console.warn('No se pudo obtener la dirección exacta:', geoError);
+                console.warn('No se pudo obtener la direcciÃ³n exacta:', geoError);
             }
 
             // Guardar coordenadas en campos ocultos
@@ -1314,16 +1359,16 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
             const coordInput = document.getElementById('modalCoordinates');
             if (coordInput) coordInput.value = coords;
             
-            // Si el target no es el de dirección, poner las coordenadas
+            // Si el target no es el de direcciÃ³n, poner las coordenadas
             if (target && targetId !== 'modalClientAddress') {
                 target.value = coords;
             }
 
-            showNotificationMessage('📍 Ubicación fijada con éxito');
+            showNotificationMessage('ðŸ“ UbicaciÃ³n fijada con Ã©xito');
             if (btn) {
                 btn.disabled = false;
                 btn.classList.add('btn-gps-success');
-                btn.innerHTML = '✅ Ubicación Lista';
+                btn.innerHTML = 'âœ… UbicaciÃ³n Lista';
                 setTimeout(() => { 
                     btn.innerHTML = originalText;
                     btn.classList.remove('btn-gps-success');
@@ -1331,9 +1376,9 @@ async function getCurrentLocation(targetId = 'modalClientAddress') {
             }
         },
         (error) => {
-            let msg = 'Ã¢Å¡Â Ã¯Â¸Â Error al obtener ubicaciÃƒÂ³n.';
-            if (error.code === 1) msg = 'Ã¢Å¡Â Ã¯Â¸Â Permiso denegado. Activa el GPS y permite el acceso.';
-            else if (error.code === 3) msg = 'Ã¢Å¡Â Ã¯Â¸Â Tiempo agotado. Intenta de nuevo.';
+            let msg = 'ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Error al obtener ubicaciÃƒÆ’Ã‚Â³n.';
+            if (error.code === 1) msg = 'ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Permiso denegado. Activa el GPS y permite el acceso.';
+            else if (error.code === 3) msg = 'ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Tiempo agotado. Intenta de nuevo.';
             
             showNotificationMessage(msg);
             console.error('GPS Error:', error);
@@ -1361,7 +1406,7 @@ function removeItemFromModal(productId) {
         
         if (cart.length === 0) {
             closeOrderModal();
-            showNotificationMessage('Ã°Å¸â€ºâ€™ Carrito vacÃƒÂ­o');
+            showNotificationMessage('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ¢â‚¬â„¢ Carrito vacÃƒÆ’Ã‚Â­o');
             return;
         }
 
@@ -1374,7 +1419,7 @@ function removeItemFromModal(productId) {
         if (modalSubtotal) modalSubtotal.textContent = `Subtotal: $${subtotal.toLocaleString('es-CL')}`;
 
         updateDeliveryCost();
-        showNotificationMessage(`Ã°Å¸â€”â€˜Ã¯Â¸Â ${item.name} eliminado`);
+        showNotificationMessage(`ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬ËœÃƒÂ¯Ã‚Â¸Ã‚Â ${item.name} eliminado`);
     }
 }
 
@@ -1389,37 +1434,37 @@ function showOrderSummary() {
 
     // Validaciones
     if (!clientName || clientName.length < 3) {
-        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor ingresa tu nombre completo');
+        showNotificationMessage('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Por favor ingresa tu nombre completo');
         document.getElementById('clientName').focus();
         return;
     }
 
     if (!clientPhone || clientPhone.length < 8) {
-        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor ingresa un nÃƒÂºmero de telÃƒÂ©fono vÃƒÂ¡lido');
+        showNotificationMessage('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Por favor ingresa un nÃƒÆ’Ã‚Âºmero de telÃƒÆ’Ã‚Â©fono vÃƒÆ’Ã‚Â¡lido');
         document.getElementById('clientPhone').focus();
         return;
     }
 
     if (!clientComuna) {
-        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor selecciona tu comuna');
+        showNotificationMessage('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Por favor selecciona tu comuna');
         document.getElementById('clientComuna').focus();
         return;
     }
 
     if (!clientSector) {
-        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor selecciona tu sector de entrega');
+        showNotificationMessage('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Por favor selecciona tu sector de entrega');
         document.getElementById('clientSector').focus();
         return;
     }
 
     if (!clientAddress || clientAddress.length < 5) {
-        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Por favor ingresa una direcciÃƒÂ³n de entrega vÃƒÂ¡lida');
+        showNotificationMessage('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Por favor ingresa una direcciÃƒÆ’Ã‚Â³n de entrega vÃƒÆ’Ã‚Â¡lida');
         document.getElementById('clientAddress').focus();
         return;
     }
 
     if (cart.length === 0) {
-        showNotificationMessage('Ã°Å¸â€ºâ€™ Tu carrito estÃƒÂ¡ vacÃƒÂ­o');
+        showNotificationMessage('ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ¢â‚¬â„¢ Tu carrito estÃƒÆ’Ã‚Â¡ vacÃƒÆ’Ã‚Â­o');
         return;
     }
     
@@ -1431,22 +1476,22 @@ function showOrderSummary() {
         <div class="order-modal-overlay" id="orderSummaryModal">
             <div class="order-modal">
                 <div class="order-modal-header">
-                    <h3>Ã°Å¸â€œâ€¹ Resumen de tu Pedido</h3>
-                    <button class="modal-close" onclick="closeOrderSummary()">Ã¢Å“â€¢</button>
+                    <h3>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹ Resumen de tu Pedido</h3>
+                    <button class="modal-close" onclick="closeOrderSummary()">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¢</button>
                 </div>
                 <div class="order-modal-content">
                     <div class="summary-section">
-                        <h4>Ã°Å¸â€˜Â¤ Datos del Cliente</h4>
+                        <h4>ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ Datos del Cliente</h4>
                         <p><strong>Nombre:</strong> ${clientName}</p>
-                        <p><strong>TelÃƒÂ©fono:</strong> ${clientPhone}</p>
-                        <p><strong>UbicaciÃƒÂ³n:</strong> ${comunaName} - ${sectorName}</p>
-                        <p><strong>DirecciÃƒÂ³n:</strong> ${clientAddress}</p>
+                        <p><strong>TelÃƒÆ’Ã‚Â©fono:</strong> ${clientPhone}</p>
+                        <p><strong>UbicaciÃƒÆ’Ã‚Â³n:</strong> ${comunaName} - ${sectorName}</p>
+                        <p><strong>DirecciÃƒÆ’Ã‚Â³n:</strong> ${clientAddress}</p>
                         ${manualLocation ? `<p><strong>Coordenadas:</strong> ${manualLocation}</p>` : ''}
                         ${clientComments ? `<p><strong>Comentarios:</strong> ${clientComments}</p>` : ''}
                     </div>
                     
                     <div class="summary-section">
-                        <h4>Ã°Å¸â€ºâ€™ Productos</h4>
+                        <h4>ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ¢â‚¬â„¢ Productos</h4>
                         ${cart.map(item => `
                             <div class="summary-item">
                                 <span>${item.name} x${item.quantity}</span>
@@ -1456,7 +1501,7 @@ function showOrderSummary() {
                     </div>
                     
                     <div class="summary-section">
-                        <h4>Ã°Å¸â€™Â° Resumen</h4>
+                        <h4>ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° Resumen</h4>
                         <div class="summary-item">
                             <span>Subtotal productos:</span>
                             <span>$${subtotal.toLocaleString('es-CL')}</span>
@@ -1472,9 +1517,9 @@ function showOrderSummary() {
                     </div>
                     
                     <div class="order-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeOrderSummary()">Ã¢â€ Â Modificar</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeOrderSummary()">ÃƒÂ¢Ã¢â‚¬Â Ã‚Â Modificar</button>
                         <button type="button" class="btn btn-success" onclick="sendOrderToWhatsApp()">
-                            Ã°Å¸â€œÂ² Confirmar y enviar por WhatsApp
+                            ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â² Confirmar y enviar por WhatsApp
                         </button>
                     </div>
                 </div>
@@ -1539,25 +1584,25 @@ function sendOrderToWhatsApp() {
     pedidosHistorial.push(nuevoPedido);
     localStorage.setItem('pedidosHistorial', JSON.stringify(pedidosHistorial));
     
-    let message = `Ã°Å¸â€ºâ€™ *NUEVO PEDIDO - Boti Dival*\n\n`;
-    message += `Ã°Å¸â€˜Â¤ *Cliente:* ${clientName}\n`;
-    message += `Ã°Å¸â€œÅ¾ *TelÃƒÂ©fono:* ${clientPhone}\n`;
-    message += `Ã°Å¸â€œÂ *Sector:* ${sectorName}\n`;
-    message += `Ã°Å¸ÂÂ  *DirecciÃƒÂ³n:* ${clientAddress}\n`;
-    if (manualLocation) message += `Ã°Å¸â€œÅ’ *UbicaciÃƒÂ³n:* ${manualLocation}\n`;
-    if (clientComments) message += `Ã°Å¸â€œÂ *Comentarios:* ${clientComments}\n\n`;
+    let message = `ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ¢â‚¬â„¢ *NUEVO PEDIDO - Boti Dival*\n\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ *Cliente:* ${clientName}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â¾ *TelÃƒÆ’Ã‚Â©fono:* ${clientPhone}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â *Sector:* ${sectorName}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â  *DirecciÃƒÆ’Ã‚Â³n:* ${clientAddress}\n`;
+    if (manualLocation) message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ *UbicaciÃƒÆ’Ã‚Â³n:* ${manualLocation}\n`;
+    if (clientComments) message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â *Comentarios:* ${clientComments}\n\n`;
     
-    message += `Ã°Å¸â€ºÂÃ¯Â¸Â *PRODUCTOS:*\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ‚ÂÃƒÂ¯Ã‚Â¸Ã‚Â *PRODUCTOS:*\n`;
     cart.forEach(item => {
-        message += `Ã¢â‚¬Â¢ ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
+        message += `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
     });
     
-    message += `\nÃ°Å¸â€™Â° *RESUMEN:*\n`;
-    message += `Ã¢â‚¬Â¢ Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
-    message += `Ã¢â‚¬Â¢ Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
-    message += `Ã¢â‚¬Â¢ *TOTAL: $${total.toLocaleString('es-CL')}*\n\n`;
+    message += `\nÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° *RESUMEN:*\n`;
+    message += `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
+    message += `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Delivery: $${deliveryCost.toLocaleString('es-CL')}\n`;
+    message += `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ *TOTAL: $${total.toLocaleString('es-CL')}*\n\n`;
     
-    message += `Ã¢Å“â€¦ *Pedido listo para procesar*`;
+    message += `ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ *Pedido listo para procesar*`;
     
     const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -1566,12 +1611,12 @@ function sendOrderToWhatsApp() {
     closeOrderSummary();
     closeCart();
     
-    // Limpiar carrito despuÃƒÂ©s del pedido
+    // Limpiar carrito despuÃƒÆ’Ã‚Â©s del pedido
     cart = [];
     updateCartUI();
     updateProductQuantityDisplay();
     saveCartState();
-    showNotificationMessage('Ã¢Å“â€¦ Pedido enviado exitosamente');
+    showNotificationMessage('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Pedido enviado exitosamente');
 }
 
 /* ==================== FUNCIONES DE PROMOCIONES ==================== */
@@ -1609,16 +1654,16 @@ function savePromocion(event) {
     hidePromoForm();
     renderPromociones();
     updateWebPromociones();
-    showNotificationMessage('Ã¢Å“â€¦ PromociÃƒÂ³n creada exitosamente');
+    showNotificationMessage('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ PromociÃƒÆ’Ã‚Â³n creada exitosamente');
 }
 
 function deletePromocion(id) {
-    if (confirm('Ã‚Â¿EstÃƒÂ¡s seguro de eliminar esta promociÃƒÂ³n?')) {
+    if (confirm('Ãƒâ€šÃ‚Â¿EstÃƒÆ’Ã‚Â¡s seguro de eliminar esta promociÃƒÆ’Ã‚Â³n?')) {
         promociones = promociones.filter(p => p.id !== id);
         localStorage.setItem('promociones', JSON.stringify(promociones));
         renderPromociones();
         updateWebPromociones();
-        showNotificationMessage('Ã°Å¸â€”â€˜Ã¯Â¸Â PromociÃƒÂ³n eliminada');
+        showNotificationMessage('ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬ËœÃƒÂ¯Ã‚Â¸Ã‚Â PromociÃƒÆ’Ã‚Â³n eliminada');
     }
 }
 
@@ -1629,7 +1674,7 @@ function togglePromocion(id) {
         localStorage.setItem('promociones', JSON.stringify(promociones));
         renderPromociones();
         updateWebPromociones();
-        showNotificationMessage(promo.active ? 'Ã¢Å“â€¦ PromociÃƒÂ³n activada' : 'Ã¢ÂÂ¸Ã¯Â¸Â PromociÃƒÂ³n pausada');
+        showNotificationMessage(promo.active ? 'ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ PromociÃƒÆ’Ã‚Â³n activada' : 'ÃƒÂ¢Ã‚ÂÃ‚Â¸ÃƒÂ¯Ã‚Â¸Ã‚Â PromociÃƒÆ’Ã‚Â³n pausada');
     }
 }
 
@@ -1646,10 +1691,10 @@ function renderPromociones() {
                     ${promo.price ? `<p class="card-text"><strong>$${promo.price.toLocaleString('es-CL')}</strong></p>` : ''}
                     <div class="mt-auto">
                         <button class="btn btn-sm ${promo.active ? 'btn-warning' : 'btn-success'}" onclick="togglePromocion(${promo.id})">
-                            ${promo.active ? 'Ã¢ÂÂ¸Ã¯Â¸Â Pausar' : 'Ã¢â€“Â¶Ã¯Â¸Â Activar'}
+                            ${promo.active ? 'ÃƒÂ¢Ã‚ÂÃ‚Â¸ÃƒÂ¯Ã‚Â¸Ã‚Â Pausar' : 'ÃƒÂ¢Ã¢â‚¬â€œÃ‚Â¶ÃƒÂ¯Ã‚Â¸Ã‚Â Activar'}
                         </button>
                         <button class="btn btn-sm btn-danger ms-1" onclick="deletePromocion(${promo.id})">
-                            Ã°Å¸â€”â€˜Ã¯Â¸Â Eliminar
+                            ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬ËœÃƒÂ¯Ã‚Â¸Ã‚Â Eliminar
                         </button>
                     </div>
                 </div>
@@ -1679,7 +1724,7 @@ function saveVideo(event) {
     // Extraer ID de YouTube
     const videoId = extractYouTubeId(url);
     if (!videoId) {
-        showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â URL de YouTube invÃƒÂ¡lida');
+        showNotificationMessage('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â URL de YouTube invÃƒÆ’Ã‚Â¡lida');
         return;
     }
     
@@ -1699,7 +1744,7 @@ function saveVideo(event) {
     hideVideoForm();
     renderVideos();
     updateWebVideos();
-    showNotificationMessage('Ã¢Å“â€¦ Video subido exitosamente');
+    showNotificationMessage('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Video subido exitosamente');
 }
 
 function extractYouTubeId(url) {
@@ -1709,12 +1754,12 @@ function extractYouTubeId(url) {
 }
 
 function deleteVideo(id) {
-    if (confirm('Ã‚Â¿EstÃƒÂ¡s seguro de eliminar este video?')) {
+    if (confirm('Ãƒâ€šÃ‚Â¿EstÃƒÆ’Ã‚Â¡s seguro de eliminar este video?')) {
         videos = videos.filter(v => v.id !== id);
         localStorage.setItem('videos', JSON.stringify(videos));
         renderVideos();
         updateWebVideos();
-        showNotificationMessage('Ã°Å¸â€”â€˜Ã¯Â¸Â Video eliminado');
+        showNotificationMessage('ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬ËœÃƒÂ¯Ã‚Â¸Ã‚Â Video eliminado');
     }
 }
 
@@ -1725,7 +1770,7 @@ function toggleVideo(id) {
         localStorage.setItem('videos', JSON.stringify(videos));
         renderVideos();
         updateWebVideos();
-        showNotificationMessage(video.active ? 'Ã¢Å“â€¦ Video activado' : 'Ã¢ÂÂ¸Ã¯Â¸Â Video pausado');
+        showNotificationMessage(video.active ? 'ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Video activado' : 'ÃƒÂ¢Ã‚ÂÃ‚Â¸ÃƒÂ¯Ã‚Â¸Ã‚Â Video pausado');
     }
 }
 
@@ -1745,10 +1790,10 @@ function renderVideos() {
                     ${video.description ? `<p class="card-text">${video.description}</p>` : ''}
                     <div class="mt-auto">
                         <button class="btn btn-sm ${video.active ? 'btn-warning' : 'btn-success'}" onclick="toggleVideo(${video.id})">
-                            ${video.active ? 'Ã¢ÂÂ¸Ã¯Â¸Â Pausar' : 'Ã¢â€“Â¶Ã¯Â¸Â Activar'}
+                            ${video.active ? 'ÃƒÂ¢Ã‚ÂÃ‚Â¸ÃƒÂ¯Ã‚Â¸Ã‚Â Pausar' : 'ÃƒÂ¢Ã¢â‚¬â€œÃ‚Â¶ÃƒÂ¯Ã‚Â¸Ã‚Â Activar'}
                         </button>
                         <button class="btn btn-sm btn-danger ms-1" onclick="deleteVideo(${video.id})">
-                            Ã°Å¸â€”â€˜Ã¯Â¸Â Eliminar
+                            ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬ËœÃƒÂ¯Ã‚Â¸Ã‚Â Eliminar
                         </button>
                     </div>
                 </div>
@@ -1764,7 +1809,7 @@ function setDeliveryStatus(status) {
     localStorage.setItem('deliveryStatus', JSON.stringify(deliveryStatus));
     updateDeliveryStatusUI();
     updateWebDeliveryStatus();
-    showNotificationMessage(status ? 'Ã°Å¸Å¡Å¡ Delivery activado' : 'Ã°Å¸ÂÂª Solo ventas presenciales activado');
+    showNotificationMessage(status ? 'ÃƒÂ°Ã…Â¸Ã…Â¡Ã…Â¡ Delivery activado' : 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Âª Solo ventas presenciales activado');
 }
 
 function updateDeliveryStatusUI() {
@@ -1777,20 +1822,20 @@ function updateDeliveryStatusUI() {
     if (deliveryStatus) {
         statusDot.className = 'status-dot active';
         statusText.textContent = 'Delivery Activo';
-        currentStatus.textContent = 'El servicio de delivery estÃƒÂ¡ funcionando normalmente.';
+        currentStatus.textContent = 'El servicio de delivery estÃƒÆ’Ã‚Â¡ funcionando normalmente.';
         activateBtn.style.display = 'none';
         deactivateBtn.style.display = 'inline-block';
     } else {
         statusDot.className = 'status-dot inactive';
         statusText.textContent = 'Solo Ventas Presenciales';
-        currentStatus.textContent = 'El delivery estÃƒÂ¡ fuera de servicio. Solo se aceptan ventas presenciales.';
+        currentStatus.textContent = 'El delivery estÃƒÆ’Ã‚Â¡ fuera de servicio. Solo se aceptan ventas presenciales.';
         activateBtn.style.display = 'inline-block';
         deactivateBtn.style.display = 'none';
     }
 }
 
 function updateWebDeliveryStatus() {
-    // Esta funciÃƒÂ³n se ejecutarÃƒÂ¡ en la pÃƒÂ¡gina principal para actualizar el estado
+    // Esta funciÃƒÆ’Ã‚Â³n se ejecutarÃƒÆ’Ã‚Â¡ en la pÃƒÆ’Ã‚Â¡gina principal para actualizar el estado
     if (typeof updateDeliveryDisplay === 'function') {
         updateDeliveryDisplay(deliveryStatus);
     }
@@ -1825,7 +1870,7 @@ function getPedidosStats() {
 function renderPedidosDashboard() {
     const stats = getPedidosStats();
     
-    // Actualizar estadÃƒÂ­sticas en el dashboard
+    // Actualizar estadÃƒÆ’Ã‚Â­sticas en el dashboard
     document.getElementById('totalPedidos').textContent = stats.totalPedidos;
     document.getElementById('pedidosHoy').textContent = stats.pedidosHoy;
     document.getElementById('pedidosSemana').textContent = stats.pedidosSemana;
@@ -1862,14 +1907,14 @@ function renderPedidosHistorial(filtroTipo = 'todos', filtroFecha = '') {
                 <td>${pedido.id}</td>
                 <td>${fecha} ${hora}</td>
                 <td>${pedido.cliente.nombre}</td>
-                <td>${pedido.tipo === 'delivery' ? 'Ã°Å¸Å¡Å¡ Delivery' : 'Ã°Å¸ÂÂª Presencial'}</td>
+                <td>${pedido.tipo === 'delivery' ? 'ÃƒÂ°Ã…Â¸Ã…Â¡Ã…Â¡ Delivery' : 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Âª Presencial'}</td>
                 <td>${pedido.cliente.comuna} - ${pedido.cliente.sector}</td>
                 <td>${pedido.productos.length} productos</td>
                 <td>$${pedido.costos.delivery.toLocaleString('es-CL')}</td>
                 <td><strong>$${pedido.costos.total.toLocaleString('es-CL')}</strong></td>
                 <td>
                     <button class="btn btn-sm btn-info" onclick="verDetallePedido(${pedido.id})">
-                        Ã°Å¸â€˜ÂÃ¯Â¸Â Ver
+                        ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚ÂÃƒÂ¯Ã‚Â¸Ã‚Â Ver
                     </button>
                 </td>
             </tr>
@@ -1888,30 +1933,30 @@ function verDetallePedido(pedidoId) {
         <div class="order-modal-overlay" id="pedidoDetailModal">
             <div class="order-modal order-modal--large">
                 <div class="order-modal-header">
-                    <h3>Ã°Å¸â€œâ€¹ Detalle del Pedido #${pedido.id}</h3>
-                    <button class="modal-close" onclick="closePedidoDetail()">Ã¢Å“â€¢</button>
+                    <h3>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹ Detalle del Pedido #${pedido.id}</h3>
+                    <button class="modal-close" onclick="closePedidoDetail()">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¢</button>
                 </div>
                 <div class="order-modal-content">
                     <div class="pedido-info-grid">
                         <div class="info-section">
-                            <h4>Ã°Å¸â€œâ€¦ InformaciÃƒÂ³n General</h4>
+                            <h4>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ InformaciÃƒÆ’Ã‚Â³n General</h4>
                             <p><strong>Fecha:</strong> ${fecha} ${hora}</p>
-                            <p><strong>Tipo:</strong> ${pedido.tipo === 'delivery' ? 'Ã°Å¸Å¡Å¡ Delivery' : 'Ã°Å¸ÂÂª Presencial'}</p>
-                            <p><strong>Estado:</strong> Ã¢Å“â€¦ Completado</p>
+                            <p><strong>Tipo:</strong> ${pedido.tipo === 'delivery' ? 'ÃƒÂ°Ã…Â¸Ã…Â¡Ã…Â¡ Delivery' : 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Âª Presencial'}</p>
+                            <p><strong>Estado:</strong> ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Completado</p>
                         </div>
                         
                         <div class="info-section">
-                            <h4>Ã°Å¸â€˜Â¤ Datos del Cliente</h4>
+                            <h4>ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ Datos del Cliente</h4>
                             <p><strong>Nombre:</strong> ${pedido.cliente.nombre}</p>
-                            <p><strong>TelÃƒÂ©fono:</strong> ${pedido.cliente.telefono}</p>
-                            <p><strong>UbicaciÃƒÂ³n:</strong> ${pedido.cliente.comuna} - ${pedido.cliente.sector}</p>
-                            <p><strong>DirecciÃƒÂ³n:</strong> ${pedido.cliente.direccion}</p>
+                            <p><strong>TelÃƒÆ’Ã‚Â©fono:</strong> ${pedido.cliente.telefono}</p>
+                            <p><strong>UbicaciÃƒÆ’Ã‚Â³n:</strong> ${pedido.cliente.comuna} - ${pedido.cliente.sector}</p>
+                            <p><strong>DirecciÃƒÆ’Ã‚Â³n:</strong> ${pedido.cliente.direccion}</p>
                             ${pedido.cliente.coordenadas ? `<p><strong>Coordenadas:</strong> ${pedido.cliente.coordenadas}</p>` : ''}
                         </div>
                     </div>
                     
                     <div class="info-section">
-                        <h4>Ã°Å¸â€ºâ€™ Productos</h4>
+                        <h4>ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ¢â‚¬â„¢ Productos</h4>
                         <div class="productos-lista">
                             ${pedido.productos.map(prod => `
                                 <div class="producto-item">
@@ -1924,7 +1969,7 @@ function verDetallePedido(pedidoId) {
                     </div>
                     
                     <div class="info-section">
-                        <h4>Ã°Å¸â€™Â° Resumen de Costos</h4>
+                        <h4>ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° Resumen de Costos</h4>
                         <div class="costos-resumen">
                             <div class="costo-item">
                                 <span>Subtotal productos:</span>
@@ -1943,7 +1988,7 @@ function verDetallePedido(pedidoId) {
                     
                     ${pedido.comentarios ? `
                         <div class="info-section">
-                            <h4>Ã°Å¸â€™Â¬ Comentarios</h4>
+                            <h4>ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¬ Comentarios</h4>
                             <p>${pedido.comentarios}</p>
                         </div>
                     ` : ''}
@@ -1951,7 +1996,7 @@ function verDetallePedido(pedidoId) {
                     <div class="order-actions">
                         <button type="button" class="btn btn-secondary" onclick="closePedidoDetail()">Cerrar</button>
                         <button type="button" class="btn btn-success" onclick="reenviarPedidoWhatsApp(${pedido.id})">
-                            Ã°Å¸â€œÂ² Reenviar por WhatsApp
+                            ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â² Reenviar por WhatsApp
                         </button>
                     </div>
                 </div>
@@ -1971,24 +2016,24 @@ function reenviarPedidoWhatsApp(pedidoId) {
     const pedido = pedidosHistorial.find(p => p.id === pedidoId);
     if (!pedido) return;
     
-    let message = `Ã°Å¸ÂÂº *REENVÃƒÂO PEDIDO Boti Dival #${pedido.id}*\n\n`;
-    message += `Ã°Å¸â€˜Â¤ *Cliente:* ${pedido.cliente.nombre}\n`;
-    message += `Ã°Å¸â€œÅ¾ *TelÃƒÂ©fono:* ${pedido.cliente.telefono}\n`;
-    message += `Ã°Å¸â€œÂ *UbicaciÃƒÂ³n:* ${pedido.cliente.comuna} - ${pedido.cliente.sector}\n`;
-    message += `Ã°Å¸ÂÂ  *DirecciÃƒÂ³n:* ${pedido.cliente.direccion}\n`;
-    if (pedido.cliente.coordenadas) message += `Ã°Å¸â€œÅ’ *Coordenadas:* ${pedido.cliente.coordenadas}\n`;
-    if (pedido.comentarios) message += `Ã°Å¸â€™Â¬ *Comentarios:* ${pedido.comentarios}\n\n`;
+    let message = `ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Âº *REENVÃƒÆ’Ã‚ÂO PEDIDO Boti Dival #${pedido.id}*\n\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ *Cliente:* ${pedido.cliente.nombre}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â¾ *TelÃƒÆ’Ã‚Â©fono:* ${pedido.cliente.telefono}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â *UbicaciÃƒÆ’Ã‚Â³n:* ${pedido.cliente.comuna} - ${pedido.cliente.sector}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â  *DirecciÃƒÆ’Ã‚Â³n:* ${pedido.cliente.direccion}\n`;
+    if (pedido.cliente.coordenadas) message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ *Coordenadas:* ${pedido.cliente.coordenadas}\n`;
+    if (pedido.comentarios) message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¬ *Comentarios:* ${pedido.comentarios}\n\n`;
     
-    message += `Ã°Å¸â€ºâ€™ *PRODUCTOS:*\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ¢â‚¬â„¢ *PRODUCTOS:*\n`;
     pedido.productos.forEach(item => {
-        message += `Ã¢â‚¬Â¢ ${item.nombre} x${item.cantidad} - $${(item.precioUnitario * item.cantidad).toLocaleString('es-CL')}\n`;
+        message += `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ ${item.nombre} x${item.cantidad} - $${(item.precioUnitario * item.cantidad).toLocaleString('es-CL')}\n`;
     });
     
-    message += `\nÃ°Å¸â€™Â° *SUBTOTAL:* $${pedido.costos.subtotal.toLocaleString('es-CL')}\n`;
-    message += `Ã°Å¸Å¡Å¡ *DELIVERY:* $${pedido.costos.delivery.toLocaleString('es-CL')}\n`;
-    message += `Ã°Å¸â€™Âµ *TOTAL:* $${pedido.costos.total.toLocaleString('es-CL')}\n\n`;
+    message += `\nÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° *SUBTOTAL:* $${pedido.costos.subtotal.toLocaleString('es-CL')}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã…Â¡Ã…Â¡ *DELIVERY:* $${pedido.costos.delivery.toLocaleString('es-CL')}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Âµ *TOTAL:* $${pedido.costos.total.toLocaleString('es-CL')}\n\n`;
     
-    message += `Ã°Å¸â€â€ž *Pedido reenviado para confirmaciÃƒÂ³n*`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ *Pedido reenviado para confirmaciÃƒÆ’Ã‚Â³n*`;
     
     const whatsappUrl = `https://wa.me/56964044114?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -2090,7 +2135,7 @@ function updateDynamicMarketing() {
     const banner = document.getElementById('deliveryStatusBanner');
     if (!banner) return;
 
-    // Si el delivery estÃƒÂ¡ activo, mostramos un mensaje positivo basado en deliveryTrips
+    // Si el delivery estÃƒÆ’Ã‚Â¡ activo, mostramos un mensaje positivo basado en deliveryTrips
     if (deliveryStatus) {
         const now = new Date();
         const weekStart = new Date(now);
@@ -2102,12 +2147,12 @@ function updateDynamicMarketing() {
         if (totalEntregas > 5) {
             banner.style.display = 'block';
             banner.className = 'delivery-status-banner success';
-            banner.innerHTML = `<i class="fas fa-shipping-fast me-2"></i> Ã‚Â¡Ya llevamos <strong>${totalEntregas}</strong> entregas exitosas esta semana! ConfÃƒÂ­a en nosotros.`;
+            banner.innerHTML = `<i class="fas fa-shipping-fast me-2"></i> Ãƒâ€šÃ‚Â¡Ya llevamos <strong>${totalEntregas}</strong> entregas exitosas esta semana! ConfÃƒÆ’Ã‚Â­a en nosotros.`;
         } else {
             banner.style.display = 'none';
         }
     } else {
-        // Si estÃƒÂ¡ desactivado, mostramos el mensaje de fuera de servicio
+        // Si estÃƒÆ’Ã‚Â¡ desactivado, mostramos el mensaje de fuera de servicio
         banner.style.display = 'block';
         banner.className = 'delivery-status-banner warning';
         banner.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> Servicio de Delivery Fuera de Servicio - Solo Ventas Presenciales`;
@@ -2154,7 +2199,17 @@ function updateDeliveryDisplay(status) {
             statusDot.classList.remove('active');
             statusDot.classList.add('inactive');
         }
-        if(statusText) statusText.textContent = 'Ã¢ÂÂ° Delivery No Disponible';
+        
+        let customMessage = 'Delivery No Disponible';
+        const scheduleStr = localStorage.getItem(STORAGE_KEYS.deliverySchedule);
+        if (scheduleStr) {
+            const schedule = JSON.parse(scheduleStr);
+            if (schedule.enabled) {
+                customMessage = `Delivery Cerrado (Horario: ${schedule.start} - ${schedule.end})`;
+            }
+        }
+        
+        if(statusText) statusText.textContent = '⏱️ ' + customMessage;
         
         // Ocultar features de delivery en el status bar
         const features = statusBar.querySelectorAll('.feature-badge');
@@ -2164,7 +2219,7 @@ function updateDeliveryDisplay(status) {
             }
         });
     } else {
-        statusText.textContent = 'Ã¢ÂÂ° Delivery Disponible';
+        if (statusText) statusText.textContent = '⏱️ Delivery Disponible';
         
         // Mostrar features de delivery
         const features = statusBar.querySelectorAll('.feature-badge');
@@ -2174,7 +2229,7 @@ function updateDeliveryDisplay(status) {
     }
 }
 
-/* ==================== INICIALIZACIÃƒâ€œN DE CONTENIDO DINÃƒÂMICO ==================== */
+/* ==================== INICIALIZACIÃƒÆ’Ã¢â‚¬Å“N DE CONTENIDO DINÃƒÆ’Ã‚ÂMICO ==================== */
 
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar promociones activas
@@ -2207,29 +2262,29 @@ window.addEventListener('storage', (event) => {
 function generateWhatsAppMessage(name, address, phone, comments) {
     const timestamp = new Date().toLocaleString('es-CL');
     const itemsList = cart.map(item => 
-        `Ã¢â‚¬Â¢ ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-CL')}`
+        `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-CL')}`
     ).join('\n');
     
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    let message = `Ã°Å¸â€ºâ€™ *NUEVO PEDIDO BOTI DIVAL* Ã°Å¸â€ºâ€™\n\n`;
-    message += `Ã°Å¸â€œÅ’ *InformaciÃƒÂ³n del Cliente*\n`;
-    message += `Ã°Å¸â€˜Â¤ Nombre: ${name}\n`;
-    message += `Ã°Å¸â€œÅ¾ TelÃƒÂ©fono: ${phone}\n`;
-    message += `Ã°Å¸â€œÂ DirecciÃƒÂ³n: ${address}\n`;
-    message += `Ã¢ÂÂ° Fecha/Hora: ${timestamp}\n\n`;
-    message += `Ã°Å¸â€œÂ¦ *Productos Pedidos (${totalItems} items)*\n`;
+    let message = `ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ¢â‚¬â„¢ *NUEVO PEDIDO BOTI DIVAL* ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ¢â‚¬â„¢\n\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ *InformaciÃƒÆ’Ã‚Â³n del Cliente*\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ Nombre: ${name}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â¾ TelÃƒÆ’Ã‚Â©fono: ${phone}\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â DirecciÃƒÆ’Ã‚Â³n: ${address}\n`;
+    message += `ÃƒÂ¢Ã‚ÂÃ‚Â° Fecha/Hora: ${timestamp}\n\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¦ *Productos Pedidos (${totalItems} items)*\n`;
     message += itemsList + '\n\n';
-    message += `Ã°Å¸â€™Â° *Subtotal: $${subtotal.toLocaleString('es-CL')}*\n`;
-    message += `Ã°Å¸Å¡Å¡ EnvÃƒÂ­o: A cotizar segÃƒÂºn distancia\n\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° *Subtotal: $${subtotal.toLocaleString('es-CL')}*\n`;
+    message += `ÃƒÂ°Ã…Â¸Ã…Â¡Ã…Â¡ EnvÃƒÆ’Ã‚Â­o: A cotizar segÃƒÆ’Ã‚Âºn distancia\n\n`;
     
     if (comments) {
-        message += `Ã°Å¸â€œÂ *Comentarios*\n${comments}\n\n`;
+        message += `ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â *Comentarios*\n${comments}\n\n`;
     }
     
-    message += `Ã¢Å“â€¦ *Por favor confirma disponibilidad y costo de envÃƒÂ­o*\n`;
-    message += `Ã‚Â¡Gracias por tu pedido! Ã°Å¸ËœÅ `;
+    message += `ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ *Por favor confirma disponibilidad y costo de envÃƒÆ’Ã‚Â­o*\n`;
+    message += `Ãƒâ€šÃ‚Â¡Gracias por tu pedido! ÃƒÂ°Ã…Â¸Ã‹Å“Ã…Â `;
 
     return message;
 }
@@ -2241,11 +2296,11 @@ function contactShipping() {
     var oldModal = document.getElementById('shippingModal');
     if (oldModal) oldModal.remove();
 
-    // Datos de zonas de envÃƒÂ­o
+    // Datos de zonas de envÃƒÆ’Ã‚Â­o
     var zones = [
-        { comuna: "DoÃƒÂ±ihue", sector: "DoÃƒÂ±ihue Centro", price: 6600 },
-        { comuna: "Coltauco", sector: "QuimÃƒÂ¡vida", price: 6000 },
-        { comuna: "DoÃƒÂ±ihue", sector: "Cerrillos", price: 6000 },
+        { comuna: "DoÃƒÆ’Ã‚Â±ihue", sector: "DoÃƒÆ’Ã‚Â±ihue Centro", price: 6600 },
+        { comuna: "Coltauco", sector: "QuimÃƒÆ’Ã‚Â¡vida", price: 6000 },
+        { comuna: "DoÃƒÆ’Ã‚Â±ihue", sector: "Cerrillos", price: 6000 },
         { comuna: "Coltauco", sector: "Lo de Cuevas", price: 5800 },
         { comuna: "Coltauco", sector: "Hijuela del Medio", price: 5800 },
         { comuna: "Coltauco", sector: "Rinconada de Parral", price: 4700 },
@@ -2270,13 +2325,13 @@ function contactShipping() {
     var minP = Math.min.apply(null, prices);
     var avgP = Math.round(zones.reduce(function(s,z){ return s + z.price; }, 0) / zones.length);
     var coltN = zones.filter(function(z){ return z.comuna === "Coltauco"; }).length;
-    var donN = zones.filter(function(z){ return z.comuna === "DoÃƒÂ±ihue"; }).length;
+    var donN = zones.filter(function(z){ return z.comuna === "DoÃƒÆ’Ã‚Â±ihue"; }).length;
 
     function distLevel(price) {
         var r = (price - minP) / (maxP - minP);
-        if (r > 0.7) return { label: "Distancia Alta", color: "#ef4444", ring: "rgba(239,68,68,0.15)", dot: "Ã°Å¸â€Â´" };
-        if (r > 0.35) return { label: "Distancia Media", color: "#f59e0b", ring: "rgba(245,158,11,0.15)", dot: "Ã°Å¸Å¸Â¡" };
-        return { label: "Cercano", color: "#10b981", ring: "rgba(16,185,129,0.15)", dot: "Ã°Å¸Å¸Â¢" };
+        if (r > 0.7) return { label: "Distancia Alta", color: "#ef4444", ring: "rgba(239,68,68,0.15)", dot: "ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â´" };
+        if (r > 0.35) return { label: "Distancia Media", color: "#f59e0b", ring: "rgba(245,158,11,0.15)", dot: "ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡" };
+        return { label: "Cercano", color: "#10b981", ring: "rgba(16,185,129,0.15)", dot: "ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¢" };
     }
 
     function fmt(n) { return "$" + n.toLocaleString("es-CL"); }
@@ -2293,7 +2348,7 @@ function contactShipping() {
         else list.sort(function(a,b){ return b.price - a.price; });
 
         if (list.length === 0) {
-            return '<div class="shp-empty"><div class="shp-empty-ring"></div><span class="shp-empty-icon">Ã°Å¸â€œÂ</span><h4>Sin resultados</h4><p>No encontramos sectores con ese criterio</p></div>';
+            return '<div class="shp-empty"><div class="shp-empty-ring"></div><span class="shp-empty-icon">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â</span><h4>Sin resultados</h4><p>No encontramos sectores con ese criterio</p></div>';
         }
 
         var html = "";
@@ -2301,7 +2356,7 @@ function contactShipping() {
             var z = list[i];
             var d = distLevel(z.price);
             var pct = Math.max(((z.price - minP) / (maxP - minP)) * 100, 12);
-            var cls = z.comuna === "DoÃƒÂ±ihue" ? "shp-donihue" : "shp-coltauco";
+            var cls = z.comuna === "DoÃƒÆ’Ã‚Â±ihue" ? "shp-donihue" : "shp-coltauco";
             var waText = encodeURIComponent("Hola Boti Dival, quiero consultar el delivery a " + z.sector + ", " + z.comuna);
             html += '<div class="shp-card" style="--delay:' + (i * 0.05) + 's" onclick="this.classList.toggle(\'expanded\')">' +
                 '<div class="shp-card-left"><div class="shp-distance-ring" style="--ring-color:' + d.ring + '"><div class="shp-distance-dot" style="background:' + d.color + '"></div></div></div>' +
@@ -2313,32 +2368,32 @@ function contactShipping() {
                     '<h4 class="shp-card-sector">' + z.sector + '</h4>' +
                     '<div class="shp-bar-track"><div class="shp-bar-fill" style="--bar-width:' + pct + '%;--bar-color:' + d.color + '"></div></div>' +
                     '<div class="shp-card-expand">' +
-                        '<p>Ã°Å¸â€œÅ’ RegiÃƒÂ³n: Libertador Gral. Bernardo O\'Higgins</p>' +
-                        '<a href="https://wa.me/56985062378?text=' + waText + '" target="_blank" class="shp-card-wa">Ã°Å¸â€™Â¬ Consultar este sector</a>' +
+                        '<p>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ RegiÃƒÆ’Ã‚Â³n: Libertador Gral. Bernardo O\'Higgins</p>' +
+                        '<a href="https://wa.me/56985062378?text=' + waText + '" target="_blank" class="shp-card-wa">ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¬ Consultar este sector</a>' +
                     '</div>' +
                 '</div></div>';
         }
         return html;
     }
 
-    var waFooter = encodeURIComponent("Hola Boti Dival, me gustarÃƒÂ­a consultar sobre el costo de envÃƒÂ­o a mi zona.");
+    var waFooter = encodeURIComponent("Hola Boti Dival, me gustarÃƒÆ’Ã‚Â­a consultar sobre el costo de envÃƒÆ’Ã‚Â­o a mi zona.");
 
     var m = '<div class="shp-overlay" id="shippingModal">' +
         '<div class="shp-modal">' +
             '<div class="shp-header"><div class="shp-header-bg"></div>' +
                 '<div class="shp-header-content">' +
                     '<div class="shp-header-left">' +
-                        '<div class="shp-header-icon-wrap"><span class="shp-header-icon">Ã°Å¸Å¡Å¡</span><span class="shp-header-pulse"></span></div>' +
-                        '<div><h2 class="shp-title">Tarifas de Delivery</h2><p class="shp-subtitle">RegiÃƒÂ³n de O\'Higgins Ã‚Â· Precios actualizados</p></div>' +
+                        '<div class="shp-header-icon-wrap"><span class="shp-header-icon">ÃƒÂ°Ã…Â¸Ã…Â¡Ã…Â¡</span><span class="shp-header-pulse"></span></div>' +
+                        '<div><h2 class="shp-title">Tarifas de Delivery</h2><p class="shp-subtitle">RegiÃƒÆ’Ã‚Â³n de O\'Higgins Ãƒâ€šÃ‚Â· Precios actualizados</p></div>' +
                     '</div>' +
                     '<button class="shp-close" onclick="closeShippingModal()" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1 1l16 16M17 1L1 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>' +
                 '</div>' +
             '</div>' +
             '<div class="shp-stats">' +
-                '<div class="shp-stat-card"><span class="shp-stat-icon">Ã°Å¸â€œÂ</span><div class="shp-stat-data"><span class="shp-stat-value">' + zones.length + '</span><span class="shp-stat-label">Zonas</span></div></div>' +
-                '<div class="shp-stat-card"><span class="shp-stat-icon">Ã°Å¸â€™Å¡</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(minP) + '</span><span class="shp-stat-label">Desde</span></div></div>' +
-                '<div class="shp-stat-card"><span class="shp-stat-icon">Ã°Å¸â€œÅ </span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(avgP) + '</span><span class="shp-stat-label">Promedio</span></div></div>' +
-                '<div class="shp-stat-card"><span class="shp-stat-icon">Ã°Å¸â€œÅ’</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(maxP) + '</span><span class="shp-stat-label">MÃƒÂ¡ximo</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â</span><div class="shp-stat-data"><span class="shp-stat-value">' + zones.length + '</span><span class="shp-stat-label">Zonas</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã…Â¡</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(minP) + '</span><span class="shp-stat-label">Desde</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â </span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(avgP) + '</span><span class="shp-stat-label">Promedio</span></div></div>' +
+                '<div class="shp-stat-card"><span class="shp-stat-icon">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™</span><div class="shp-stat-data"><span class="shp-stat-value">' + fmt(maxP) + '</span><span class="shp-stat-label">MÃƒÆ’Ã‚Â¡ximo</span></div></div>' +
             '</div>' +
             '<div class="shp-controls">' +
                 '<div class="shp-search-wrap">' +
@@ -2348,19 +2403,19 @@ function contactShipping() {
                 '<div class="shp-controls-row">' +
                     '<div class="shp-filters">' +
                         '<button class="shp-filter active" onclick="setShippingFilter(this,\'all\')">Todos <span class="shp-filter-count">' + zones.length + '</span></button>' +
-                        '<button class="shp-filter" onclick="setShippingFilter(this,\'Coltauco\')">Ã°Å¸ÂËœÃ¯Â¸Â Coltauco <span class="shp-filter-count">' + coltN + '</span></button>' +
-                        '<button class="shp-filter" onclick="setShippingFilter(this,\'DoÃƒÂ±ihue\')">Ã°Å¸ÂÂ¡ DoÃƒÂ±ihue <span class="shp-filter-count">' + donN + '</span></button>' +
+                        '<button class="shp-filter" onclick="setShippingFilter(this,\'Coltauco\')">ÃƒÂ°Ã…Â¸Ã‚ÂÃ‹Å“ÃƒÂ¯Ã‚Â¸Ã‚Â Coltauco <span class="shp-filter-count">' + coltN + '</span></button>' +
+                        '<button class="shp-filter" onclick="setShippingFilter(this,\'DoÃƒÆ’Ã‚Â±ihue\')">ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â¡ DoÃƒÆ’Ã‚Â±ihue <span class="shp-filter-count">' + donN + '</span></button>' +
                     '</div>' +
                     '<div class="shp-sort">' +
-                        '<button class="shp-sort-btn active" onclick="setShippingSort(this,\'price-desc\')" title="Mayor precio">Ã¢â€ â€œ$</button>' +
-                        '<button class="shp-sort-btn" onclick="setShippingSort(this,\'price-asc\')" title="Menor precio">Ã¢â€ â€˜$</button>' +
+                        '<button class="shp-sort-btn active" onclick="setShippingSort(this,\'price-desc\')" title="Mayor precio">ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Å“$</button>' +
+                        '<button class="shp-sort-btn" onclick="setShippingSort(this,\'price-asc\')" title="Menor precio">ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Ëœ$</button>' +
                         '<button class="shp-sort-btn" onclick="setShippingSort(this,\'name\')" title="A-Z">A-Z</button>' +
                     '</div>' +
                 '</div>' +
             '</div>' +
             '<div class="shp-list" id="shippingZonesList">' + buildCards("all", "", "price-desc") + '</div>' +
             '<div class="shp-footer">' +
-                '<div class="shp-footer-info"><span class="shp-footer-dot"></span><p>Los precios son referenciales y pueden variar segÃƒÂºn condiciones del pedido</p></div>' +
+                '<div class="shp-footer-info"><span class="shp-footer-dot"></span><p>Los precios son referenciales y pueden variar segÃƒÆ’Ã‚Âºn condiciones del pedido</p></div>' +
                 '<div class="shp-footer-actions">' +
                     '<button class="shp-btn-ghost" onclick="closeShippingModal()">Cerrar</button>' +
                     '<a href="https://wa.me/56985062378?text=' + waFooter + '" target="_blank" class="shp-btn-wa">' +
@@ -2412,7 +2467,7 @@ function closeShippingModal() {
 }
 
 function contactShippingWhatsApp() {
-    var message = "Hola Boti Dival, me gustarÃƒÂ­a consultar sobre el costo de envÃƒÂ­o a mi zona. Mi direcciÃƒÂ³n es: [Mi direcciÃƒÂ³n]";
+    var message = "Hola Boti Dival, me gustarÃƒÆ’Ã‚Â­a consultar sobre el costo de envÃƒÆ’Ã‚Â­o a mi zona. Mi direcciÃƒÆ’Ã‚Â³n es: [Mi direcciÃƒÆ’Ã‚Â³n]";
     window.open("https://wa.me/56985062378?text=" + encodeURIComponent(message), "_blank");
 }
 
@@ -2461,7 +2516,7 @@ function initScrollAnimations() {
         });
     }, observerOptions);
 
-    // Agregar clases de animaciÃƒÂ³n a elementos
+    // Agregar clases de animaciÃƒÆ’Ã‚Â³n a elementos
     document.querySelectorAll('.promo-card').forEach((card, index) => {
         card.classList.add('animate-on-scroll');
         if (index % 2 === 0) {
@@ -2486,7 +2541,7 @@ function initScrollAnimations() {
 /* ==================== MEJORAS DE UX ==================== */
 
 function addTouchFeedback() {
-    // Agregar feedback tÃƒÂ¡ctil en mÃƒÂ³viles solo a botones y promociones
+    // Agregar feedback tÃƒÆ’Ã‚Â¡ctil en mÃƒÆ’Ã‚Â³viles solo a botones y promociones
     document.querySelectorAll('.btn, .promo-card').forEach(el => {
         el.addEventListener('touchstart', () => {
             el.style.transform = 'scale(0.98)';
@@ -2499,7 +2554,7 @@ function addTouchFeedback() {
 }
 
 function enhanceSearch() {
-    // Mejorar bÃƒÂºsqueda con debounce
+    // Mejorar bÃƒÆ’Ã‚Âºsqueda con debounce
     let searchTimeout;
     const searchInput = document.getElementById('searchInput');
     
@@ -2513,7 +2568,7 @@ function enhanceSearch() {
 
 function addKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-        // Ctrl/Cmd + K para focus en bÃƒÂºsqueda
+        // Ctrl/Cmd + K para focus en bÃƒÆ’Ã‚Âºsqueda
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
             document.getElementById('searchInput').focus();
@@ -2527,17 +2582,17 @@ function addKeyboardShortcuts() {
 }
 
 
-/* ==================== OPTIMIZACIÃƒâ€œN DE RENDIMIENTO ==================== */
+/* ==================== OPTIMIZACIÃƒÆ’Ã¢â‚¬Å“N DE RENDIMIENTO ==================== */
 
 function setupLazyLoad() {
-    // Aplicar animaciÃƒÂ³n de entrada suave a las tarjetas (sin ocultarlas)
+    // Aplicar animaciÃƒÆ’Ã‚Â³n de entrada suave a las tarjetas (sin ocultarlas)
     document.querySelectorAll('.product-card').forEach((card, index) => {
         card.style.animationDelay = `${index * 0.05}s`;
         card.classList.add('fade-in-card');
     });
 }
 
-/* ==================== DARK MODE (AutomÃƒÂ¡tico segÃƒÂºn hora) ==================== */
+/* ==================== DARK MODE (AutomÃƒÆ’Ã‚Â¡tico segÃƒÆ’Ã‚Âºn hora) ==================== */
 
 function checkDarkMode() {
     const hour = new Date().getHours();
@@ -2553,7 +2608,7 @@ setInterval(checkDarkMode, 600000); // Check cada 10 minutos
 /* ==================== CONTADOR DE DEMANDA ==================== */
 
 function updateDemandStatus() {
-    // SimulaciÃƒÂ³n - en producciÃƒÂ³n esto vendrÃƒÂ­a de un servidor
+    // SimulaciÃƒÆ’Ã‚Â³n - en producciÃƒÆ’Ã‚Â³n esto vendrÃƒÆ’Ã‚Â­a de un servidor
     const hour = new Date().getHours();
     if (hour >= 22 || hour <= 2) {
         // "Alta demanda" en horarios pico nocturnos
@@ -2566,18 +2621,18 @@ function updateDemandStatus() {
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {
-        // Service worker no disponible, continuar sin ÃƒÂ©l
+        // Service worker no disponible, continuar sin ÃƒÆ’Ã‚Â©l
     });
 }
 
-/* ==================== MANEJO DE CONEXIÃƒâ€œN ==================== */
+/* ==================== MANEJO DE CONEXIÃƒÆ’Ã¢â‚¬Å“N ==================== */
 
 window.addEventListener('online', () => {
-    showNotificationMessage('Ã¢Å“â€œ ConexiÃƒÂ³n establecida');
+    showNotificationMessage('ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ ConexiÃƒÆ’Ã‚Â³n establecida');
 });
 
 window.addEventListener('offline', () => {
-    showNotificationMessage('Ã¢Å¡Â Ã¯Â¸Â Sin conexiÃƒÂ³n a internet');
+    showNotificationMessage('ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Sin conexiÃƒÆ’Ã‚Â³n a internet');
 });
 
 /* ==================== PRODUCT DETAIL MODAL ==================== */
@@ -2595,7 +2650,7 @@ function openProductModal(id) {
     // Populate modal
     document.getElementById('modalProductCategory').textContent = getCategoryLabel(product.category);
     document.getElementById('modalProductName').textContent = product.name;
-    document.getElementById('modalProductDescription').textContent = product.description || 'Sin descripciÃ³n detallada.';
+    document.getElementById('modalProductDescription').textContent = product.description || 'Sin descripciÃƒÂ³n detallada.';
     
     document.getElementById('modalProductPrice').textContent = '$' + product.price.toLocaleString('es-CL');
     if (product.previousPrice) {
@@ -2666,15 +2721,15 @@ function confirmModalAdd() {
     // Cerrar el modal
     closeProductModal();
     
-    // Opcional: mostrar un feedback visual temporal en el botÃ³n
+    // Opcional: mostrar un feedback visual temporal en el botÃƒÂ³n
 }
 
-// Global click listener (Consolidado para evitar múltiples listeners)
+// Global click listener (Consolidado para evitar mÃºltiples listeners)
 document.addEventListener('click', (e) => {
     // 1. Manejo de tarjetas de productos
     const card = e.target.closest('.product-card');
     if (card) {
-        // Ignorar clics en los botones de acción del carrito dentro de la tarjeta
+        // Ignorar clics en los botones de acciÃ³n del carrito dentro de la tarjeta
         if (!e.target.closest('.product-actions')) {
             const productId = parseInt(card.dataset.id);
             if (!isNaN(productId)) {
@@ -2688,7 +2743,7 @@ document.addEventListener('click', (e) => {
         closeProductModal();
     }
 
-    // 3. Cerrar resultados de búsqueda al hacer clic fuera
+    // 3. Cerrar resultados de bÃºsqueda al hacer clic fuera
     if (!e.target.closest('.search-box')) {
         const searchResults = document.getElementById('searchResults');
         if (searchResults) searchResults.classList.remove('active');
@@ -2769,7 +2824,7 @@ function showToastNotification(title, message) {
         toast.id = 'toastNotification';
         toast.className = 'toast-notification';
         toast.innerHTML = `
-            <div class="toast-icon">âœ“</div>
+            <div class="toast-icon">Ã¢Å“â€œ</div>
             <div class="toast-content">
                 <div style="font-weight: 800; font-size: 0.75rem; text-transform: uppercase; opacity: 0.7;">${title}</div>
                 <div>${message}</div>

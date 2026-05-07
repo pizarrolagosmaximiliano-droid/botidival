@@ -17,7 +17,8 @@ const STORAGE_KEYS = {
     carousel: 'carouselImages',
     delivery: 'deliveryStatus',
     deliveryTrips: 'deliveryTripsHistory',
-    instagram: 'instagramVideos'
+    instagram: 'instagramVideos',
+    deliverySchedule: 'deliverySchedule'
 };
 
 const ORDER_STATUS = ['nuevo', 'preparando', 'en-camino', 'entregado', 'cancelado'];
@@ -656,27 +657,127 @@ function setDeliveryStatus(status) {
 
 function renderDeliveryStatus() {
     const deliveryStatus = JSON.parse(localStorage.getItem(STORAGE_KEYS.delivery));
-    const current = deliveryStatus !== null ? deliveryStatus : true;
+    const scheduleStr = localStorage.getItem(STORAGE_KEYS.deliverySchedule);
+    const schedule = scheduleStr ? JSON.parse(scheduleStr) : { enabled: false, start: '12:00', end: '23:00' };
+    
+    // Evaluate if the schedule is currently open (just for display in admin)
+    let isCurrentlyOpen = deliveryStatus !== null ? deliveryStatus : true;
+    let overrideMessage = '';
+
+    if (schedule.enabled) {
+        const now = new Date();
+        const currentTime = now.getHours() + now.getMinutes() / 60;
+        
+        const [startH, startM] = schedule.start.split(':').map(Number);
+        const [endH, endM] = schedule.end.split(':').map(Number);
+        const startTime = startH + startM / 60;
+        const endTime = endH + endM / 60;
+        
+        if (startTime <= endTime) {
+            isCurrentlyOpen = currentTime >= startTime && currentTime < endTime;
+        } else {
+            isCurrentlyOpen = currentTime >= startTime || currentTime < endTime;
+        }
+        overrideMessage = isCurrentlyOpen ? `Abierto según horario automático (${schedule.start} - ${schedule.end}).` : `Cerrado según horario automático (${schedule.start} - ${schedule.end}).`;
+    }
+
     const dot = document.getElementById('deliveryStatusDot');
     const text = document.getElementById('deliveryStatusText');
     const message = document.getElementById('deliveryCurrentStatus');
     const activateBtn = document.getElementById('activateDeliveryBtn');
     const deactivateBtn = document.getElementById('deactivateDeliveryBtn');
+    const overrideWarning = document.getElementById('scheduleOverrideWarning');
 
-    if (current) {
+    if (!dot) return;
+
+    if (isCurrentlyOpen) {
         dot.className = 'status-dot active';
         text.textContent = 'Delivery ACTIVO';
-        message.textContent = 'Delivery Disponible para clientes.';
-        activateBtn.style.display = 'none';
-        deactivateBtn.style.display = 'inline-block';
+        message.textContent = schedule.enabled ? overrideMessage : 'Delivery Disponible para clientes.';
     } else {
         dot.className = 'status-dot inactive';
         text.textContent = 'Delivery INACTIVO';
-        message.textContent = 'Delivery No Disponible. Solo retiro presencial.';
-        activateBtn.style.display = 'inline-block';
+        message.textContent = schedule.enabled ? overrideMessage : 'Delivery No Disponible. Solo retiro presencial.';
+    }
+    
+    if (schedule.enabled) {
+        activateBtn.disabled = true;
+        deactivateBtn.disabled = true;
+        activateBtn.style.display = 'none';
         deactivateBtn.style.display = 'none';
+        if(overrideWarning) overrideWarning.classList.remove('d-none');
+    } else {
+        activateBtn.disabled = false;
+        deactivateBtn.disabled = false;
+        if(overrideWarning) overrideWarning.classList.add('d-none');
+        if (isCurrentlyOpen) {
+            activateBtn.style.display = 'none';
+            deactivateBtn.style.display = 'inline-block';
+        } else {
+            activateBtn.style.display = 'inline-block';
+            deactivateBtn.style.display = 'none';
+        }
+    }
+    
+    // Fill schedule form
+    const toggle = document.getElementById('enableScheduleToggle');
+    const startInput = document.getElementById('scheduleStart');
+    const endInput = document.getElementById('scheduleEnd');
+    const saveBtn = document.getElementById('scheduleSaveBtn');
+    
+    if (toggle && startInput && endInput && saveBtn) {
+        toggle.checked = schedule.enabled;
+        startInput.value = schedule.start;
+        endInput.value = schedule.end;
+        startInput.disabled = !schedule.enabled;
+        endInput.disabled = !schedule.enabled;
+        saveBtn.disabled = !schedule.enabled;
     }
 }
+
+window.toggleSchedule = function() {
+    const toggle = document.getElementById('enableScheduleToggle');
+    const startInput = document.getElementById('scheduleStart');
+    const endInput = document.getElementById('scheduleEnd');
+    const saveBtn = document.getElementById('scheduleSaveBtn');
+    
+    const isEnabled = toggle.checked;
+    startInput.disabled = !isEnabled;
+    endInput.disabled = !isEnabled;
+    saveBtn.disabled = !isEnabled;
+    
+    const scheduleStr = localStorage.getItem(STORAGE_KEYS.deliverySchedule);
+    const schedule = scheduleStr ? JSON.parse(scheduleStr) : { enabled: false, start: '12:00', end: '23:00' };
+    schedule.enabled = isEnabled;
+    localStorage.setItem(STORAGE_KEYS.deliverySchedule, JSON.stringify(schedule));
+    
+    renderDeliveryStatus();
+    // Dispatch storage event to update index.html immediately if it's open
+    window.dispatchEvent(new Event('storage'));
+};
+
+window.saveSchedule = function(e) {
+    e.preventDefault();
+    const startInput = document.getElementById('scheduleStart').value;
+    const endInput = document.getElementById('scheduleEnd').value;
+    
+    if (!startInput || !endInput) {
+        alert('Por favor ingresa ambas horas.');
+        return;
+    }
+    
+    const scheduleStr = localStorage.getItem(STORAGE_KEYS.deliverySchedule);
+    const schedule = scheduleStr ? JSON.parse(scheduleStr) : { enabled: true };
+    schedule.enabled = true;
+    schedule.start = startInput;
+    schedule.end = endInput;
+    
+    localStorage.setItem(STORAGE_KEYS.deliverySchedule, JSON.stringify(schedule));
+    renderDeliveryStatus();
+    alert('Horario configurado correctamente.');
+    // Dispatch storage event
+    window.dispatchEvent(new Event('storage'));
+};
 /* =================== PRODUCTOS (CATÁLOGO) =================== */
 
 async function saveProducto(event) {
