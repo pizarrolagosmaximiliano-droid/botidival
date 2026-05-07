@@ -244,7 +244,7 @@ function initializeApp() {
     updateDynamicMarketing();
     
     setupEventListeners();
-    updateStatus();
+    // updateStatus() removed
     updateCartUI();
     initializeCarousel();
     initScrollAnimations();
@@ -272,7 +272,7 @@ function initializeApp() {
     const videoForm = document.getElementById('videoCreateForm');
     if (videoForm) videoForm.addEventListener('submit', saveVideo);
     
-    setInterval(updateStatus, 60000); 
+    // setInterval(updateStatus, 60000) removed 
     setInterval(checkDarkMode, 600000); // Check cada 10 minutos
 
     // SincronizaciÃƒÆ’Ã‚Â³n en tiempo real
@@ -1178,36 +1178,7 @@ function handleSearchResultClick(productId) {
 
 /* ==================== HORARIOS Y ESTADO ==================== */
 
-function updateStatus() {
-    const statusBar = document.getElementById('statusBar');
-    const statusText = document.getElementById('statusText');
-    if (!statusBar || !statusText) return;
-    
-    const now = new Date();
-    const day = now.getDay();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const currentTime = hours * 60 + minutes;
-
-    let isOpen = false;
-    let closeTime = '';
-
-    if (day >= 0 && day <= 4) {
-        isOpen = true;
-        closeTime = 'hasta las 00:30';
-    } else if (day === 5 || day === 6) {
-        isOpen = true;
-        closeTime = 'hasta las 02:30';
-    }
-
-    if (isOpen) {
-        statusText.textContent = 'Abierto ' + closeTime;
-        statusBar.classList.remove('closed');
-    } else {
-        statusText.textContent = 'Cerrado en estos momentos';
-        statusBar.classList.add('closed');
-    }
-}
+// Legacy updateStatus removed in favor of manual config
 
 
 /* ==================== FUNCIONES DE DELIVERY Y PAGO ==================== */
