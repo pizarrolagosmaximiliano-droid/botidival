@@ -5782,14 +5782,18 @@ html {
     border-radius: 12px;
     box-shadow: var(--shadow-float);
     z-index: 9999;
-    transform: translateX(120%);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(calc(100% + 30px));
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 600;
     max-width: 320px;
 }
 
 .notification.show {
     transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* --- Back button & View Title --- */
