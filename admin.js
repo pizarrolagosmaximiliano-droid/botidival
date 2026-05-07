@@ -18,7 +18,7 @@ const STORAGE_KEYS = {
     delivery: 'deliveryStatus',
     deliveryTrips: 'deliveryTripsHistory',
     instagram: 'instagramVideos',
-    deliverySchedule: 'deliverySchedule'
+    closingTime: 'closingTime'
 };
 
 const ORDER_STATUS = ['nuevo', 'preparando', 'en-camino', 'entregado', 'cancelado'];
